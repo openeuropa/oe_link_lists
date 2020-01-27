@@ -287,4 +287,24 @@ class LinkListViewBuilder extends EntityViewBuilder {
     return NULL;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function isViewModeCacheable($view_mode) {
+    if ($view_mode === 'default') {
+      // The 'default' is not an actual view mode.
+      return TRUE;
+    }
+
+    $view_modes_info = $this->entityDisplayRepository->getViewModes($this->entityTypeId);
+
+    // If the requested view mode is not set, the view builder will use the
+    // default view mode.
+    if (!isset($view_modes_info[$view_mode])) {
+      return TRUE;
+    }
+
+    return !empty($view_modes_info[$view_mode]['cache']);
+  }
+
 }
