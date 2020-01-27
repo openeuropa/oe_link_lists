@@ -11,13 +11,6 @@ use Drupal\KernelTests\KernelTestBase;
 class LinkListViewBuilderTest extends KernelTestBase {
 
   /**
-   * The block storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $storage;
-
-  /**
    * Link list to test.
    *
    * @var \Drupal\oe_link_lists\Entity\LinkListInterface
@@ -53,10 +46,10 @@ class LinkListViewBuilderTest extends KernelTestBase {
       'system',
     ]);
 
-    $this->storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
 
-    // Create a block with only required values.
-    $this->linkList = $this->storage->create([
+    // Create a link list with only required values.
+    $this->linkList = $storage->create([
       'bundle' => 'dynamic',
       'title' => 'My link list',
       'administrative_title' => 'Link list 1',
@@ -100,12 +93,12 @@ class LinkListViewBuilderTest extends KernelTestBase {
     $this->renderer->renderRoot($build);
     $this->assertTrue($this->container->get('cache.' . $bin)->get($cid), 'The link list render element has been cached.');
 
-    // Re-save the block and check that the cache entry has been deleted.
+    // Re-save the link list and check that the cache entry has been deleted.
     $this->linkList->save();
     $this->assertFalse($this->container->get('cache.' . $bin)->get($cid), 'The link list render cache entry has been cleared when the link list was saved.');
 
     // Rebuild the render array (creating a new cache entry in the process) and
-    // delete the block to check the cache entry is deleted.
+    // delete the link list to check the cache entry is deleted.
     unset($build['#printed']);
     $this->renderer->renderRoot($build);
     $this->assertTrue($this->container->get('cache.' . $bin)->get($cid), 'The link list render element has been cached.');
