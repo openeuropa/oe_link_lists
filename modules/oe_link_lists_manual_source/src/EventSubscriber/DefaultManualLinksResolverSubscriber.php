@@ -97,48 +97,46 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
    */
   protected function getLinkFromEntity(LinkListLinkInterface $link_entity): ?LinkInterface {
     $link_entity = $this->entityRepository->getTranslationFromContext($link_entity);
-    if ($link_entity->bundle() === 'external') {
-      try {
-        $url = Url::fromUri($link_entity->get('url')->uri);
+
+    $url = $link_entity->hasField('target') && $link_entity->get('target')->entity instanceof EntityInterface ? $link_entity->get('target')->entity->toUrl() : NULL;
+    if ($url) {
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
+      $referenced_entity = $link_entity->get('target')->entity;
+      $referenced_entity = $this->entityRepository->getTranslationFromContext($referenced_entity);
+      $event = new EntityValueResolverEvent($referenced_entity);
+      $this->eventDispatcher->dispatch(EntityValueResolverEvent::NAME, $event);
+      $link = $event->getLink();
+      $link->addCacheableDependency($referenced_entity);
+
+      // Override the title and teaser.
+      if (!$link_entity->get('title')->isEmpty()) {
+        $link->setTitle($link_entity->getTitle());
       }
-      catch (\InvalidArgumentException $exception) {
-        // Normally this should not ever happen but just in case the data is
-        // incorrect we want to construct a valid link object.
-        $url = Url::fromRoute('<front>');
+      if (!$link_entity->get('teaser')->isEmpty()) {
+        $link->setTeaser(['#markup' => $link_entity->getTeaser()]);
       }
 
-      $link = new DefaultLink($url, $link_entity->getTitle(), ['#markup' => $link_entity->getTeaser()]);
-      $event = new ManualLinkOverrideResolverEvent($link, $link_entity);
-      $this->eventDispatcher->dispatch(ManualLinkOverrideResolverEvent::NAME, $event);
-
+      // Dispatch an event to allow others to perform their overrides.
+      $event = new EntityValueOverrideResolverEvent($referenced_entity, $link_entity, $link);
+      $this->eventDispatcher->dispatch(EntityValueOverrideResolverEvent::NAME, $event);
       return $event->getLink();
     }
 
-    $url = $link_entity->get('target')->entity instanceof EntityInterface ? $link_entity->get('target')->entity->toUrl() : NULL;
-    if (!$url) {
-      return NULL;
+    try {
+      $url = Url::fromUri($link_entity->get('url')->uri);
+    }
+    catch (\InvalidArgumentException $exception) {
+      // Normally this should not ever happen but just in case the data is
+      // incorrect we want to construct a valid link object.
+      $url = Url::fromRoute('<front>');
     }
 
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
-    $referenced_entity = $link_entity->get('target')->entity;
-    $referenced_entity = $this->entityRepository->getTranslationFromContext($referenced_entity);
-    $event = new EntityValueResolverEvent($referenced_entity);
-    $this->eventDispatcher->dispatch(EntityValueResolverEvent::NAME, $event);
-    $link = $event->getLink();
-    $link->addCacheableDependency($referenced_entity);
+    $link = new DefaultLink($url, $link_entity->getTitle(), ['#markup' => $link_entity->getTeaser()]);
+    $event = new ManualLinkOverrideResolverEvent($link, $link_entity);
+    $this->eventDispatcher->dispatch(ManualLinkOverrideResolverEvent::NAME, $event);
 
-    // Override the title and teaser.
-    if (!$link_entity->get('title')->isEmpty()) {
-      $link->setTitle($link_entity->getTitle());
-    }
-    if (!$link_entity->get('teaser')->isEmpty()) {
-      $link->setTeaser(['#markup' => $link_entity->getTeaser()]);
-    }
-
-    // Dispatch an event to allow others to perform their overrides.
-    $event = new EntityValueOverrideResolverEvent($referenced_entity, $link_entity, $link);
-    $this->eventDispatcher->dispatch(EntityValueOverrideResolverEvent::NAME, $event);
     return $event->getLink();
+
   }
 
 }

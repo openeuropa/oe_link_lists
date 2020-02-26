@@ -34,7 +34,7 @@ class LinkListLinkInlineForm extends EntityInlineForm {
 
     // Apply a "required" #states condition to the title and teaser elements in
     // case the URL field exists and it is filled in.
-    if (isset($entity_form['url'])) {
+    if ($entity->bundle() === 'external' && isset($entity_form['url'])) {
       $parents = $entity_form['url']['widget'][0]['#field_parents'];
       $first = array_shift($parents);
       $parents = array_merge($parents, ['url', 0, 'uri']);
