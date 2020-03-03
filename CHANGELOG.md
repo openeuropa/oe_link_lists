@@ -1,10 +1,23 @@
 # Change Log
 
+## [0.4.0](https://github.com/openeuropa/oe_link_lists/tree/0.4.0) (2020-03-03)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.3.0...0.4.0)
+
+**Merged pull requests:**
+
+- OPENEUROPA-2853: Fix inline entity form version to 1.0-rc2 [\#52](https://github.com/openeuropa/oe_link_lists/pull/52) ([22Alexandra](https://github.com/22Alexandra))
+- OPENEUROPA-2710: Add extra cases for access tests. [\#51](https://github.com/openeuropa/oe_link_lists/pull/51) ([brummbar](https://github.com/brummbar))
+- OPENEUROPA-2841: Test that access checks on view operations add the entity cacheability metadata. [\#50](https://github.com/openeuropa/oe_link_lists/pull/50) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- OPENEUROPA-2783: Add documentation for Link List RSS module and add submodule. [\#48](https://github.com/openeuropa/oe_link_lists/pull/48) ([sergepavle](https://github.com/sergepavle))
+- OPENEUROPA-2759: Link list translation form improvements [\#47](https://github.com/openeuropa/oe_link_lists/pull/47) ([upchuk](https://github.com/upchuk))
+- OPENEUROPA-2710: CRUD Permissions. [\#45](https://github.com/openeuropa/oe_link_lists/pull/45) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [0.3.0](https://github.com/openeuropa/oe_link_lists/tree/0.3.0) (2020-02-05)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.2.0...0.3.0)
 
 **Merged pull requests:**
 
+- Update CHANGELOG.md for release 0.3.0. [\#49](https://github.com/openeuropa/oe_link_lists/pull/49) ([brummbar](https://github.com/brummbar))
 - OPENEUROPA-2578: Fixes the configuration setter translatability bug when forcefully changing plugins [\#43](https://github.com/openeuropa/oe_link_lists/pull/43) ([upchuk](https://github.com/upchuk))
 - OPENEUROPA-2735: Remove html tags from rss link titles. [\#42](https://github.com/openeuropa/oe_link_lists/pull/42) ([nagyad](https://github.com/nagyad))
 - OPENEUROPA-2731: Remove content overview admin path of link\_list\_link. [\#41](https://github.com/openeuropa/oe_link_lists/pull/41) ([nagyad](https://github.com/nagyad))
