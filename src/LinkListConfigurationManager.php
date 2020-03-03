@@ -126,11 +126,11 @@ class LinkListConfigurationManager {
    * @return array
    *   The list of parents.
    */
-  protected function getTranslatableParents(LinkListConfigurationItem $item) {
+  public function getTranslatableParents(LinkListConfigurationItem $item) {
     // We start by adding the values that are not provided by plugins.
     $parents = [
-      ['more', 'title_override'],
-      ['more', 'target'],
+      'link_display][more][more_title' => ['more', 'title_override'],
+      'link_display][more][more_target' => ['more', 'target'],
     ];
 
     $configuration = $this->extractConfiguration($this->getUntranslatedFieldItem($item));
@@ -138,11 +138,13 @@ class LinkListConfigurationManager {
     // Then we load all the plugins and ask for their parents.
     $source_plugin = isset($configuration['source']['plugin']) ? $this->linkSourceManager->createInstance($configuration['source']['plugin']) : NULL;
     if ($source_plugin instanceof TranslatableLinkListPluginInterface) {
-      $parents = array_merge($parents, $this->getPluginTranslatableParents($source_plugin, ['source', 'plugin_configuration']));
+      $plugin_parents = $this->getPluginTranslatableParents($source_plugin, ['source', 'plugin_configuration']);
+      $parents = array_merge($parents, $plugin_parents);
     }
-    $display = isset($configuration['display']['plugin']) ? $this->linkDisplayManager->createInstance($configuration['display']['plugin']) : NULL;
-    if ($display instanceof TranslatableLinkListPluginInterface) {
-      $parents = array_merge($parents, $this->getPluginTranslatableParents($display, ['display', 'plugin_configuration']));
+    $display_plugin = isset($configuration['display']['plugin']) ? $this->linkDisplayManager->createInstance($configuration['display']['plugin']) : NULL;
+    if ($display_plugin instanceof TranslatableLinkListPluginInterface) {
+      $plugin_parents = $this->getPluginTranslatableParents($display_plugin, ['display', 'plugin_configuration']);
+      $parents = array_merge($parents, $plugin_parents);
     }
 
     return $parents;
@@ -165,7 +167,7 @@ class LinkListConfigurationManager {
 
     $plugin_parents = $plugin->getTranslatableParents();
     foreach ($plugin_parents as $plugin_parent_set) {
-      $parents[] = array_merge($base_parents, $plugin_parent_set);
+      $parents[implode('][', $plugin_parent_set)] = array_merge($base_parents, $plugin_parent_set);
     }
 
     return $parents;
