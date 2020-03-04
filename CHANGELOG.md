@@ -1,10 +1,18 @@
 # Change Log
 
+## [0.4.1](https://github.com/openeuropa/oe_link_lists/tree/0.4.1) (2020-03-04)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.0...0.4.1)
+
+**Merged pull requests:**
+
+- OPENEUROPA-2759: Display plugin non-translatable fix. [\#55](https://github.com/openeuropa/oe_link_lists/pull/55) ([upchuk](https://github.com/upchuk))
+
 ## [0.4.0](https://github.com/openeuropa/oe_link_lists/tree/0.4.0) (2020-03-03)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.3.0...0.4.0)
 
 **Merged pull requests:**
 
+- Update CHANGELOG.md for release 0.4.0. [\#54](https://github.com/openeuropa/oe_link_lists/pull/54) ([brummbar](https://github.com/brummbar))
 - OPENEUROPA-2853: Fix inline entity form version to 1.0-rc2 [\#52](https://github.com/openeuropa/oe_link_lists/pull/52) ([22Alexandra](https://github.com/22Alexandra))
 - OPENEUROPA-2710: Add extra cases for access tests. [\#51](https://github.com/openeuropa/oe_link_lists/pull/51) ([brummbar](https://github.com/brummbar))
 - OPENEUROPA-2841: Test that access checks on view operations add the entity cacheability metadata. [\#50](https://github.com/openeuropa/oe_link_lists/pull/50) ([imanoleguskiza](https://github.com/imanoleguskiza))
