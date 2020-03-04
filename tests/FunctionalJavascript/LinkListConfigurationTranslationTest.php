@@ -66,6 +66,7 @@ class LinkListConfigurationTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Translatable form display');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The display translatable string', 'I can be translated');
+    $this->getSession()->getPage()->fillField('The display non translatable string', 'I cannot be translated');
 
     // Configure the non-plugin configuration options.
     $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
@@ -86,6 +87,7 @@ class LinkListConfigurationTranslationTest extends WebDriverTestBase {
     // Assert that all form elements that are not translatable are disabled.
     $this->assertSession()->fieldDisabled('Link source');
     $this->assertSession()->fieldDisabled('The source non translatable string');
+    $this->assertSession()->fieldDisabled('The display non translatable string');
     $this->assertSession()->fieldDisabled('Link display');
     $this->assertSession()->fieldDisabled('Number of items');
     $this->assertSession()->fieldDisabled('configuration[0][link_display][more][button]');
