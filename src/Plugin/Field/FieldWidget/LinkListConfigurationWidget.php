@@ -366,8 +366,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       if (!empty($element['#translatable_parents'])) {
         // If we are translating the entity and we have elements that we are
         // translating, add a process to the plugin form to handle them.
-        $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = [get_class($this), 'processUntranslatableFields'];
-        $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
+        $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = [get_class($this), 'processUntranslatableFields'];
+        $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
       }
     }
 
