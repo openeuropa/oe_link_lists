@@ -22,6 +22,7 @@ class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginI
   public function defaultConfiguration() {
     return [
       'translatable_string' => '',
+      'non_translatable_string' => '',
     ];
   }
 
@@ -36,6 +37,13 @@ class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginI
       '#required' => TRUE,
     ];
 
+    $form['non_translatable_string'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('The display non translatable string'),
+      '#default_value' => $this->configuration['non_translatable_string'],
+      '#required' => TRUE,
+    ];
+
     return $form;
   }
 
@@ -44,6 +52,7 @@ class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginI
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['translatable_string'] = $form_state->getValue('translatable_string');
+    $this->configuration['non_translatable_string'] = $form_state->getValue('non_translatable_string');
   }
 
   /**
