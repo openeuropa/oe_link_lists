@@ -35,7 +35,8 @@ class LinkCollectionTest extends UnitTestCase {
 
     // Create a collection with an invalid element specified.
     $test_data[] = new Link($this->randomMachineName(), new Url('<front>'));
-    $this->setExpectedException(\InvalidArgumentException::class, 'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got Drupal\Core\Link.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got Drupal\Core\Link.');
     new LinkCollection($test_data);
   }
 
@@ -169,7 +170,8 @@ class LinkCollectionTest extends UnitTestCase {
    */
   public function testOffsetSetInvalidArgument($argument, string $exception_message): void {
     $collection = new LinkCollection();
-    $this->setExpectedException(\InvalidArgumentException::class, $exception_message);
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage($exception_message);
     $collection[] = $argument;
   }
 

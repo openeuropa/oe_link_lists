@@ -58,12 +58,16 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Internal');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Entity type');
-    $this->assertEquals([
+    $expected = [
       '- Select -' => '- Select -',
       'link_list' => 'Link list',
       'node' => 'Content',
       'user' => 'User',
-    ], $this->getOptions($select));
+    ];
+    if ($this->container->get('entity_type.manager')->hasDefinition('path_alias')) {
+      $expected['path_alias'] = 'URL alias';
+    }
+    $this->assertEquals($expected, $this->getOptions($select));
 
     // Select the user option and save the content.
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'user');
