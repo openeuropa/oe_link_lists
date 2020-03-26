@@ -34,7 +34,7 @@ class LinkListViewBuilderTest extends KernelTestBase {
     ]);
 
     $mode_storage = $this->container->get('entity_type.manager')->getStorage('entity_view_mode');
-    $display_repository = $this->container->get('entity_display.repository');
+    $display_storage = $this->container->get('entity_type.manager')->getStorage('entity_view_display');
     // Create a cacheable and an uncacheable view modes and displays for
     // link list entities.
     $view_modes = [
@@ -49,7 +49,12 @@ class LinkListViewBuilderTest extends KernelTestBase {
         'status' => TRUE,
         'cache' => $cacheable,
       ])->save();
-      $display_repository->getViewDisplay('link_list', 'dynamic', $mode)->save();
+      $display_storage->create([
+        'targetEntityType' => 'link_list',
+        'bundle' => 'dynamic',
+        'mode' => $mode,
+        'status' => TRUE,
+      ])->save();
     }
   }
 
