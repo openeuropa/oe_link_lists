@@ -137,20 +137,18 @@ class LinkListViewBuilder extends EntityViewBuilder {
 
         $display = $displays[$entity->bundle()];
 
-        $this->moduleHandler()->invokeAll(
-          $view_hook,
-          [&$build_list[$key],
-            $entity,
-            $display,
-            $view_mode,
-          ]);
-        $this->moduleHandler()->invokeAll(
-          'entity_view',
-          [&$build_list[$key],
-            $entity,
-            $display,
-            $view_mode,
-          ]);
+        $this->moduleHandler()->invokeAll($view_hook, [
+          &$build_list[$key],
+          $entity,
+          $display,
+          $view_mode,
+        ]);
+        $this->moduleHandler()->invokeAll('entity_view', [
+          &$build_list[$key],
+          $entity,
+          $display,
+          $view_mode,
+        ]);
 
         $this->addContextualLinks($build_list[$key], $entity);
         $this->alterBuild($build_list[$key], $entity, $display, $view_mode);
@@ -285,6 +283,27 @@ class LinkListViewBuilder extends EntityViewBuilder {
     }
 
     return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function isViewModeCacheable($view_mode) {
+    if ($view_mode === 'default') {
+      // The 'default' is not an actual view mode.
+      return TRUE;
+    }
+
+    $view_modes_info = $this->entityDisplayRepository->getViewModes($this->entityTypeId);
+
+    // If the requested view mode is not set, the view builder will use either
+    // the default view mode or a temporary view mode. In order to avoid
+    // re-rendering, we assume non-existing view modes to be cacheable.
+    if (!isset($view_modes_info[$view_mode])) {
+      return TRUE;
+    }
+
+    return !empty($view_modes_info[$view_mode]['cache']);
   }
 
 }
