@@ -43,6 +43,8 @@ class LinkListConfigurationTranslationTest extends WebDriverTestBase {
       'bypass node access',
       'administer link_lists',
       'translate any entity',
+      'view link list',
+      'access link list canonical page',
     ]);
 
     $this->drupalLogin($web_user);
@@ -97,6 +99,22 @@ class LinkListConfigurationTranslationTest extends WebDriverTestBase {
     $this->assertSession()->fieldEnabled('The display translatable string');
     $this->assertSession()->fieldEnabled('Target');
     $this->assertSession()->fieldEnabled('Button label');
+
+    // Translate the link list.
+    $this->getSession()->getPage()->fillField('Title', 'Test de traduction');
+    $this->getSession()->getPage()->fillField('Administrative title', 'Test la traduction admin titre');
+
+    // Save but do not published.
+    $this->getSession()->getPage()->uncheckField('Published');
+    $this->getSession()->getPage()->pressButton('Save (this translation)');
+
+    // Assert we have the link list translated and it's not published.
+    $link_list = $this->getLinkListByTitle('Title test', TRUE);
+    $this->assertTrue($link_list->hasTranslation('fr'));
+    $translation = $link_list->getTranslation('fr');
+    $this->assertEquals('Test de traduction', $translation->get('title')->value);
+    $this->assertEquals('Test la traduction admin titre', $translation->get('administrative_title')->value);
+    $this->assertFalse($this->container->get('content_translation.manager')->getTranslationMetadata($translation)->isPublished());
   }
 
 }
