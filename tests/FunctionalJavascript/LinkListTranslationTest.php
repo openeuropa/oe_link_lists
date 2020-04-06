@@ -8,11 +8,11 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 
 /**
- * Tests the link list form configuration translation.
+ * Tests the link list translation form.
  *
  * @group oe_link_lists
  */
-class LinkListConfigurationTranslationTest extends WebDriverTestBase {
+class LinkListTranslationTest extends WebDriverTestBase {
 
   use LinkListTestTrait;
 
@@ -97,6 +97,79 @@ class LinkListConfigurationTranslationTest extends WebDriverTestBase {
     $this->assertSession()->fieldEnabled('The display translatable string');
     $this->assertSession()->fieldEnabled('Target');
     $this->assertSession()->fieldEnabled('Button label');
+  }
+
+  /**
+   * Tests that we can unpublish link list translations independently.
+   */
+  public function testLinkListStatusTranslation(): void {
+    // Create a link list with a FR translation.
+    $link_list_storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    $values = [
+      'bundle' => 'dynamic',
+      'title' => 'My link list',
+      'administrative_title' => 'Link list admin',
+    ];
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->create($values);
+    $configuration = [
+      'source' => [
+        'plugin' => 'bar',
+        'plugin_configuration' => ['url' => 'http://example.com'],
+      ],
+      'display' => [
+        'plugin' => 'bar',
+        'plugin_configuration' => ['link' => FALSE],
+      ],
+    ];
+
+    $link_list->setConfiguration($configuration);
+    $link_list->addTranslation('fr', $link_list->toArray());
+    $link_list->save();
+
+    // Assert both translations are published.
+    $link_list = $this->getLinkListByTitle('My link list', TRUE);
+    $this->assertEquals('en', $link_list->language()->getId());
+    $this->assertTrue($link_list->isPublished());
+    $this->assertTrue($this->container->get('content_translation.manager')->getTranslationMetadata($link_list)->isPublished());
+    $translation = $link_list->getTranslation('fr');
+    $this->assertEquals('fr', $translation->language()->getId());
+    $this->assertTrue($translation->isPublished());
+    $this->assertTrue($this->container->get('content_translation.manager')->getTranslationMetadata($translation)->isPublished());
+
+    $french = \Drupal::languageManager()->getLanguage('fr');
+
+    // Unpublish FR.
+    $this->drupalGet($link_list->toUrl('edit-form', ['language' => $french]));
+    $this->getSession()->getPage()->uncheckField('Published');
+    $this->getSession()->getPage()->pressButton('Save');
+
+    $link_list = $this->getLinkListByTitle('My link list', TRUE);
+    $this->assertEquals('en', $link_list->language()->getId());
+    $this->assertTrue($link_list->isPublished());
+    $this->assertTrue($this->container->get('content_translation.manager')->getTranslationMetadata($link_list)->isPublished());
+    $translation = $link_list->getTranslation('fr');
+    $this->assertEquals('fr', $translation->language()->getId());
+    $this->assertFalse($translation->isPublished());
+    $this->assertFalse($this->container->get('content_translation.manager')->getTranslationMetadata($translation)->isPublished());
+
+    // Publish back FR and unpublish EN.
+    $this->drupalGet($link_list->toUrl('edit-form', ['language' => $french]));
+    $this->getSession()->getPage()->checkField('Published');
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->getSession()->getPage()->uncheckField('Published');
+    $this->getSession()->getPage()->pressButton('Save');
+
+    $link_list = $this->getLinkListByTitle('My link list', TRUE);
+    $this->assertEquals('en', $link_list->language()->getId());
+    $this->assertFalse($link_list->isPublished());
+    $this->assertFalse($this->container->get('content_translation.manager')->getTranslationMetadata($link_list)->isPublished());
+    $translation = $link_list->getTranslation('fr');
+    $this->assertEquals('fr', $translation->language()->getId());
+    $this->assertTrue($translation->isPublished());
+    $this->assertTrue($this->container->get('content_translation.manager')->getTranslationMetadata($translation)->isPublished());
   }
 
 }

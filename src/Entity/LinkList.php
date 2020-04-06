@@ -23,7 +23,7 @@ use Drupal\oe_link_lists\LinkListConfigurationManager;
  *     "list_builder" = "Drupal\oe_link_lists\LinkListListBuilder",
  *     "access" = "Drupal\oe_link_lists\LinkListAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
- *     "translation" = "Drupal\content_translation\ContentTranslationHandler",
+ *     "translation" = "Drupal\oe_link_lists\LinkListTranslationHandler",
  *     "form" = {
  *       "default" = "Drupal\oe_link_lists\Form\LinkListForm",
  *       "add" = "Drupal\oe_link_lists\Form\LinkListForm",
