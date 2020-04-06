@@ -16,8 +16,6 @@ class LinkListTranslationHandler extends ContentTranslationHandler {
 
   /**
    * {@inheritdoc}
-   *
-   * @SuppressWarnings(PHPMD.CyclomaticComplexity)
    */
   public function entityFormAlter(array &$form, FormStateInterface $form_state, EntityInterface $entity) {
     parent::entityFormAlter($form, $form_state, $entity);
