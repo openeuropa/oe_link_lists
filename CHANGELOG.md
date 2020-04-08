@@ -1,10 +1,22 @@
 # Change Log
 
+## [0.5.0](https://github.com/openeuropa/oe_link_lists/tree/0.5.0) (2020-04-08)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.1...0.5.0)
+
+**Merged pull requests:**
+
+- OPENEUROPA-3056: Add translation handler for link lists. [\#60](https://github.com/openeuropa/oe_link_lists/pull/60) ([nagyad](https://github.com/nagyad))
+- OPENEUROPA-0001: Use drupal/core instead of drupal/core-recommended. [\#59](https://github.com/openeuropa/oe_link_lists/pull/59) ([22Alexandra](https://github.com/22Alexandra))
+- OPENEUROPA-2943: Upgrade to PHP 7.3. [\#58](https://github.com/openeuropa/oe_link_lists/pull/58) ([sergepavle](https://github.com/sergepavle))
+- OPENEUROPA-2604: Drupal 8 recommended project. [\#57](https://github.com/openeuropa/oe_link_lists/pull/57) ([upchuk](https://github.com/upchuk))
+- OPENEUROPA-2732: Add render cache keys and test. [\#46](https://github.com/openeuropa/oe_link_lists/pull/46) ([imanoleguskiza](https://github.com/imanoleguskiza))
+
 ## [0.4.1](https://github.com/openeuropa/oe_link_lists/tree/0.4.1) (2020-03-04)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.0...0.4.1)
 
 **Merged pull requests:**
 
+- Update CHANGELOG.md for release 0.4.1. [\#56](https://github.com/openeuropa/oe_link_lists/pull/56) ([brummbar](https://github.com/brummbar))
 - OPENEUROPA-2759: Display plugin non-translatable fix. [\#55](https://github.com/openeuropa/oe_link_lists/pull/55) ([upchuk](https://github.com/upchuk))
 
 ## [0.4.0](https://github.com/openeuropa/oe_link_lists/tree/0.4.0) (2020-03-03)
