@@ -98,6 +98,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
   protected function getLinkFromEntity(LinkListLinkInterface $link_entity): ?LinkInterface {
     $link_entity = $this->entityRepository->getTranslationFromContext($link_entity);
 
+    // Handle internal links first.
     $url = $link_entity->hasField('target') && $link_entity->get('target')->entity instanceof EntityInterface ? $link_entity->get('target')->entity->toUrl() : NULL;
     if ($url) {
       /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
@@ -122,6 +123,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       return $event->getLink();
     }
 
+    // Handle external links (or any bundle that uses a field call "url").
     try {
       $url = Url::fromUri($link_entity->get('url')->uri);
     }

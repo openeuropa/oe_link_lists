@@ -59,7 +59,6 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     ]);
 
     $this->createContentType(['type' => 'page']);
-
   }
 
   /**
@@ -133,6 +132,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $this->assertCount(2, $links);
     $this->assertEquals($node_one->label(), $links[0]->getTitle());
     $this->assertEquals('User page', $links[1]->getTitle());
+    $this->assertEquals('User page teaser', $links[1]->getTeaser()['#markup']);
   }
 
   /**

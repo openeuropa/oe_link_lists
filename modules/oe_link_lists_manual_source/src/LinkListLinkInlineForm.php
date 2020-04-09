@@ -32,12 +32,19 @@ class LinkListLinkInlineForm extends EntityInlineForm {
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $entity_form['#entity'];
 
-    // Apply a "required" #states condition to the title and teaser elements in
-    // case the URL field exists and it is filled in.
-    if ($entity->bundle() === 'external' && isset($entity_form['url'])) {
-      $parents = $entity_form['url']['widget'][0]['#field_parents'];
+    if ($entity->bundle() === 'internal') {
+      $this->addOverrideElement($entity_form, $form_state);
+      return $entity_form;
+    }
+
+    // Apply a "required" #states condition to the title and teaser elements
+    // in case the bundle is not internal and we can guarantee we get a value
+    // from the target entity.
+    $link_field = $this->getUrlFieldFromEntity($entity);
+    if ($link_field && isset($entity_form[$link_field])) {
+      $parents = $entity_form[$link_field]['widget'][0]['#field_parents'];
       $first = array_shift($parents);
-      $parents = array_merge($parents, ['url', 0, 'uri']);
+      $parents = array_merge($parents, [$link_field, 0, 'uri']);
       $name = $first . '[' . implode('][', $parents) . ']';
       $states = [
         'required' => [
@@ -48,10 +55,6 @@ class LinkListLinkInlineForm extends EntityInlineForm {
       foreach (['title', 'teaser'] as $name) {
         $entity_form[$name]['widget'][0]['value']['#states'] = $states;
       }
-    }
-
-    if ($entity->hasField('target')) {
-      $this->addOverrideElement($entity_form, $form_state);
     }
 
     return $entity_form;
@@ -109,6 +112,25 @@ class LinkListLinkInlineForm extends EntityInlineForm {
       $entity->set('title', NULL);
       $entity->set('teaser', NULL);
     }
+  }
+
+  /**
+   * Determines the first URL field on the entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity.
+   *
+   * @return string|null
+   *   The field name.
+   */
+  protected function getUrlFieldFromEntity(ContentEntityInterface $entity): ?string {
+    foreach ($entity->getFieldDefinitions() as $name => $definition) {
+      if ($definition->getType() === 'link') {
+        return $name;
+      }
+    }
+
+    return NULL;
   }
 
 }

@@ -91,7 +91,8 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
       return $this->t('Internal link to: @internal_entity', ['@internal_entity' => $target->label()]);
     }
 
-    return $this->t('Internal link: @title', ['@title' => $this->getTitle()]);
+    $bundle = \Drupal::entityTypeManager()->getStorage('link_list_link_type')->load($this->bundle())->label();
+    return $this->t('@bundle link: @title', ['@bundle' => $bundle, '@title' => $this->getTitle()]);
   }
 
   /**
