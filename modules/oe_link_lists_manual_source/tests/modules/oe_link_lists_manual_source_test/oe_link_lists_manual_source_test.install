@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * The OpenEuropa Link Lists Manual Source install file.
+ */
+
 use Drupal\field\Entity\FieldConfig;
 
 /**
