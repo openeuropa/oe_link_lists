@@ -99,8 +99,8 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
     $link_entity = $this->entityRepository->getTranslationFromContext($link_entity);
 
     // Handle internal links first.
-    $url = $link_entity->hasField('target') && $link_entity->get('target')->entity instanceof EntityInterface ? $link_entity->get('target')->entity->toUrl() : NULL;
-    if ($url) {
+    $internal = $link_entity->hasField('target') && $link_entity->get('target')->entity instanceof EntityInterface;
+    if ($internal) {
       /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
       $referenced_entity = $link_entity->get('target')->entity;
       $referenced_entity = $this->entityRepository->getTranslationFromContext($referenced_entity);
