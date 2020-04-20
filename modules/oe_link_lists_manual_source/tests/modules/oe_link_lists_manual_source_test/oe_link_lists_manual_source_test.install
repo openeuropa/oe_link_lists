@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * The OpenEuropa Link Lists Manual Source install file.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_install().
+ */
+function oe_link_lists_manual_source_test_install() {
+  /** @var \Drupal\Core\Field\FieldConfigInterface $field */
+  $field = FieldConfig::load('link_list.manual.links');
+  if (!$field) {
+    return;
+  }
+
+  $settings = $field->getSetting('handler_settings');
+  $bundles = &$settings['target_bundles'];
+  $bundles['internal_route'] = 'internal_route';
+  $field->setSetting('handler_settings', $settings);
+  $field->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function oe_link_lists_manual_source_test_uninstall() {
+  /** @var \Drupal\Core\Field\FieldConfigInterface $field */
+  $field = FieldConfig::load('link_list.manual.links');
+  if (!$field) {
+    return;
+  }
+
+  $settings = $field->getSetting('handler_settings');
+  $bundles = &$settings['target_bundles'];
+  if (isset($bundles['internal_route'])) {
+    unset($bundles['internal_route']);
+    $field->setSetting('handler_settings', $settings);
+    $field->save();
+  }
+}

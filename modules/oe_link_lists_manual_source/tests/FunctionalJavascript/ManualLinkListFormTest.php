@@ -16,26 +16,33 @@ use Drupal\oe_link_lists\DefaultLink;
 class ManualLinkListFormTest extends ManualLinkListTestBase {
 
   /**
+   * Default user permissions.
+   *
+   * @var array
+   */
+  protected $userPermissions = [
+    'bypass node access',
+    'create manual link list',
+    'edit manual link list',
+    'create internal link list link',
+    'create external link list link',
+    'edit external link list link',
+    'edit internal link list link',
+  ];
+
+  /**
    * Tests that we can create link lists with manually defined links.
    *
    * Tests a number of combinations of external and internal links.
    */
   public function testManualLinkList(): void {
+    $web_user = $this->drupalCreateUser($this->userPermissions);
+    $this->drupalLogin($web_user);
+
     /** @var \Drupal\Core\Entity\EntityStorageInterface $link_storage */
     $link_storage = \Drupal::service('entity_type.manager')->getStorage('link_list_link');
     /** @var \Drupal\Core\Entity\EntityStorageInterface $link_list_storage */
     $link_list_storage = \Drupal::service('entity_type.manager')->getStorage('link_list');
-
-    $web_user = $this->drupalCreateUser([
-      'bypass node access',
-      'create manual link list',
-      'edit manual link list',
-      'create internal link list link',
-      'create external link list link',
-      'edit external link list link',
-      'edit internal link list link',
-    ]);
-    $this->drupalLogin($web_user);
 
     // Go to a link list creation page and assert that we can choose the type.
     $this->drupalGet('link_list/add/manual');
@@ -180,6 +187,65 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $link = $link_list->get('links')->offsetGet(2)->entity;
     $this->assertTrue($link->get('title')->isEmpty());
     $this->assertTrue($link->get('teaser')->isEmpty());
+  }
+
+  /**
+   * Tests that the manual list can work with other link bundles.
+   */
+  public function testExtraBundle(): void {
+    // Install and enable the internal_route bundle.
+    \Drupal::service('module_installer')->install(['oe_link_lists_manual_source_test']);
+
+    $this->userPermissions[] = 'create internal_route link list link';
+    $this->userPermissions[] = 'edit internal_route link list link';
+    $web_user = $this->drupalCreateUser($this->userPermissions);
+    $this->drupalLogin($web_user);
+
+    /** @var \Drupal\Core\Entity\EntityStorageInterface $link_list_storage */
+    $link_list_storage = \Drupal::service('entity_type.manager')->getStorage('link_list');
+
+    $this->drupalGet('link_list/add/manual');
+    $this->getSession()->getPage()->fillField('Title', 'Test list');
+    $this->getSession()->getPage()->fillField('Administrative title', 'List 1');
+
+    // Select and configure the display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal_route');
+    $this->getSession()->getPage()->pressButton('Add new Link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $links_wrapper = $this->getSession()->getPage()->find('css', '.field--widget-inline-entity-form-complex');
+    $this->assertNotNull($links_wrapper);
+    $links_wrapper->fillField('URL', '/node');
+    $links_wrapper->fillField('Title', 'Link title');
+    $links_wrapper->fillField('Teaser', 'Link teaser');
+    $this->getSession()->getPage()->pressButton('Create Link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->pageTextContains('Internal Route link: Link title');
+
+    // Save the list and make sure the values are saved correctly.
+    $this->getSession()->getPage()->pressButton('Save');
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->load(1);
+    $links = $link_list->get('links')->referencedEntities();
+    $this->assertCount(1, $links);
+    /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $link */
+    $link = reset($links);
+    $this->assertEquals('internal:/node', $link->get('url')->uri);
+    $this->assertEquals('Link title', $link->get('title')->value);
+    $this->assertEquals('Link teaser', $link->get('teaser')->value);
+
+    // Edit the link list and check the values are shown correctly in the form.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->assertSession()->pageTextContains('Internal Route link: Link title');
+    $edit = $this->getSession()->getPage()->find('xpath', '(//input[@type="submit" and @value="Edit"])[1]');
+    $edit->press();
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $links_wrapper = $this->getSession()->getPage()->find('css', '.field--widget-inline-entity-form-complex');
+    $this->assertSession()->fieldValueEquals('URL', '/node', $links_wrapper);
+    $this->assertSession()->fieldValueEquals('Title', 'Link title', $links_wrapper);
+    $this->assertSession()->fieldValueEquals('Teaser', 'Link teaser', $links_wrapper);
   }
 
 }

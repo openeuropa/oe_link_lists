@@ -25,6 +25,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
   protected static $modules = [
     'oe_link_lists',
     'oe_link_lists_manual_source',
+    'oe_link_lists_manual_source_test',
     'entity_reference_revisions',
     'inline_entity_form',
     'field',
@@ -53,11 +54,11 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       'node',
       'system',
       'oe_link_lists_manual_source',
+      'oe_link_lists_manual_source_test',
       'entity_reference_revisions',
     ]);
 
     $this->createContentType(['type' => 'page']);
-
   }
 
   /**
@@ -88,6 +89,15 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     ]);
     $external_link->save();
 
+    $internal_route = $link_storage->create([
+      'bundle' => 'internal_route',
+      'url' => '/user',
+      'title' => 'User page',
+      'teaser' => 'User page teaser',
+      'status' => 1,
+    ]);
+    $internal_route->save();
+
     // Create a list that references one internal and one external link.
     $list_storage = $entity_type_manager->getStorage('link_list');
     $list = $list_storage->create([
@@ -95,6 +105,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       'links' => [
         $external_link,
         $internal_link_one,
+        $internal_route,
       ],
       'status' => 1,
     ]);
@@ -106,9 +117,10 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
 
     $links = $plugin->getLinks();
-    $this->assertCount(2, $links);
+    $this->assertCount(3, $links);
     $this->assertEquals('Example title', $links[0]->getTitle());
     $this->assertEquals($node_one->label(), $links[1]->getTitle());
+    $this->assertEquals('User page', $links[2]->getTitle());
 
     // Assert we can filter the amount of links we get.
     $links = $plugin->getLinks(1);
@@ -117,8 +129,10 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
 
     // Verify the offset.
     $links = $plugin->getLinks(NULL, 1);
-    $this->assertCount(1, $links);
+    $this->assertCount(2, $links);
     $this->assertEquals($node_one->label(), $links[0]->getTitle());
+    $this->assertEquals('User page', $links[1]->getTitle());
+    $this->assertEquals('User page teaser', $links[1]->getTeaser()['#markup']);
   }
 
   /**

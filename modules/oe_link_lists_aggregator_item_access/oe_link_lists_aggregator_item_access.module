@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal hooks.
+ * The OpenEuropa Link Lists Aggregator Item Access module file.
  */
 
 declare(strict_types = 1);

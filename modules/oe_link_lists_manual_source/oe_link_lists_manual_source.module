@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal hooks.
+ * The OpenEuropa Link Lists Manual Source module file.
  */
 
 declare(strict_types = 1);

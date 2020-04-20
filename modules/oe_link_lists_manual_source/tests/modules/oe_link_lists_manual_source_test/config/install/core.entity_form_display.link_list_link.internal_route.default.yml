@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.link_list_link.internal_route.url
+    - oe_link_lists_manual_source.link_list_link_type.internal_route
+  module:
+    - link
+id: link_list_link.internal_route.default
+targetEntityType: link_list_link
+bundle: internal_route
+mode: default
+content:
+  url:
+    type: link_default
+    weight: 0
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+hidden: {  }
