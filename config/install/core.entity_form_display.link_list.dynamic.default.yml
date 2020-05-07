@@ -2,14 +2,12 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.link_list.manual.links
-    - oe_link_lists.link_list_type.manual
+    - oe_link_lists.link_list_type.dynamic
   module:
-    - inline_entity_form
     - oe_link_lists
-id: link_list.manual.default
+id: link_list.dynamic.default
 targetEntityType: link_list
-bundle: manual
+bundle: dynamic
 mode: default
 content:
   administrative_title:
@@ -22,32 +20,15 @@ content:
     third_party_settings: {  }
   configuration:
     type: link_list_configuration
-    weight: 3
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
-  links:
-    weight: 2
-    settings:
-      form_mode: default
-      revision: true
-      override_labels: true
-      label_singular: Link
-      label_plural: Links
-      allow_new: true
-      match_operator: CONTAINS
-      collapsible: false
-      collapsed: false
-      allow_existing: false
-      allow_duplicate: false
-    third_party_settings: {  }
-    type: inline_entity_form_complex
-    region: content
   status:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 4
+    weight: 3
     region: content
     third_party_settings: {  }
   title:
