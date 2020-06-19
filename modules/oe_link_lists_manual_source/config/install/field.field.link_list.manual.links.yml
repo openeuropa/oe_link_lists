@@ -5,7 +5,7 @@ dependencies:
     - field.storage.link_list.links
     - oe_link_lists.link_list_type.manual
     - oe_link_lists_manual_source.link_list_link_type.external
-    - oe_link_lists_manual_source.link_list_link_type.internal
+    - oe_link_lists_manual_source.link_list_link_type.internal_content
   module:
     - entity_reference_revisions
 id: link_list.manual.links
@@ -23,7 +23,7 @@ settings:
   handler_settings:
     target_bundles:
       external: external
-      internal: internal
+      internal_content: internal_content
     sort:
       field: _none
     auto_create: false

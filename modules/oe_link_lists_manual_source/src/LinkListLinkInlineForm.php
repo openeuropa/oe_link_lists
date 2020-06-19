@@ -32,14 +32,14 @@ class LinkListLinkInlineForm extends EntityInlineForm {
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $entity_form['#entity'];
 
-    if ($entity->bundle() === 'internal') {
+    if ($entity->bundle() === 'internal_content') {
       $this->addOverrideElement($entity_form, $form_state);
       return $entity_form;
     }
 
     // Apply a "required" #states condition to the title and teaser elements
-    // in case the bundle is not internal and we can guarantee we get a value
-    // from the target entity.
+    // in case the bundle is not internal_content and we can guarantee we get
+    // a value from the target entity.
     $link_field = $this->getUrlFieldFromEntity($entity);
     if ($link_field && isset($entity_form[$link_field])) {
       $parents = $entity_form[$link_field]['widget'][0]['#field_parents'];
@@ -79,9 +79,9 @@ class LinkListLinkInlineForm extends EntityInlineForm {
       '#weight' => 1,
     ];
 
-    // For the Internal bundle, we only want to show the Title and Teaser
-    // elements if the Override checkbox is checked. So we use #states for
-    // controlling the visibility.
+    // For the Internal content bundle, we only want to show the Title and
+    // Teaser elements if the Override checkbox is checked. So we use #states
+    // for controlling the visibility.
     $parents = $entity_form['#parents'];
     $first = array_shift($parents);
     $parents = array_merge($parents, ['override']);

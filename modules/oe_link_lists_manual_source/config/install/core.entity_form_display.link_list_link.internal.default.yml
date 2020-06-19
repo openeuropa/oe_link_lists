@@ -2,11 +2,11 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.link_list_link.internal.target
-    - oe_link_lists_manual_source.link_list_link_type.internal
-id: link_list_link.internal.default
+    - field.field.link_list_link.internal_content.target
+    - oe_link_lists_manual_source.link_list_link_type.internal_content
+id: link_list_link.internal_content.default
 targetEntityType: link_list_link
-bundle: internal
+bundle: internal_content
 mode: default
 content:
   target:

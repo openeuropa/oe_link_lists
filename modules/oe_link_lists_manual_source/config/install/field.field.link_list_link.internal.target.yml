@@ -3,13 +3,13 @@ status: true
 dependencies:
   config:
     - field.storage.link_list_link.target
-    - oe_link_lists_manual_source.link_list_link_type.internal
-id: link_list_link.internal.target
+    - oe_link_lists_manual_source.link_list_link_type.internal_content
+id: link_list_link.internal_content.target
 field_name: target
 entity_type: link_list_link
-bundle: internal
+bundle: internal_content
 label: Target
-description: 'The internal target of the link'
+description: 'The internal content target of the link'
 required: true
 translatable: false
 default_value: {  }

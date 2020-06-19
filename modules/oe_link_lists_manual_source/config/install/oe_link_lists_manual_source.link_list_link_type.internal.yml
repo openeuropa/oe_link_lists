@@ -1,5 +1,5 @@
 langcode: en
 status: true
 dependencies: {  }
-id: internal
-label: Internal
+id: internal_content
+label: Internal content
