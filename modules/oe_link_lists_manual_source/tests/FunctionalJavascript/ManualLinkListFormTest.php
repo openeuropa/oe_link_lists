@@ -24,10 +24,10 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     'bypass node access',
     'create manual link list',
     'edit manual link list',
-    'create internal link list link',
+    'create internal_content link list link',
     'create external link list link',
     'edit external link list link',
-    'edit internal link list link',
+    'edit internal_content link list link',
   ];
 
   /**

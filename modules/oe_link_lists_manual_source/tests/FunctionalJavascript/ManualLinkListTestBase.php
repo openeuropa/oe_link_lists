@@ -62,7 +62,7 @@ abstract class ManualLinkListTestBase extends WebDriverTestBase {
    *   The teaser.
    */
   protected function createInlineInternalLink(string $page, string $title = NULL, string $teaser = NULL): void {
-    $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal');
+    $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal_content');
     $this->getSession()->getPage()->pressButton('Add new Link');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $links_wrapper = $this->getSession()->getPage()->find('css', '.field--widget-inline-entity-form-complex');

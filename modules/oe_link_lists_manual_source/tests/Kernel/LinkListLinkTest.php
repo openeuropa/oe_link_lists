@@ -72,7 +72,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
     // Create an internal link.
     /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $link_entity */
     $link_entity = $link_storage->create([
-      'bundle' => 'internal',
+      'bundle' => 'internal_content',
       'target' => $node->id(),
       'status' => 1,
     ]);
@@ -155,7 +155,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
     $external_link_entity->save();
 
     $internal_link_entity = $link_storage->create([
-      'bundle' => 'internal',
+      'bundle' => 'internal_content',
       'target' => $node->id(),
       'status' => 1,
     ]);

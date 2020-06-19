@@ -27,7 +27,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'manual', TRUE);
     $bundles = [
-      'internal',
+      'internal_content',
       'external',
     ];
     foreach ($bundles as $bundle) {
@@ -47,10 +47,10 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
       'edit manual link list',
       'view link list',
       'access link list canonical page',
-      'create internal link list link',
+      'create internal_content link list link',
       'create external link list link',
       'edit external link list link',
-      'edit internal link list link',
+      'edit internal_content link list link',
       'translate any entity',
     ]);
 

@@ -74,7 +74,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $link_storage = $entity_type_manager->getStorage('link_list_link');
     $internal_link_one = $link_storage->create([
-      'bundle' => 'internal',
+      'bundle' => 'internal_content',
       'target' => $node_one->id(),
       'status' => 1,
     ]);
@@ -147,13 +147,13 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $link_storage = $entity_type_manager->getStorage('link_list_link');
     $internal_link_one = $link_storage->create([
-      'bundle' => 'internal',
+      'bundle' => 'internal_content',
       'target' => $node_one->id(),
       'status' => 1,
     ]);
     $internal_link_one->save();
     $internal_link_two = $link_storage->create([
-      'bundle' => 'internal',
+      'bundle' => 'internal_content',
       'target' => $node_two->id(),
       'status' => 1,
     ]);

@@ -212,7 +212,7 @@ class LinkListLinkAccessControlHandlerTest extends EntityKernelTestBase {
         'published' => TRUE,
       ],
       'user with update access on different bundle' => [
-        'permissions' => ['edit internal link list link'],
+        'permissions' => ['edit internal_content link list link'],
         'operation' => 'update',
         'expected_result' => AccessResult::neutral()->addCacheContexts(['user.permissions']),
         'published' => TRUE,
