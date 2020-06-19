@@ -90,7 +90,7 @@ class LinkListAccessTest extends KernelTestBase {
 
     $configuration = [
       'source' => [
-        'plugin' => 'internal_content',
+        'plugin' => 'internal',
         'plugin_configuration' => [
           'entity_type' => 'node',
           'bundle' => 'page',
