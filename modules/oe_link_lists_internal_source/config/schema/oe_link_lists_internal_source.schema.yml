@@ -1,0 +1,13 @@
+oe_link_lists_internal_source.settings:
+  type: config_object
+  label: 'OpenEuropa Internal Link Lists settings'
+  mapping:
+    allowed_entity_bundles:
+      type: sequence
+      label: 'Entity types'
+      sequence:
+        type: sequence
+        label: 'Bundles'
+        sequence:
+          type: string
+          label: 'Bundle ID'
