@@ -20,6 +20,7 @@ use Drupal\oe_link_lists\Event\EntityValueResolverEvent;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
 use Drupal\oe_link_lists\LinkSourcePluginBase;
+use Drupal\oe_link_lists_internal_source\Event\InternalSourceBundlesEvent;
 use Drupal\oe_link_lists_internal_source\Event\InternalSourceEntityTypesEvent;
 use Drupal\oe_link_lists_internal_source\Event\InternalSourceQueryEvent;
 use Drupal\oe_link_lists_internal_source\InternalLinkSourceFilterPluginManagerInterface;
@@ -411,6 +412,10 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     foreach ($this->entityTypeBundleInfo->getBundleInfo($entity_type_id) as $bundle_id => $info) {
       $bundles[$bundle_id] = $info['label'];
     }
+
+    $event = new InternalSourceBundlesEvent($entity_type_id, array_keys($bundles));
+    $this->eventDispatcher->dispatch(InternalSourceBundlesEvent::NAME, $event);
+    $bundles = array_intersect_key($bundles, array_flip($event->getBundles()));
 
     return $bundles;
   }
