@@ -2,3 +2,9 @@ services:
   plugin.manager.oe_link_lists.internal_source_filter:
     class: Drupal\oe_link_lists_internal_source\InternalLinkSourceFilterPluginManager
     parent: default_plugin_manager
+
+  oe_link_lists_internal_source.event_subscriber.internal_source_alter:
+    class: Drupal\oe_link_lists_internal_source\EventSubscriber\InternalSourceSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
