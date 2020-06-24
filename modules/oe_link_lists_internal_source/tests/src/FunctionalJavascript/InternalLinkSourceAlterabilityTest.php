@@ -69,13 +69,32 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     }
     $this->assertEquals($expected, $this->getOptions($select));
 
+    // Disable the user bundle from the list of selectable entity types.
+    \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
+      'node' => [
+        'page',
+      ],
+      'link_list' => [
+        'dynamic',
+      ],
+      'user' => [
+        'user',
+      ],
+    ])->save();
+
+    $this->getSession()->getPage()->selectFieldOption('Entity type', 'node');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $select = $this->assertSession()->selectExists('Bundle');
+    $expected = [
+      '- Select -' => '- Select -',
+      'page' => 'Basic page',
+    ];
+    $this->assertEquals($expected, $this->getOptions($select));
+
     // Select the user option and save the content.
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'user');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->pressButton('Save');
-
-    // Disable the user bundle from the list of selectable entity types.
-    \Drupal::service('state')->set('internal_source_allowed_entity_types', ['node', 'link_list']);
 
     // Go to the edit page of the link list.
     $link_list = $this->getLinkListByTitle('Internal list');
@@ -83,15 +102,20 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
 
     // The user option should not be selectable anymore.
     $select = $this->assertSession()->selectExists('Entity type');
-    $this->assertEquals('', $select->getValue());
+    $this->assertEquals('user', $select->getValue());
     $this->assertEquals([
       '- Select -' => '- Select -',
       'link_list' => 'Link list',
       'node' => 'Content',
+      'user' => 'User',
     ], $this->getOptions($select));
 
     // Leave only node enabled.
-    \Drupal::service('state')->set('internal_source_allowed_entity_types', ['node']);
+    \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
+      'node' => [
+        'article',
+      ],
+    ])->save();
 
     $this->drupalGet($link_list->toUrl('edit-form'));
     $select = $this->assertSession()->selectExists('Entity type');
@@ -106,7 +130,6 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $select = $this->assertSession()->selectExists('Bundle');
     $this->assertEquals([
       '- Select -' => '- Select -',
-      'page' => 'Basic page',
       'article' => 'Article',
     ], $this->getOptions($select));
 
