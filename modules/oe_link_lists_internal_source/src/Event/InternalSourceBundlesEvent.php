@@ -7,7 +7,7 @@ namespace Drupal\oe_link_lists_internal_source\Event;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Event to alter the referencable entity types in the internal source plugin.
+ * Event to alter the referencable bundles in the internal source plugin.
  */
 class InternalSourceBundlesEvent extends Event {
 

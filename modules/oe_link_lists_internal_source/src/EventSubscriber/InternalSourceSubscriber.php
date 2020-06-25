@@ -22,7 +22,7 @@ class InternalSourceSubscriber implements EventSubscriberInterface {
   private $configFactory;
 
   /**
-   * InternalSourceQuerySubscriber constructor.
+   * InternalSourceSubscriber constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
