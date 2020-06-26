@@ -49,7 +49,7 @@ class InternalSourceBundlesEvent extends Event {
    * @return string
    *   The entity type ID.
    */
-  public function getEntityType(): ?string {
+  public function getEntityType(): string {
     return $this->entityType;
   }
 
@@ -59,7 +59,7 @@ class InternalSourceBundlesEvent extends Event {
    * @return array
    *   An array of entity type bundle IDs.
    */
-  public function getBundles(): ?array {
+  public function getBundles(): array {
     return $this->bundles;
   }
 

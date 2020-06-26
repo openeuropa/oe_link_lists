@@ -22,22 +22,22 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  private $entityTypeManager;
+  protected $entityTypeManager;
 
   /**
    * The entity type bundle info.
    *
    * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
    */
-  private $entityTypeBundleInfo;
+  protected $entityTypeBundleInfo;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entit_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entit_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
     parent::__construct($config_factory);
     $this->entityTypeManager = $entit_type_manager;
-    $this->entityTypeBundleInfo = $entity_type_bundle;
+    $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }
 
   /**
@@ -94,7 +94,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
       '#options' => $entity_types,
       '#default_value' => array_keys($config->get('allowed_entity_bundles') ?? []),
       '#empty_value' => '',
-      '#description' => $this->t('Please, select entity types which should be allowed for selecting for Link List internal source.'),
+      '#description' => $this->t('Select entity types which can be used for Link List internal source.'),
     ];
 
     $form['allowed_bundles'] = [
@@ -123,6 +123,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
           '#type' => 'checkboxes',
           '#options' => $bundle_options,
           '#default_value' => $config->get('allowed_entity_bundles.' . $entity_type_id) ?? [],
+          '#description' => $this->t('Select entity bundle which can be used for Link List internal source.'),
         ],
       ];
     }

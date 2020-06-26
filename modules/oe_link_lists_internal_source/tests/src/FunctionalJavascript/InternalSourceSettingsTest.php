@@ -4,10 +4,14 @@ declare(strict_types = 1);
 
 namespace Drupal\Tests\oe_link_lists_internal_source\FunctionalJavascript;
 
+use Drupal\Tests\SchemaCheckTestTrait;
+
 /**
- * Tests that the internal source settings form.
+ * Tests the internal source settings form.
  */
-class LinkListsInternalSourceSettingsTest extends InternalLinkSourceTestBase {
+class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
+
+  use SchemaCheckTestTrait;
 
   /**
    * {@inheritdoc}
@@ -33,16 +37,16 @@ class LinkListsInternalSourceSettingsTest extends InternalLinkSourceTestBase {
 
     $admin_user = $this->drupalCreateUser([
       'access administration pages',
-      'administer site configuration',
+      'access link lists internal source configuration',
     ]);
     $this->drupalLogin($admin_user);
   }
 
   /**
-   * Test the internal source settings form.
+   * Tests the internal source settings.
    */
   public function testInternalSourceSettingsForm(): void {
-    $this->drupalGet('admin/config/system/link-lists-internal-source-settings');
+    $this->drupalGet('admin/config/system/link-lists/internal-source-settings');
     $page = $this->getSession()->getPage();
 
     $page->checkField('Link list');
@@ -58,6 +62,7 @@ class LinkListsInternalSourceSettingsTest extends InternalLinkSourceTestBase {
     $page->checkField('News');
 
     $page->pressButton('Save configuration');
+    $this->assertConfigSchemaByName('oe_link_lists_internal_source.settings');
 
     $page->hasCheckedField('Content');
     $page->hasUncheckedField('Page');
@@ -71,6 +76,7 @@ class LinkListsInternalSourceSettingsTest extends InternalLinkSourceTestBase {
     $page->checkField('Dynamic');
 
     $page->pressButton('Save configuration');
+    $this->assertConfigSchemaByName('oe_link_lists_internal_source.settings');
 
     $page->hasCheckedField('Link list');
     $page->hasUncheckedField('Content');
@@ -80,7 +86,6 @@ class LinkListsInternalSourceSettingsTest extends InternalLinkSourceTestBase {
     $page->hasCheckedField('Dynamic');
     $page->hasUncheckedField('Page');
     $page->hasUncheckedField('News');
-
   }
 
 }

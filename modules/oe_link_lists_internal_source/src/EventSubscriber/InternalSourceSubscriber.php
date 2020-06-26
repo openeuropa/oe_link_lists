@@ -38,7 +38,6 @@ class InternalSourceSubscriber implements EventSubscriberInterface {
     return [
       InternalSourceEntityTypesEvent::NAME => 'alterEntityTypes',
       InternalSourceBundlesEvent::NAME => 'alterBundles',
-
     ];
   }
 
@@ -48,7 +47,7 @@ class InternalSourceSubscriber implements EventSubscriberInterface {
    * @param \Drupal\oe_link_lists_internal_source\Event\InternalSourceEntityTypesEvent $event
    *   The event.
    */
-  public function alterEntityTypes(InternalSourceEntityTypesEvent $event) {
+  public function alterEntityTypes(InternalSourceEntityTypesEvent $event): void {
     $config = $this->configFactory->get('oe_link_lists_internal_source.settings');
     $allowed_entity_types = $config->get('allowed_entity_bundles');
     // Limit the selectable entity types.
@@ -66,7 +65,7 @@ class InternalSourceSubscriber implements EventSubscriberInterface {
    * @param \Drupal\oe_link_lists_internal_source\Event\InternalSourceBundlesEvent $event
    *   The event.
    */
-  public function alterBundles(InternalSourceBundlesEvent $event) {
+  public function alterBundles(InternalSourceBundlesEvent $event): void {
     $config = $this->configFactory->get('oe_link_lists_internal_source.settings');
     $allowed_entity_types = $config->get('allowed_entity_bundles');
     // Limit the selectable entity types.
