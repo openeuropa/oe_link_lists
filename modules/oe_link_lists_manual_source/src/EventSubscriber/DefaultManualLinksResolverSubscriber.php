@@ -78,7 +78,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       }
     }
 
-    if ($links) {
+    if (!$links->isEmpty()) {
       $event->setLinks($links);
     }
   }
