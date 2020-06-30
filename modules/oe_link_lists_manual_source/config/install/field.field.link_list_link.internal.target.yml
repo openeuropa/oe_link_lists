@@ -9,7 +9,7 @@ field_name: target
 entity_type: link_list_link
 bundle: internal
 label: Target
-description: 'The internal target of the link'
+description: 'The internal content target of the link'
 required: true
 translatable: false
 default_value: {  }
