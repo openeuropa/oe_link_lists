@@ -4,7 +4,7 @@ services:
     parent: default_plugin_manager
 
   oe_link_lists_internal_source.event_subscriber.internal_source_alter:
-    class: Drupal\oe_link_lists_internal_source\EventSubscriber\InternalSourceSubscriber
+    class: Drupal\oe_link_lists_internal_source\EventSubscriber\InternalSourceRestrictionSubscriber
     arguments: ['@config.factory']
     tags:
       - { name: event_subscriber }

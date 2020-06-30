@@ -10,16 +10,16 @@ use Drupal\oe_link_lists_internal_source\Event\InternalSourceEntityTypesEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Subscribes to the event for altering the InternalSource plugin.
+ * Subscribes to the events for altering the available entity type and bundle.
  */
-class InternalSourceSubscriber implements EventSubscriberInterface {
+class InternalSourceRestrictionSubscriber implements EventSubscriberInterface {
 
   /**
    * The config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  private $configFactory;
+  protected $configFactory;
 
   /**
    * InternalSourceSubscriber constructor.
@@ -54,6 +54,7 @@ class InternalSourceSubscriber implements EventSubscriberInterface {
     if (!$allowed_entity_types) {
       return;
     }
+
     $entity_types = array_keys($allowed_entity_types);
 
     $event->setEntityTypes(array_intersect($entity_types, $event->getEntityTypes()));

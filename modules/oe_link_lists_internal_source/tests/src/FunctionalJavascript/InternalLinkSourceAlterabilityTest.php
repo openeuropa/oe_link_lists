@@ -69,7 +69,18 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     }
     $this->assertEquals($expected, $this->getOptions($select));
 
-    // Disable the user bundle from the list of selectable entity types.
+    // Select the node and assert we can see all the content types.
+    $this->getSession()->getPage()->selectFieldOption('Entity type', 'node');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $select = $this->assertSession()->selectExists('Bundle');
+    $expected = [
+      '- Select -' => '- Select -',
+      'page' => 'Basic page',
+      'article' => 'Article',
+    ];
+    $this->assertEquals($expected, $this->getOptions($select));
+
+    // Disable the article bundle from the list of selectable entity types.
     \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
       'node' => [
         'page',
@@ -81,6 +92,11 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
         'user',
       ],
     ])->save();
+
+    // Select user and then node again and assert the Article content type is
+    // no longer selectable.
+    $this->getSession()->getPage()->selectFieldOption('Entity type', 'user');
+    $this->assertSession()->assertWaitOnAjaxRequest();
 
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'node');
     $this->assertSession()->assertWaitOnAjaxRequest();
@@ -110,7 +126,7 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
       'user' => 'User',
     ], $this->getOptions($select));
 
-    // Leave only node enabled.
+    // Leave only node (article) enabled.
     \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
       'node' => [
         'article',

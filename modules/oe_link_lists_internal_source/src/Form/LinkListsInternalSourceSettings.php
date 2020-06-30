@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Configure OpenEuropa Internal Link Lists settings for internal source plugin.
+ * Configures the Internal Link Lists source plugin settings.
  */
 class LinkListsInternalSourceSettings extends ConfigFormBase {
 
@@ -94,7 +94,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
       '#options' => $entity_types,
       '#default_value' => array_keys($config->get('allowed_entity_bundles') ?? []),
       '#empty_value' => '',
-      '#description' => $this->t('Select entity types which can be used for Link List internal source.'),
+      '#description' => $this->t('Select the entity types which can be used by the Internal source plugin.'),
     ];
 
     $form['allowed_bundles'] = [
@@ -109,7 +109,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
         $bundle_options[$bundle_id] = $entity_type_bundle['label'];
       }
       $form['allowed_bundles'][$entity_type_id] = [
-        '#title' => $this->t('Bundles of %entity_type entity type', ['%entity_type' => $entity_type_label]),
+        '#title' => $this->t('Bundles of <em>%entity_type</em>', ['%entity_type' => $entity_type_label]),
         '#type' => 'details',
         '#open' => TRUE,
         '#states' => [
@@ -123,7 +123,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
           '#type' => 'checkboxes',
           '#options' => $bundle_options,
           '#default_value' => $config->get('allowed_entity_bundles.' . $entity_type_id) ?? [],
-          '#description' => $this->t('Select entity bundle which can be used for Link List internal source.'),
+          '#description' => $this->t('Select the entity bundles which can be used by the Internal source plugin.'),
         ],
       ];
     }
@@ -134,22 +134,41 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->config('oe_link_lists_internal_source.settings');
-    $allowed_entity_types = array_filter($form_state->getValue('allowed_entity_types'));
-    $allowed_bundles = [];
-    foreach ($allowed_entity_types as $entity_type) {
-      $selected_allowed_bundles = array_filter($form_state->getValue([
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    $selected_entity_types = array_filter($form_state->getValue('allowed_entity_types'));
+    foreach ($selected_entity_types as $entity_type) {
+      $selected_bundles = array_filter($form_state->getValue([
         'allowed_bundles',
         $entity_type,
         'bundles',
       ]));
-      // Allowed bundles should be explicitly selected.
-      if (empty($selected_allowed_bundles)) {
-        continue;
+
+      if (empty($selected_bundles)) {
+        $definition = $this->entityTypeManager->getDefinition($entity_type);
+        $form_state->setError($form['allowed_bundles'][$entity_type]['bundles'], $this->t('Please select at least 1 bundle for <em>@entity_type</em>. Or select all of them if you would like all to be included.', ['@entity_type' => $definition->getLabel()]));
       }
-      $allowed_bundles[$entity_type] = $selected_allowed_bundles;
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $config = $this->config('oe_link_lists_internal_source.settings');
+    $selected_entity_types = array_filter($form_state->getValue('allowed_entity_types'));
+    $allowed_bundles = [];
+    foreach ($selected_entity_types as $entity_type) {
+      $selected_bundles = array_filter($form_state->getValue([
+        'allowed_bundles',
+        $entity_type,
+        'bundles',
+      ]));
+
+      $allowed_bundles[$entity_type] = $selected_bundles;
+    }
+
     $config->set('allowed_entity_bundles', $allowed_bundles)->save();
     parent::submitForm($form, $form_state);
   }

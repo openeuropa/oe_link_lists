@@ -43,9 +43,9 @@ class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
   }
 
   /**
-   * Tests the internal source settings.
+   * Tests the internal source entity type/bundle restrictions.
    */
-  public function testInternalSourceSettingsForm(): void {
+  public function testInternalSourceRestrictions(): void {
     $this->drupalGet('admin/config/system/link-lists/internal-source-settings');
     $page = $this->getSession()->getPage();
 
@@ -59,9 +59,14 @@ class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
     $this->assertFalse($page->findField('allowed_bundles[link_list][bundles][dynamic]')->isVisible(), 'Dynamic bundle of Link List is invisible.');
     $this->assertTrue($page->findField('allowed_bundles[node][bundles][page]')->isVisible(), 'Page content type checkbox is visible.');
     $this->assertTrue($page->findField('allowed_bundles[node][bundles][news]')->isVisible(), 'News content type checkbox is visible.');
-    $page->checkField('News');
 
+    // Assert the validation.
     $page->pressButton('Save configuration');
+    $this->assertSession()->pageTextContains('Please select at least 1 bundle for Content. Or select all of them if you would like all to be included.');
+
+    $page->checkField('News');
+    $page->pressButton('Save configuration');
+    $this->assertSession()->pageTextContains('The configuration options have been saved.');
     $this->assertConfigSchemaByName('oe_link_lists_internal_source.settings');
 
     $page->hasCheckedField('Content');
@@ -76,6 +81,7 @@ class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
     $page->checkField('Dynamic');
 
     $page->pressButton('Save configuration');
+    $this->assertSession()->pageTextContains('The configuration options have been saved.');
     $this->assertConfigSchemaByName('oe_link_lists_internal_source.settings');
 
     $page->hasCheckedField('Link list');

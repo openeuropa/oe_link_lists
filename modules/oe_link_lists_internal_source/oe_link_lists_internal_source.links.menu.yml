@@ -1,6 +1,6 @@
 oe_link_lists_internal_source.settings:
   title: Internal source settings
-  description: Configuration form that restricts entity types and bundles for internal source plugin.
+  description: Configuration form that restricts the available entity types and bundles for the Internal Source plugin.
   parent: oe_link_lists.index
   route_name: oe_link_lists_internal_source.settings
   weight: 10
