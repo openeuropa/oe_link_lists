@@ -75,7 +75,7 @@ class InternalSourceRestrictionSubscriber implements EventSubscriberInterface {
     }
     $entity_type = $event->getEntityType();
     $allowed_bundles = $allowed_entity_types[$entity_type] ?? [];
-    $event->setBundles($entity_type, array_intersect($event->getBundles(), $allowed_bundles));
+    $event->setBundles(array_intersect($event->getBundles(), $allowed_bundles));
   }
 
 }

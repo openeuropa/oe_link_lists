@@ -109,7 +109,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
         $bundle_options[$bundle_id] = $entity_type_bundle['label'];
       }
       $form['allowed_bundles'][$entity_type_id] = [
-        '#title' => $this->t('Bundles of <em>%entity_type</em>', ['%entity_type' => $entity_type_label]),
+        '#title' => $this->t('Bundles of %entity_type', ['%entity_type' => $entity_type_label]),
         '#type' => 'details',
         '#open' => TRUE,
         '#states' => [
@@ -123,7 +123,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
           '#type' => 'checkboxes',
           '#options' => $bundle_options,
           '#default_value' => $config->get('allowed_entity_bundles.' . $entity_type_id) ?? [],
-          '#description' => $this->t('Select the entity bundles which can be used by the Internal source plugin.'),
+          '#description' => $this->t('Select the entity bundles of @entity_type which can be used by the Internal source plugin.', ['@entity_type' => $entity_type_label]),
         ],
       ];
     }
@@ -169,7 +169,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
       $allowed_bundles[$entity_type] = $selected_bundles;
     }
 
-    $config->set('allowed_entity_bundles', $allowed_bundles)->save();
+    $config->set('allowed_entity_bundles', array_keys($allowed_bundles))->save();
     parent::submitForm($form, $form_state);
   }
 

@@ -1,5 +1,5 @@
 oe_link_lists.index:
-  path: '/admin/config/system/link-lists'
+  path: '/admin/config/link-lists'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
     _title: 'Link Lists'

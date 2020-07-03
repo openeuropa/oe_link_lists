@@ -37,7 +37,7 @@ class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
 
     $admin_user = $this->drupalCreateUser([
       'access administration pages',
-      'access link lists internal source configuration',
+      'configure link lists internal source',
     ]);
     $this->drupalLogin($admin_user);
   }

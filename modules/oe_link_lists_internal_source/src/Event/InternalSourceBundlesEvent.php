@@ -66,13 +66,10 @@ class InternalSourceBundlesEvent extends Event {
   /**
    * Sets the entity type bundles.
    *
-   * @param string $entityType
-   *   An entity type ID.
    * @param array $bundles
    *   An array of entity bundle IDs.
    */
-  public function setBundles(string $entityType, array $bundles): void {
-    $this->entityType = $entityType;
+  public function setBundles(array $bundles): void {
     $this->bundles = $bundles;
   }
 

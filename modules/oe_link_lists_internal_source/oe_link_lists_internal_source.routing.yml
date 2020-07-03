@@ -1,7 +1,7 @@
 oe_link_lists_internal_source.settings:
-  path: '/admin/config/system/link-lists/internal-source-settings'
+  path: '/admin/config/link-lists/internal-source-settings'
   defaults:
     _title: 'Internal source settings'
     _form: 'Drupal\oe_link_lists_internal_source\Form\LinkListsInternalSourceSettings'
   requirements:
-    _permission: 'access link lists internal source configuration'
+    _permission: 'configure link lists internal source'

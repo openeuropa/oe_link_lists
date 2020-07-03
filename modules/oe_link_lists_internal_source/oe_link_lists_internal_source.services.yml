@@ -3,7 +3,7 @@ services:
     class: Drupal\oe_link_lists_internal_source\InternalLinkSourceFilterPluginManager
     parent: default_plugin_manager
 
-  oe_link_lists_internal_source.event_subscriber.internal_source_alter:
+  oe_link_lists_internal_source.event_subscriber.internal_source:
     class: Drupal\oe_link_lists_internal_source\EventSubscriber\InternalSourceRestrictionSubscriber
     arguments: ['@config.factory']
     tags:
