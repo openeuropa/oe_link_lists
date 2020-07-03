@@ -46,7 +46,7 @@ class InternalSourceSettingsTest extends InternalLinkSourceTestBase {
    * Tests the internal source entity type/bundle restrictions.
    */
   public function testInternalSourceRestrictions(): void {
-    $this->drupalGet('admin/config/system/link-lists/internal-source-settings');
+    $this->drupalGet('admin/config/link-lists/internal-source-settings');
     $page = $this->getSession()->getPage();
 
     $page->checkField('Link list');

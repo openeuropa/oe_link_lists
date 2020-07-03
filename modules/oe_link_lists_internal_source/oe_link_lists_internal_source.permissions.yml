@@ -1,3 +1,3 @@
-access link lists internal source configuration:
-  title: 'Access Link Lists internal source configuration'
+configure link lists internal source:
+  title: 'Configure Link Lists internal source'
   restrict access: true

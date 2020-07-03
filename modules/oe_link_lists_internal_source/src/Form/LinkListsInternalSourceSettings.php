@@ -166,10 +166,10 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
         'bundles',
       ]));
 
-      $allowed_bundles[$entity_type] = $selected_bundles;
+      $allowed_bundles[$entity_type] = array_keys($selected_bundles);
     }
 
-    $config->set('allowed_entity_bundles', array_keys($allowed_bundles))->save();
+    $config->set('allowed_entity_bundles', $allowed_bundles)->save();
     parent::submitForm($form, $form_state);
   }
 
