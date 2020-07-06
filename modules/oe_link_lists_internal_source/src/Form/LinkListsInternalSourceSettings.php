@@ -147,7 +147,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
 
       if (empty($selected_bundles)) {
         $definition = $this->entityTypeManager->getDefinition($entity_type);
-        $form_state->setError($form['allowed_bundles'][$entity_type]['bundles'], $this->t('Please select at least 1 bundle for <em>@entity_type</em>. Or select all of them if you would like all to be included.', ['@entity_type' => $definition->getLabel()]));
+        $form_state->setError($form['allowed_bundles'][$entity_type]['bundles'], $this->t('Please select at least 1 bundle for %entity_type. Or select all of them if you would like all to be included.', ['%entity_type' => $definition->getLabel()]));
       }
     }
   }
