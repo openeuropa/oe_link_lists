@@ -1,0 +1,7 @@
+oe_link_lists.index:
+  path: '/admin/config/link-lists'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Link Lists'
+  requirements:
+    _permission: 'access administration pages'

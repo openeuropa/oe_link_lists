@@ -4,3 +4,9 @@ entity.link_list.collection:
   description: 'List of Link lists'
   parent: system.admin_content
   weight: 100
+oe_link_lists.index:
+  title: 'Link lists'
+  route_name: oe_link_lists.index
+  description: 'List of Link lists'
+  parent: system.admin_config
+  weight: 100

@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists_internal_source_test\EventSubscriber;
 
 use Drupal\Core\State\StateInterface;
-use Drupal\oe_link_lists_internal_source\Event\InternalSourceEntityTypesEvent;
 use Drupal\oe_link_lists_internal_source\Event\InternalSourceQueryEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -37,7 +36,6 @@ class InternalSourceTestSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     return [
       InternalSourceQueryEvent::NAME => 'alterQuery',
-      InternalSourceEntityTypesEvent::NAME => 'alterEntityTypes',
     ];
   }
 
@@ -59,22 +57,6 @@ class InternalSourceTestSubscriber implements EventSubscriberInterface {
     // Set the query metadata onto the state so we can assert it in the test.
     $this->state->set('internal_source_query_test_metadata', $configuration);
     $query->condition('name', 'Entity one', '!=');
-  }
-
-  /**
-   * Alters the selectable entity types.
-   *
-   * @param \Drupal\oe_link_lists_internal_source\Event\InternalSourceEntityTypesEvent $event
-   *   The event.
-   */
-  public function alterEntityTypes(InternalSourceEntityTypesEvent $event) {
-    // Limit the selectable entity types if tests specified any.
-    $allowed_entity_types = $this->state->get('internal_source_allowed_entity_types', FALSE);
-    if (!$allowed_entity_types) {
-      return;
-    }
-
-    $event->setEntityTypes($allowed_entity_types);
   }
 
 }
