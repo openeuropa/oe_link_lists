@@ -9,6 +9,9 @@ use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Event class used for resolving a manually created links into link objects.
+ *
+ * @deprecated in oe_link_lists 0.7.0 and will be removed in 1.0.0. Use
+ *   ManualLinkResolverEvent instead.
  */
 class ManualLinksResolverEvent extends Event {
 

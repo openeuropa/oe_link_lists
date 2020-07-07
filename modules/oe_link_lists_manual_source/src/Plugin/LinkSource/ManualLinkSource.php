@@ -12,6 +12,7 @@ use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
 use Drupal\oe_link_lists\LinkSourcePluginBase;
 use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
+use Drupal\oe_link_lists_manual_source\Event\ManualLinkResolverEvent;
 use Drupal\oe_link_lists_manual_source\Event\ManualLinksResolverEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -126,10 +127,29 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
     }
 
     $ids = array_slice($ids, $offset, $limit);
+    /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface[] $link_entities */
     $link_entities = $this->entityTypeManager->getStorage('link_list_link')->loadMultipleRevisions(array_column($ids, 'entity_revision_id'));
-    $event = new ManualLinksResolverEvent($link_entities);
-    $this->eventDispatcher->dispatch(ManualLinksResolverEvent::NAME, $event);
-    return $event->getLinks();
+
+    // For legacy reasons, we need to first dispatch the event responsible for
+    // resolving all links if there are any subscribers to this event.
+    $listeners = $this->eventDispatcher->getListeners(ManualLinksResolverEvent::NAME);
+    if ($listeners) {
+      return $this->legacyResolveLinks($link_entities);
+    }
+
+    // Otherwise we resolve the links by dispatching an event for each of them.
+    $links = new LinkCollection();
+    foreach ($link_entities as $link_entity) {
+      $event = new ManualLinkResolverEvent($link_entity);
+      $this->eventDispatcher->dispatch(ManualLinkResolverEvent::NAME, $event);
+      $link = $event->getLink();
+      if ($link) {
+        $link->addCacheableDependency($link_entity);
+        $links->add($link);
+      }
+    }
+
+    return $links;
   }
 
   /**
@@ -144,6 +164,25 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
         'links',
       ],
     ];
+  }
+
+  /**
+   * Resolves all the links in one event.
+   *
+   * This approach is for legacy reasons to prevent BC and allow modules that
+   * may have subscribed to this event to subscribe instead to
+   * ManualLinkResolverEvent.
+   *
+   * @param array $link_entities
+   *   The link entities.
+   *
+   * @return \Drupal\oe_link_lists\LinkCollectionInterface
+   *   The list of resolved links.
+   */
+  protected function legacyResolveLinks(array $link_entities) {
+    $event = new ManualLinksResolverEvent($link_entities);
+    $this->eventDispatcher->dispatch(ManualLinksResolverEvent::NAME, $event);
+    return $event->getLinks();
   }
 
 }
