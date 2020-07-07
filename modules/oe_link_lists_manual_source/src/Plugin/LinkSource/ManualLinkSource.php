@@ -142,8 +142,8 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
     foreach ($link_entities as $link_entity) {
       $event = new ManualLinkResolverEvent($link_entity);
       $this->eventDispatcher->dispatch(ManualLinkResolverEvent::NAME, $event);
-      $link = $event->getLink();
-      if ($link) {
+      if ($event->hasLink()) {
+        $link = $event->getLink();
         $link->addCacheableDependency($link_entity);
         $links->add($link);
       }

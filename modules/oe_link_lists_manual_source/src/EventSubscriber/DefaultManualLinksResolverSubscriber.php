@@ -83,7 +83,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
    *   The link.
    */
   public function resolveInternalLink(ManualLinkResolverEvent $event): LinkInterface {
-    $link_entity = $event->getLinkEntity();
+    $link_entity = $this->entityRepository->getTranslationFromContext($event->getLinkEntity());
 
     /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
     $referenced_entity = $link_entity->get('target')->entity;
@@ -119,7 +119,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
    *   The link.
    */
   public function resolveExternalLink(ManualLinkResolverEvent $event): LinkInterface {
-    $link_entity = $event->getLinkEntity();
+    $link_entity = $this->entityRepository->getTranslationFromContext($event->getLinkEntity());
 
     try {
       $url = Url::fromUri($link_entity->get('url')->uri);

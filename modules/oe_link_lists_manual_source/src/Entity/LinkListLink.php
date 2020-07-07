@@ -12,6 +12,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\node\NodeInterface;
+use Drupal\oe_link_lists\LinkInterface;
 use Drupal\oe_link_lists_manual_source\Event\ManualLinkResolverEvent;
 
 /**
@@ -95,9 +96,10 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
     $event_dispatcher = \Drupal::service('event_dispatcher');
     $event = new ManualLinkResolverEvent($this);
     $event_dispatcher->dispatch(ManualLinkResolverEvent::NAME, $event);
-    $link = $event->getLink();
+    $link = $event->hasLink() ? $event->getLink() : NULL;
     $bundle = \Drupal::entityTypeManager()->getStorage('link_list_link_type')->load($this->bundle())->label();
-    return $this->t('@bundle link: @title', ['@bundle' => $bundle, '@title' => $link->getTitle()]);
+    $title = $link instanceof LinkInterface ? $link->getTitle() : t('Unresolved');
+    return $this->t('@bundle link: @title', ['@bundle' => $bundle, '@title' => $title]);
   }
 
   /**

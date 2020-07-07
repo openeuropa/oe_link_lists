@@ -1,0 +1,6 @@
+services:
+  oe_link_lists_manual_source_test.event_subscriber.internal_route_manual_links_resolver:
+    class: Drupal\oe_link_lists_manual_source_test\EventSubscriber\InternalRouteManualLinksResolverSubscriber
+    arguments: ['@state']
+    tags:
+      - { name: event_subscriber }

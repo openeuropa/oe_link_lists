@@ -53,6 +53,16 @@ class ManualLinkResolverEvent extends Event {
   }
 
   /**
+   * Checks whether the link was resolved.
+   *
+   * @return bool
+   *   Whether the link has been resolved or not.
+   */
+  public function hasLink(): bool {
+    return $this->link instanceof LinkInterface;
+  }
+
+  /**
    * Returns the link object.
    *
    * @return \Drupal\oe_link_lists\LinkInterface
