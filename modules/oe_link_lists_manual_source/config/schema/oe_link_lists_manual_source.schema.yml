@@ -1,0 +1,7 @@
+oe_link_lists_manual_source.link_list_link_type.*.third_party.oe_link_lists_manual_source:
+  type: mapping
+  label: 'Override settings'
+  mapping:
+    override:
+      type: boolean
+      label: 'Override'

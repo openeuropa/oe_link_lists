@@ -3,3 +3,6 @@ status: true
 dependencies: {  }
 id: external
 label: External
+third_party_settings:
+  oe_link_lists_manual_source:
+    override: false
