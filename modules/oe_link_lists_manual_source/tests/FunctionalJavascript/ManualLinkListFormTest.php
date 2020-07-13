@@ -198,6 +198,8 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
 
     $this->userPermissions[] = 'create internal_route link list link';
     $this->userPermissions[] = 'edit internal_route link list link';
+    $this->userPermissions[] = 'access link list canonical page';
+    $this->userPermissions[] = 'view link list';
     $web_user = $this->drupalCreateUser($this->userPermissions);
     $this->drupalLogin($web_user);
 
@@ -222,10 +224,23 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $links_wrapper->fillField('Teaser', 'Link teaser');
     $this->getSession()->getPage()->pressButton('Create Link');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains('Internal Route link: Link title');
+    // The internal route link was not resolved.
+    $this->assertSession()->pageTextContains('Internal Route link: Unresolved');
 
     // Save the list and make sure the values are saved correctly.
     $this->getSession()->getPage()->pressButton('Save');
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->load(1);
+
+    // View the link list and assert that we don't have the link as it was not
+    // yet resolved.
+    $this->drupalGet($link_list->toUrl());
+    $this->assertNoLink('Link title');
+
+    // Instruct the subscriber to resolve the internal route links.
+    \Drupal::state()->set('oe_link_lists_manual_source_test_subscriber_resolve', TRUE);
+
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $link_list_storage->load(1);
     $links = $link_list->get('links')->referencedEntities();

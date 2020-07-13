@@ -70,7 +70,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     // Create a node to be used by an internal link.
     $node_one = $this->createNode(['type' => 'page']);
 
-    // Create an internal link and an external link.
+    // Create an internal content, external and internal route link.
     $entity_type_manager = $this->container->get('entity_type.manager');
     $link_storage = $entity_type_manager->getStorage('link_list_link');
     $internal_link_one = $link_storage->create([
@@ -117,7 +117,16 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
 
     $links = $plugin->getLinks();
+    // Only the internal content and external links get resolved.
+    $this->assertCount(2, $links);
+
+    // Enable the resolver.
+    $this->container->get('state')->set('oe_link_lists_manual_source_test_subscriber_resolve', TRUE);
+
+    // Now there should be 3 links.
+    $links = $plugin->getLinks();
     $this->assertCount(3, $links);
+
     $this->assertEquals('Example title', $links[0]->getTitle());
     $this->assertEquals($node_one->label(), $links[1]->getTitle());
     $this->assertEquals('User page', $links[2]->getTitle());
