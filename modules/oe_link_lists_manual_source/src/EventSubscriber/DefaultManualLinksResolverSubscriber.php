@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_manual_source\EventSubscriber;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultLink;
@@ -66,9 +67,14 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       'external' => [$this, 'resolveExternalLink'],
     ];
 
-    if (isset($bundles[$event->getLinkEntity()->bundle()])) {
-      $callback = $bundles[$event->getLinkEntity()->bundle()];
-      $link = call_user_func($callback, $event);
+    $bundle = $event->getLinkEntity()->bundle();
+    if (!isset($bundles[$bundle])) {
+      return;
+    }
+
+    $callback = $bundles[$bundle];
+    $link = call_user_func($callback, $event);
+    if ($link) {
       $event->setLink($link);
     }
   }
@@ -82,11 +88,13 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
    * @return \Drupal\oe_link_lists\LinkInterface
    *   The link.
    */
-  public function resolveInternalLink(ManualLinkResolverEvent $event): LinkInterface {
+  public function resolveInternalLink(ManualLinkResolverEvent $event): ?LinkInterface {
     $link_entity = $this->entityRepository->getTranslationFromContext($event->getLinkEntity());
 
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $referenced_entity */
     $referenced_entity = $link_entity->get('target')->entity;
+    if (!$referenced_entity instanceof ContentEntityInterface) {
+      return NULL;
+    }
 
     $referenced_entity = $this->entityRepository->getTranslationFromContext($referenced_entity);
     $resolver_event = new EntityValueResolverEvent($referenced_entity);
