@@ -31,8 +31,12 @@ class LinkListLinkInlineForm extends EntityInlineForm {
 
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $entity_form['#entity'];
+    $config = $this->entityTypeManager->getStorage('link_list_link_type')->load($entity->bundle());
+    // If the bundle doesn't implement the setting, by default we display title
+    // and teaser fields.
+    $override = $config->getThirdPartySetting('oe_link_lists_manual_source', 'override', FALSE);
 
-    if ($entity->bundle() === 'internal') {
+    if ($override) {
       $this->addOverrideElement($entity_form, $form_state);
       return $entity_form;
     }
