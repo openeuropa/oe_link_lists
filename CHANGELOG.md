@@ -1,11 +1,23 @@
 # Changelog
 
+## [0.7.0](https://github.com/openeuropa/oe_link_lists/tree/0.7.0) (2020-08-04)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.6.0...0.7.0)
+
+**Merged pull requests:**
+
+- EWPP-37: Add override third party setting for link list link bundles. [\#69](https://github.com/openeuropa/oe_link_lists/pull/69) ([22Alexandra](https://github.com/22Alexandra))
+- OPENEUROPA-3315: Deprecating manual links resolver [\#68](https://github.com/openeuropa/oe_link_lists/pull/68) ([upchuk](https://github.com/upchuk))
+- OPENEUROPA-3317: Configuration form for dynamic link list restrictions. [\#67](https://github.com/openeuropa/oe_link_lists/pull/67) ([sergepavle](https://github.com/sergepavle))
+- OPENEUROPA-3315: Update internal bundle label to Internal content. [\#66](https://github.com/openeuropa/oe_link_lists/pull/66) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [0.6.0](https://github.com/openeuropa/oe_link_lists/tree/0.6.0) (2020-06-22)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.5.0...0.6.0)
 
 **Merged pull requests:**
 
+- RELEASE-0.6.0: Update CHANGELOG.md for release 0.6.0. [\#65](https://github.com/openeuropa/oe_link_lists/pull/65) ([sergepavle](https://github.com/sergepavle))
 - OPENEUROPA-3216: Remove drupal-coder version. [\#63](https://github.com/openeuropa/oe_link_lists/pull/63) ([nagyad](https://github.com/nagyad))
 - OPENEUROPA-3084: Update entity form displays. [\#62](https://github.com/openeuropa/oe_link_lists/pull/62) ([22Alexandra](https://github.com/22Alexandra))
 - OPENEUROPA-0000: Opening to other manual link bundles. [\#53](https://github.com/openeuropa/oe_link_lists/pull/53) ([upchuk](https://github.com/upchuk))
