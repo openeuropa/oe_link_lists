@@ -247,7 +247,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#open' => TRUE,
     ];
 
-    $plugin_id = $form_state->getValue(array_merge($parents, ['plugin']), $this->getConfigurationPluginId($link_list, 'source'));
+    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
+      'plugin_select',
+      'link_source',
+    ]);
+    if (!$plugin_id) {
+      $plugin_id = $this->getConfigurationPluginId($link_list, 'source');
+    }
 
     $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
     $element['link_source']['plugin'] = [
@@ -262,6 +268,14 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         'wrapper' => 'link-source-plugin-configuration' . $wrapper_suffix,
       ],
       '#default_value' => $plugin_id,
+      '#submit' => [
+        [get_class($this), 'selectPlugin'],
+      ],
+      '#executes_submit_callback' => TRUE,
+      '#plugin_select' => 'link_source',
+      '#limit_validation_errors' => [
+        array_merge($parents, ['plugin']),
+      ],
     ];
 
     // A wrapper that the Ajax callback will replace.
@@ -291,7 +305,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       if (!empty($element['#translatable_parents'])) {
         // If we are translating the entity and we have elements that we are
         // translating, add a process to the plugin form to handle them.
-        $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = [get_class($this), 'processUntranslatableFields'];
+        $process = [get_class($this), 'processUntranslatableFields'];
+        $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
         $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
       }
     }
@@ -326,7 +341,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
 
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
-    $plugin_id = $form_state->getValue(array_merge($parents, ['plugin']), $this->getConfigurationPluginId($link_list, 'display'));
+    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
+      'plugin_select',
+      'link_display',
+    ]);
+    if (!$plugin_id) {
+      $plugin_id = $this->getConfigurationPluginId($link_list, 'display');
+    }
 
     $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
     $element['link_display']['plugin'] = [
@@ -340,7 +361,15 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         'callback' => [$this, 'pluginConfigurationAjaxCallback'],
         'wrapper' => 'link-display-plugin-configuration' . $wrapper_suffix,
       ],
+      '#submit' => [
+        [get_class($this), 'selectPlugin'],
+      ],
       '#default_value' => $plugin_id,
+      '#executes_submit_callback' => TRUE,
+      '#plugin_select' => 'link_display',
+      '#limit_validation_errors' => [
+        array_merge($parents, ['plugin']),
+      ],
     ];
 
     // A wrapper that the Ajax callback will replace.
@@ -366,7 +395,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       if (!empty($element['#translatable_parents'])) {
         // If we are translating the entity and we have elements that we are
         // translating, add a process to the plugin form to handle them.
-        $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = [get_class($this), 'processUntranslatableFields'];
+        $process = [get_class($this), 'processUntranslatableFields'];
+        $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
         $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
       }
     }
@@ -497,6 +527,20 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         ],
       ],
     ];
+  }
+
+  /**
+   * Submit callback for storing the selected plugin ID.
+   *
+   * @param array $form
+   *   The form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public static function selectPlugin(array $form, FormStateInterface $form_state): void {
+    $triggering_element = $form_state->getTriggeringElement();
+    NestedArray::setValue($form_state->getStorage(), ['plugin_select', $triggering_element['#plugin_select']], $triggering_element['#value']);
+    $form_state->setRebuild(TRUE);
   }
 
   /**
