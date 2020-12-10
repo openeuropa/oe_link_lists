@@ -198,6 +198,9 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $remove->press();
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->pressButton('Save');
+    $link_list_storage->resetCache();
+    $link_list = $link_list_storage->load(1);
+    $this->assertEmpty($link_list->get('links')->offsetGet(2));
     $link_storage->resetCache();
     $this->assertInstanceOf(LinkListLinkInterface::class, $link_storage->load($link->id()));
   }
