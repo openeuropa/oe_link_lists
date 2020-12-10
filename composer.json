@@ -7,7 +7,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.2",
-        "drupal/core": "^8.7",
+        "drupal/core": "^8.8.2",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/inline_entity_form": "^1.0-rc8",
         "drupal/composite_reference": "~1.0-alpha2"
