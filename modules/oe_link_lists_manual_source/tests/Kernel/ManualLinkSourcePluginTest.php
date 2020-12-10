@@ -27,6 +27,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     'oe_link_lists_manual_source',
     'oe_link_lists_manual_source_test',
     'entity_reference_revisions',
+    'composite_reference',
     'inline_entity_form',
     'field',
     'filter',
@@ -56,6 +57,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       'oe_link_lists_manual_source',
       'oe_link_lists_manual_source_test',
       'entity_reference_revisions',
+      'composite_reference',
     ]);
 
     $this->createContentType(['type' => 'page']);

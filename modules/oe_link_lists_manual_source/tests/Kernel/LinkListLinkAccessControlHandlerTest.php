@@ -27,6 +27,7 @@ class LinkListLinkAccessControlHandlerTest extends EntityKernelTestBase {
     'node',
     'entity_reference_revisions',
     'inline_entity_form',
+    'composite_reference',
     'field',
   ];
 
@@ -52,8 +53,11 @@ class LinkListLinkAccessControlHandlerTest extends EntityKernelTestBase {
 
     $this->installEntitySchema('link_list');
     $this->installEntitySchema('link_list_link');
-    $this->installConfig('oe_link_lists');
-    $this->installConfig('oe_link_lists_manual_source');
+    $this->installConfig([
+      'oe_link_lists',
+      'oe_link_lists_manual_source',
+      'composite_reference',
+    ]);
 
     $this->accessControlHandler = $this->container->get('entity_type.manager')->getAccessControlHandler('link_list_link');
 

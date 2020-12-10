@@ -27,6 +27,7 @@ class LinkListAccessTest extends KernelTestBase {
     'oe_link_lists_internal_source',
     'oe_link_lists_test',
     'entity_reference_revisions',
+    'composite_reference',
     'field',
     'node',
     'text',
@@ -50,6 +51,7 @@ class LinkListAccessTest extends KernelTestBase {
       'system',
       'entity_reference_revisions',
       'oe_link_lists',
+      'composite_reference',
     ]);
 
     $node_type = NodeType::create([
