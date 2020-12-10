@@ -28,7 +28,7 @@ function oe_link_lists_manual_source_post_update_override() {
 /**
  * Add inline entity reference removal policy to keep entities.
  */
-function oe_link_lists_manual_source_post_update_removal_policy() {
+function oe_link_lists_manual_source_post_update_00001() {
   $form_display = EntityFormDisplay::load('link_list.manual.default');
   $component = $form_display->getComponent('links');
   $component['settings']['removed_reference'] = 'keep';
