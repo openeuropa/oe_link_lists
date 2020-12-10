@@ -7,6 +7,7 @@ namespace Drupal\Tests\oe_link_lists_manual_source\FunctionalJavascript;
 use Drupal\node\NodeInterface;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use Drupal\oe_link_lists\DefaultLink;
+use Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface;
 
 /**
  * Tests the Manual link lists allow to add links on the fly.
@@ -187,6 +188,18 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $link = $link_list->get('links')->offsetGet(2)->entity;
     $this->assertTrue($link->get('title')->isEmpty());
     $this->assertTrue($link->get('teaser')->isEmpty());
+
+    // Remove the last link reference and check if the entity is not deleted
+    // because the IEF widget is configured to keep the removed entities.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $remove = $this->getSession()->getPage()->find('xpath', '(//input[@type="submit" and @value="Remove"])[3]');
+    $remove->press();
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $remove->press();
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+    $link_storage->resetCache();
+    $this->assertInstanceOf(LinkListLinkInterface::class, $link_storage->load($link->id()));
   }
 
   /**
