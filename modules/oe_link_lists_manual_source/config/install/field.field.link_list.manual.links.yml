@@ -7,7 +7,11 @@ dependencies:
     - oe_link_lists_manual_source.link_list_link_type.external
     - oe_link_lists_manual_source.link_list_link_type.internal
   module:
+    - composite_reference
     - entity_reference_revisions
+third_party_settings:
+  composite_reference:
+    composite: true
 id: link_list.manual.links
 field_name: links
 entity_type: link_list

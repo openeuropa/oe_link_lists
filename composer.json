@@ -7,14 +7,15 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.2",
-        "drupal/core": "^8.7",
+        "drupal/core": "^8.8.2",
         "drupal/entity_reference_revisions": "^1.7",
-        "drupal/inline_entity_form": "^1.0-rc3"
+        "drupal/inline_entity_form": "^1.0-rc8"
     },
     "require-dev": {
         "composer/installers": "~1.5",
         "drupal-composer/drupal-scaffold": "~2.2",
         "drupal/config_devel": "~1.2",
+        "drupal/composite_reference": "~1.0-alpha2",
         "drupal/drupal-extension": "~4.0",
         "drush/drush": "~9.0@stable",
         "guzzlehttp/guzzle": "~6.3",
@@ -25,9 +26,6 @@
         "phpunit/phpunit": "~6.0",
         "symfony/dom-crawler": "~3.4"
     },
-    "_readme": [
-        "The minimum core requirement for DEV is set at 8.7.7 because it includes a testing step that checks for enabled form elements."
-    ],
     "scripts": {
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
         "post-install-cmd": "./vendor/bin/run drupal:site-setup",
@@ -59,6 +57,11 @@
             "build/profiles/contrib/{$name}": ["type:drupal-profile"],
             "build/modules/contrib/{$name}": ["type:drupal-module"],
             "build/themes/contrib/{$name}": ["type:drupal-theme"]
+        },
+        "patches": {
+            "drupal/inline_entity_form": {
+                "https://www.drupal.org/project/inline_entity_form/issues/2875716": "https://www.drupal.org/files/issues/2020-11-05/ief_removed_references_2875716-89.patch"
+            }
         }
     },
     "config": {

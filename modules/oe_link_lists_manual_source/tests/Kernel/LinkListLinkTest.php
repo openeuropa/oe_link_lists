@@ -19,6 +19,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
     'oe_link_lists_manual_source',
     'entity_reference_revisions',
     'inline_entity_form',
+    'composite_reference',
     'node',
     'user',
     'field',
@@ -40,6 +41,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
       'field',
       'node',
       'system',
+      'composite_reference',
       'oe_link_lists_manual_source',
       'entity_reference_revisions',
     ]);

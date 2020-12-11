@@ -10,6 +10,17 @@ be provided when creating the link.\
 Internal links (labelled "Internal content") are meant to reference nodes that
 exist on the website. Title and teaser can be provided as "override" (see below).
 
+## Installation
+
+Before enabling this module, make sure the following module is present in your codebase by adding them to your
+`composer.json` and by running `composer update`:
+
+```json
+"require": {
+    "drupal/composite_reference": "~1.0@alpha2"
+}
+```
+
 ## Marking a link list link bundle as overridable
 Bundles of this entity type can be marked as “overridable” to mean that the
 title and teaser value are optional and they would be used to override values

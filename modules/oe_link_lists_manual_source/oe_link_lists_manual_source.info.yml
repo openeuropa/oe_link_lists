@@ -9,3 +9,4 @@ dependencies:
   - oe_link_lists:oe_link_lists
   - inline_entity_form:inline_entity_form
   - entity_reference_revisions:entity_reference_revisions
+  - composite_reference:composite_reference
