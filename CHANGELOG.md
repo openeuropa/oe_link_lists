@@ -1,11 +1,21 @@
 # Changelog
 
-## [0.7.0](https://github.com/openeuropa/oe_link_lists/tree/0.7.0) (2020-08-04)
+## [0.8.0](https://github.com/openeuropa/oe_link_lists/tree/0.8.0) (2020-12-11)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.7.0...0.8.0)
+
+**Merged pull requests:**
+
+- EWPP-405: Add IEF reference removal policy config to manual links. [\#73](https://github.com/openeuropa/oe_link_lists/pull/73) ([nagyad](https://github.com/nagyad))
+- EWPP-516: Update docker images. [\#72](https://github.com/openeuropa/oe_link_lists/pull/72) ([22Alexandra](https://github.com/22Alexandra))
+
+## [0.7.0](https://github.com/openeuropa/oe_link_lists/tree/0.7.0) (2020-08-06)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.6.0...0.7.0)
 
 **Merged pull requests:**
 
+- Release-0.7.0: Update changelog. [\#70](https://github.com/openeuropa/oe_link_lists/pull/70) ([nagyad](https://github.com/nagyad))
 - EWPP-37: Add override third party setting for link list link bundles. [\#69](https://github.com/openeuropa/oe_link_lists/pull/69) ([22Alexandra](https://github.com/22Alexandra))
 - OPENEUROPA-3315: Deprecating manual links resolver [\#68](https://github.com/openeuropa/oe_link_lists/pull/68) ([upchuk](https://github.com/upchuk))
 - OPENEUROPA-3317: Configuration form for dynamic link list restrictions. [\#67](https://github.com/openeuropa/oe_link_lists/pull/67) ([sergepavle](https://github.com/sergepavle))
