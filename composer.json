@@ -9,13 +9,13 @@
         "php": ">=7.2",
         "drupal/core": "^8.8.2",
         "drupal/entity_reference_revisions": "^1.7",
-        "drupal/inline_entity_form": "^1.0-rc8",
-        "drupal/composite_reference": "~1.0-alpha2"
+        "drupal/inline_entity_form": "^1.0-rc8"
     },
     "require-dev": {
         "composer/installers": "~1.5",
         "drupal-composer/drupal-scaffold": "~2.2",
         "drupal/config_devel": "~1.2",
+        "drupal/composite_reference": "~1.0-alpha2",
         "drupal/drupal-extension": "~4.0",
         "drush/drush": "~9.0@stable",
         "guzzlehttp/guzzle": "~6.3",
