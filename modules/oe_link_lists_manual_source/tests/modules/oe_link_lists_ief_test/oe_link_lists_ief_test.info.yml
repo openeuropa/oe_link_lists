@@ -1,0 +1,12 @@
+name: OpenEuropa Link Lists IEF Test
+description: Test integration with Inline Entity Form.
+package: Testing
+
+type: module
+core_version_requirement: ^8.9 || ^9
+
+dependencies:
+  - drupal:link
+  - drupal:field
+  - drupal:node
+  - oe_link_lists:oe_link_lists_manual_source

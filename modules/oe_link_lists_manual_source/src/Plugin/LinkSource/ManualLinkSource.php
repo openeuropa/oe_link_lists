@@ -133,14 +133,19 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
     // update each link with their parent (link list) entity.
     $ids = [];
     foreach ($entity->get('links')->getValue() as $value) {
-      $ids[$value['target_revision_id']] = [
-        'entity_id' => $value['target_id'],
-        'entity_revision_id' => $value['target_revision_id'],
+      $link_entity_reference = $value['entity'] ?? NULL;
+      $id = $link_entity_reference ? $link_entity_reference->id() : $value['target_id'];
+      $revision_id = $link_entity_reference ? $link_entity_reference->getRevisionId() : $value['target_revision_id'];
+      $ids[$revision_id] = [
+        'entity_id' => $id,
+        'entity_revision_id' => $revision_id,
       ];
 
       // @todo move this to IEF directly where the entity is being built.
-      $link = $this->entityTypeManager->getStorage('link_list_link')->load($value['target_id']);
+      /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $link */
+      $link = $this->entityTypeManager->getStorage('link_list_link')->load($id);
       $link->setParentEntity($entity, 'links');
+      $link->setNewRevision(FALSE);
       $link->save();
     }
 

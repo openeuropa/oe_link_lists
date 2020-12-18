@@ -248,8 +248,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The form state.
    */
   protected function buildLinkSourceElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
-    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $link_list = $this->getLinkListFromForm($form, $form_state);
 
     // Only certain bundles expose the choice of the link source plugin.
     /** @var \Drupal\oe_link_lists\Entity\LinkListType $bundle */
@@ -367,8 +366,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#open' => TRUE,
     ];
 
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
-    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $link_list = $this->getLinkListFromForm($form, $form_state);
     $plugin_id = NestedArray::getValue($form_state->getStorage(), [
       'plugin_select',
       'link_display',
@@ -472,8 +470,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The form state.
    */
   protected function buildGeneralConfigurationForm(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
-    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $link_list = $this->getLinkListFromForm($form, $form_state);
     $configuration = $link_list->getConfiguration();
 
     $parents = array_merge($element['#field_parents'], [
@@ -713,13 +710,14 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     parent::extractFormValues($items, $form, $form_state);
 
     $field_name = $items->getName();
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
-    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $link_list = $this->getLinkListFromForm($form, $form_state);
     $widget_state = self::getWidgetState($form['#parents'], $field_name, $form_state);
 
     foreach ($items as $delta => $value) {
       $configuration = [];
-      $element = NestedArray::getValue($form, array_merge($widget_state['array_parents'], [$delta]));
+      // Extracting the element from the form needs to take into account to full
+      // form because the widget state is set relative to the full form.
+      $element = NestedArray::getValue($form_state->getCompleteForm(), array_merge($widget_state['array_parents'], [$delta]));
       $configuration['display'] = $this->extractPluginConfiguration('link_display', $element, $form_state);
       $configuration['no_results_behaviour'] = $this->extractPluginConfiguration('no_results_behaviour', $element, $form_state);
 
@@ -730,6 +728,28 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $this->applyGeneralListConfiguration($configuration, $element, $form_state);
       $this->linkListConfigurationManager->setConfiguration($configuration, $items->get($delta));
     }
+  }
+
+  /**
+   * Extracts the current link list this widget is embedded in.
+   *
+   * We need to account for the field being part of a IEF-based link list form
+   * in which case we need to check on the form for the entity.
+   *
+   * @param array $form
+   *   The form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return \Drupal\oe_link_lists\Entity\LinkListInterface
+   *   The link list.
+   */
+  protected function getLinkListFromForm(array $form, FormStateInterface $form_state): LinkListInterface {
+    if (isset($form['#type']) && $form['#type'] === 'inline_entity_form') {
+      return $form['#entity'];
+    }
+
+    return $form_state->getBuildInfo()['callback_object']->getEntity();
   }
 
   /**

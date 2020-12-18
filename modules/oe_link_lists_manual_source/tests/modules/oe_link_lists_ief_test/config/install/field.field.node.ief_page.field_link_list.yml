@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_link_list
+    - node.type.ief_page
+    - oe_link_lists.link_list_type.manual
+  module:
+    - composite_reference
+    - entity_reference_revisions
+third_party_settings:
+  composite_reference:
+    composite: false
+id: node.ief_page.field_link_list
+field_name: field_link_list
+entity_type: node
+bundle: ief_page
+label: 'Link List'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:link_list'
+  handler_settings:
+    target_bundles:
+      manual: manual
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference_revisions
