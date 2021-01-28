@@ -7,6 +7,7 @@ namespace Drupal\oe_link_lists;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Base class for link_source plugins.
@@ -56,6 +57,13 @@ abstract class LinkSourcePluginBase extends PluginBase implements LinkSourceInte
    * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // Empty in many cases.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityInterface $entity = NULL): void {
     // Empty in many cases.
   }
 

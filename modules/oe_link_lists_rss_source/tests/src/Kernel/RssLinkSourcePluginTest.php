@@ -13,6 +13,7 @@ use Drupal\Core\Form\SubformState;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -30,10 +31,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'user',
     'aggregator',
     'options',
     'system',
+    'language',
+    'content_translation',
     'oe_link_lists',
+    'oe_link_lists_test',
     'oe_link_lists_rss_source',
   ];
 
@@ -90,6 +95,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   protected function setUp() {
     parent::setUp();
 
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('link_list');
+    $this->installConfig([
+      'oe_link_lists',
+      'system',
+      'language',
+      'content_translation',
+    ]);
     $this->installConfig('aggregator');
     $this->installEntitySchema('aggregator_feed');
     $this->installEntitySchema('aggregator_item');
@@ -132,6 +145,10 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
       ->willReturn($http_client_mock);
 
     $this->container->set('http_client_factory', $http_client_factory_mock);
+
+    ConfigurableLanguage::createFromLangcode('fr')->save();
+    ConfigurableLanguage::createFromLangcode('de')->save();
+    \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
   }
 
   /**
@@ -175,9 +192,102 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   }
 
   /**
+   * Tests the plugin translation.
+   */
+  public function testPluginTranslation(): void {
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
+    $item_storage = $entity_type_manager->getStorage('aggregator_item');
+
+    // Confirm there are no aggregates before creating the plugin.
+    $this->assertCount(0, $feed_storage->loadMultiple());
+    $this->assertCount(0, $item_storage->loadMultiple());
+
+    // Create a link list.
+    $link_list_storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    $values = [
+      'bundle' => 'dynamic',
+      'title' => 'My link list',
+      'administrative_title' => 'Link list 1',
+    ];
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->create($values);
+
+    // Create a standard link list configuration array.
+    $configuration = [
+      'source' => [
+        'plugin' => 'rss',
+        'plugin_configuration' => [
+          'url' => 'http://www.example.com/atom.xml',
+        ],
+      ],
+      'display' => [
+        'plugin' => 'bar',
+        'plugin_configuration' => ['link' => FALSE],
+      ],
+    ];
+
+    $link_list->setConfiguration($configuration);
+    $this->assertEquals($configuration, $link_list->getConfiguration());
+
+    $link_list->save();
+
+    // Confirm the aggregates.
+    $this->assertCount(1, $feed_storage->loadMultiple());
+    $this->assertCount(2, $item_storage->loadMultiple());
+
+    // Test with adding translation.
+    $link_list->addTranslation('fr', $link_list->toArray());
+    $this->assertTrue($link_list->hasTranslation('fr'));
+    $this->assertEquals('fr', $link_list->getTranslation('fr')->language()->getId());
+
+    $configuration['source']['plugin_configuration']['url'] = 'http://ec.europa.eu/rss.xml';
+    $translation = $link_list->getTranslation('fr');
+    $translation->setConfiguration($configuration);
+
+    $expected_source = [
+      'plugin' => 'rss',
+      'plugin_configuration' => [
+        'url' => 'http://ec.europa.eu/rss.xml',
+      ],
+    ];
+    $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
+
+    $translation->save();
+
+    // New aggregate was added.
+    $this->assertCount(2, $feed_storage->loadMultiple());
+    $this->assertCount(4, $item_storage->loadMultiple());
+
+    // Add translation with an existing rss source.
+    $link_list->addTranslation('de', $link_list->toArray());
+    $this->assertTrue($link_list->hasTranslation('de'));
+    $this->assertEquals('de', $link_list->getTranslation('de')->language()->getId());
+
+    $translation = $link_list->getTranslation('fr');
+    $translation->setConfiguration($configuration);
+
+    $expected_source = [
+      'plugin' => 'rss',
+      'plugin_configuration' => [
+        'url' => 'http://ec.europa.eu/rss.xml',
+      ],
+    ];
+    $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
+
+    $translation->save();
+
+    // No aggregate was added.
+    $this->assertCount(2, $feed_storage->loadMultiple());
+    $this->assertCount(4, $item_storage->loadMultiple());
+  }
+
+  /**
    * Tests the plugin submit handler.
    *
    * @covers ::submitConfigurationForm
+   * @covers ::preSave
    */
   public function testPluginSubmitConfiguration(): void {
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
@@ -194,12 +304,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $form_state = new FormState();
     $form_state->setValue('url', '');
     $plugin->submitConfigurationForm($form, $form_state);
+    $plugin->preSave();
 
     // Add a valid RSS feed.
     $form = [];
     $form_state = new FormState();
     $form_state->setValue('url', 'http://www.example.com/atom.xml');
     $plugin->submitConfigurationForm($form, $form_state);
+    $plugin->preSave();
 
     // Verify the configuration of the plugin.
     $this->assertEquals([
@@ -222,6 +334,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $form_state = new FormState();
     $form_state->setValue('url', 'http://www.example.com/atom.xml');
     $plugin->submitConfigurationForm($form, $form_state);
+    $plugin->preSave();
 
     $feed_storage->resetCache();
     $item_storage->resetCache();
@@ -239,6 +352,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $form_state = new FormState();
     $form_state->setValue('url', 'http://www.example.com/rss.xml');
     $plugin->submitConfigurationForm($form, $form_state);
+    $plugin->preSave();
 
     // Verify the configuration of the plugin.
     $this->assertEquals([

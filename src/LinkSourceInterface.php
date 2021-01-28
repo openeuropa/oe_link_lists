@@ -7,6 +7,7 @@ namespace Drupal\oe_link_lists;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Interface for link_source plugins.
@@ -33,5 +34,13 @@ interface LinkSourceInterface extends PluginFormInterface, ConfigurableInterface
    *   A list of links.
    */
   public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface;
+
+  /**
+   * Called when parent entity's presave hook is invoked.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface|null $entity
+   *   The parent entity.
+   */
+  public function preSave(EntityInterface $entity = NULL): void;
 
 }
