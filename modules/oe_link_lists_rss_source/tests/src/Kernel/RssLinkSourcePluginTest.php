@@ -233,7 +233,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $link_list->save();
 
-    // Confirm the aggregates.
+    // Assert the aggregator feeds and items.
     $this->assertCount(1, $feed_storage->loadMultiple());
     $this->assertCount(2, $item_storage->loadMultiple());
 
@@ -256,7 +256,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $translation->save();
 
-    // New aggregate was added.
+    // New aggregator items were added.
     $this->assertCount(2, $feed_storage->loadMultiple());
     $this->assertCount(4, $item_storage->loadMultiple());
 
@@ -278,7 +278,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $translation->save();
 
-    // No aggregate was added.
+    // No aggregator items were added.
     $this->assertCount(2, $feed_storage->loadMultiple());
     $this->assertCount(4, $item_storage->loadMultiple());
   }

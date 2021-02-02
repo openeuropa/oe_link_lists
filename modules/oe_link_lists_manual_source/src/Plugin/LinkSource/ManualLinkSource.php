@@ -17,7 +17,6 @@ use Drupal\oe_link_lists_manual_source\Event\ManualLinksResolverEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\oe_link_lists_manual_source\Entity\LinkListLink;
 
 /**
  * Link source plugin that allows to enter links manually.
@@ -147,7 +146,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       ];
 
       // @todo move this to IEF directly where the entity is being built.
-      $link = LinkListLink::load($value['target_id']);
+      $link = $this->entityTypeManager->getStorage('link_list_link')->load($value['target_id']);
       $link->setParentEntity($entity, 'links');
       $link->save();
     }
