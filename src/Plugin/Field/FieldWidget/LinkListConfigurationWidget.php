@@ -563,6 +563,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         $configuration['source'] = $this->extractPluginConfiguration('link_source', $element, $form_state);
       }
 
+      if ($link_list->bundle() === 'manual') {
+        $configuration['source'] = [
+          'plugin' => 'manual_links',
+          'plugin_configuration' => [],
+        ];
+      }
+
       $this->applyGeneralListConfiguration($configuration, $element, $form_state);
       $this->linkListConfigurationManager->setConfiguration($configuration, $items->get($delta));
     }

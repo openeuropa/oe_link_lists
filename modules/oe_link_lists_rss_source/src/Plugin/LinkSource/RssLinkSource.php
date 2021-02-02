@@ -7,7 +7,7 @@ namespace Drupal\oe_link_lists_rss_source\Plugin\LinkSource;
 use Drupal\aggregator\FeedInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
@@ -94,7 +94,7 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function preSave(EntityInterface $entity = NULL): void {
+  public function preSave(ContentEntityInterface $entity): void {
     parent::preSave($entity);
 
     // Never allow empty values as URL.

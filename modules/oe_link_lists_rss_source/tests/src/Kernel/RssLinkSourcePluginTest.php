@@ -192,9 +192,11 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   }
 
   /**
-   * Tests the plugin translation.
+   * Tests the plugin.
+   *
+   * @covers ::preSave
    */
-  public function testPluginTranslation(): void {
+  public function testPlugin(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
     $item_storage = $entity_type_manager->getStorage('aggregator_item');
@@ -234,13 +236,15 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $link_list->save();
 
     // Assert the aggregator feeds and items.
-    $this->assertCount(1, $feed_storage->loadMultiple());
+    $feeds = $feed_storage->loadMultiple();
+    $this->assertCount(1, $feeds);
+    /** @var \Drupal\aggregator\Entity\Feed $feed */
+    $feed = $feeds[1];
+    $this->assertEqual($feed->getUrl(), 'http://www.example.com/atom.xml');
     $this->assertCount(2, $item_storage->loadMultiple());
 
     // Test with adding translation.
     $link_list->addTranslation('fr', $link_list->toArray());
-    $this->assertTrue($link_list->hasTranslation('fr'));
-    $this->assertEquals('fr', $link_list->getTranslation('fr')->language()->getId());
 
     $configuration['source']['plugin_configuration']['url'] = 'http://ec.europa.eu/rss.xml';
     $translation = $link_list->getTranslation('fr');
@@ -257,15 +261,18 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $translation->save();
 
     // New aggregator items were added.
-    $this->assertCount(2, $feed_storage->loadMultiple());
+    $feeds = $feed_storage->loadMultiple();
+    $this->assertCount(2, $feeds);
+    $feed = $feeds[1];
+    $this->assertEqual($feed->getUrl(), 'http://www.example.com/atom.xml');
+    $feed = $feeds[2];
+    $this->assertEqual($feed->getUrl(), 'http://ec.europa.eu/rss.xml');
     $this->assertCount(4, $item_storage->loadMultiple());
 
     // Add translation with an existing rss source.
     $link_list->addTranslation('de', $link_list->toArray());
-    $this->assertTrue($link_list->hasTranslation('de'));
-    $this->assertEquals('de', $link_list->getTranslation('de')->language()->getId());
 
-    $translation = $link_list->getTranslation('fr');
+    $translation = $link_list->getTranslation('de');
     $translation->setConfiguration($configuration);
 
     $expected_source = [
@@ -281,91 +288,6 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     // No aggregator items were added.
     $this->assertCount(2, $feed_storage->loadMultiple());
     $this->assertCount(4, $item_storage->loadMultiple());
-  }
-
-  /**
-   * Tests the plugin submit handler.
-   *
-   * @covers ::submitConfigurationForm
-   * @covers ::preSave
-   */
-  public function testPluginSubmitConfiguration(): void {
-    $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
-    $entity_type_manager = $this->container->get('entity_type.manager');
-    $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
-    $item_storage = $entity_type_manager->getStorage('aggregator_item');
-
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
-    $plugin = $plugin_manager->createInstance('rss');
-    $this->assertEquals(['url' => ''], $plugin->getConfiguration());
-
-    // Try to submit the plugin with an empty URL.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', '');
-    $plugin->submitConfigurationForm($form, $form_state);
-    $plugin->preSave();
-
-    // Add a valid RSS feed.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/atom.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
-    $plugin->preSave();
-
-    // Verify the configuration of the plugin.
-    $this->assertEquals([
-      'url' => 'http://www.example.com/atom.xml',
-    ], $plugin->getConfiguration());
-
-    // One feed with two items should be imported.
-    $this->assertCount(1, $feed_storage->loadMultiple());
-    $this->assertCount(2, $item_storage->loadMultiple());
-    $feeds = $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']);
-    $this->assertCount(1, $feeds);
-
-    // Save the update time of the feed for later comparison.
-    $feed = reset($feeds);
-    $last_checked_time = $feed->getLastCheckedTime();
-
-    // Run a new instance of the plugin and refer to the same RSS feed.
-    $plugin = $plugin_manager->createInstance('rss');
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/atom.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
-    $plugin->preSave();
-
-    $feed_storage->resetCache();
-    $item_storage->resetCache();
-    // Still one feed and two items should be present.
-    $this->assertCount(1, $feed_storage->loadMultiple());
-    $this->assertCount(2, $item_storage->loadMultiple());
-    $feeds = $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']);
-    $this->assertCount(1, $feeds);
-    // The feed should have not been checked for updates.
-    $feed = reset($feeds);
-    $this->assertEquals($last_checked_time, $feed->getLastCheckedTime());
-
-    // Add a new feed.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/rss.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
-    $plugin->preSave();
-
-    // Verify the configuration of the plugin.
-    $this->assertEquals([
-      'url' => 'http://www.example.com/rss.xml',
-    ], $plugin->getConfiguration());
-
-    $feed_storage->resetCache();
-    $item_storage->resetCache();
-    // Two feeds are present now.
-    $this->assertCount(2, $feed_storage->loadMultiple());
-    $this->assertCount(9, $item_storage->loadMultiple());
-    $this->assertCount(1, $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']));
-    $this->assertCount(1, $feed_storage->loadByProperties(['url' => 'http://www.example.com/rss.xml']));
   }
 
   /**

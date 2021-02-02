@@ -7,7 +7,7 @@ namespace Drupal\oe_link_lists;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Base class for link_source plugins.
@@ -63,7 +63,7 @@ abstract class LinkSourcePluginBase extends PluginBase implements LinkSourceInte
   /**
    * {@inheritdoc}
    */
-  public function preSave(EntityInterface $entity = NULL): void {
+  public function preSave(ContentEntityInterface $entity): void {
     // Empty in many cases.
   }
 

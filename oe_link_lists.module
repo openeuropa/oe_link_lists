@@ -16,12 +16,6 @@ function oe_link_lists_link_list_presave(EntityInterface $entity) {
   /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
   $config = $entity->getConfiguration();
 
-  if (empty($config['source']) && $entity->bundle() === 'manual') {
-    $config['source'] = [
-      'plugin' => 'manual_links',
-      'plugin_configuration' => [],
-    ];
-  }
   if (isset($config['source']) && isset($config['source']['plugin_configuration'])) {
     /** @var \Drupal\oe_link_lists\LinkSourcePluginManager $plugin_manager */
     $source_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_source');
