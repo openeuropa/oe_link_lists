@@ -140,6 +140,9 @@ class LinkListTest extends EntityKernelTestBase {
     $link_list->setConfiguration($configuration);
     $link_list->save();
 
+    // Assert the display plugin preSave was called.
+    $this->assertEqual($link_list->getRevisionLogMessage(), 'Bar presave was called.');
+
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);

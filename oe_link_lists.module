@@ -30,3 +30,16 @@ function oe_link_lists_link_list_presave(EntityInterface $entity) {
     $plugin->preSave($entity);
   }
 }
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function oe_link_lists_module_implements_alter(&$implementations, $hook) {
+  if ($hook !== 'link_list_presave') {
+    return;
+  }
+  // Make oe_link_lists_link_list_presave run last.
+  $group = $implementations['oe_link_lists'];
+  unset($implementations['oe_link_lists']);
+  $implementations['oe_link_lists'] = $group;
+}

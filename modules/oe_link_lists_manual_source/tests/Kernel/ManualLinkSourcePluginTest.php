@@ -111,16 +111,6 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       ],
       'status' => 1,
     ]);
-
-    $configuration = [
-      'source' => [
-        'plugin' => 'manual_links',
-        'plugin_configuration' => [],
-      ],
-    ];
-
-    $list->setConfiguration($configuration);
-    $this->assertEquals($configuration, $list->getConfiguration());
     $list->save();
 
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
@@ -199,16 +189,6 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       ],
       'status' => 1,
     ]);
-
-    $configuration = [
-      'source' => [
-        'plugin' => 'manual_links',
-        'plugin_configuration' => [],
-      ],
-    ];
-
-    $list->setConfiguration($configuration);
-    $this->assertEquals($configuration, $list->getConfiguration());
     $list->save();
 
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
