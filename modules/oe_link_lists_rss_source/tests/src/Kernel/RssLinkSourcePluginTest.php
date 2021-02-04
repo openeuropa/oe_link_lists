@@ -241,9 +241,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     // Assert the aggregator feeds and items.
     $feeds = $feed_storage->loadMultiple();
     $this->assertCount(1, $feeds);
-    /** @var \Drupal\aggregator\Entity\Feed $feed */
-    $feed = $feeds[1];
-    $this->assertEqual($feed->getUrl(), 'http://www.example.com/atom.xml');
+    $this->assertEqual($feeds[1]->getUrl(), 'http://www.example.com/atom.xml');
     $this->assertCount(2, $item_storage->loadMultiple());
 
     // Test with adding translation.
@@ -266,10 +264,8 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     // New aggregator items were added.
     $feeds = $feed_storage->loadMultiple();
     $this->assertCount(2, $feeds);
-    $feed = $feeds[1];
-    $this->assertEqual($feed->getUrl(), 'http://www.example.com/atom.xml');
-    $feed = $feeds[2];
-    $this->assertEqual($feed->getUrl(), 'http://ec.europa.eu/rss.xml');
+    $this->assertEqual($feeds[1]->getUrl(), 'http://www.example.com/atom.xml');
+    $this->assertEqual($feeds[2]->getUrl(), 'http://ec.europa.eu/rss.xml');
     $this->assertCount(4, $item_storage->loadMultiple());
 
     // Add translation with an existing rss source.
