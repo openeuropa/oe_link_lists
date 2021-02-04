@@ -129,6 +129,8 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       return;
     }
 
+    // Set the referenced link list links onto the plugin configuration and
+    // update each link with their parent (link list) entity.
     $ids = [];
     foreach ($entity->get('links')->getValue() as $value) {
       $ids[$value['target_revision_id']] = [

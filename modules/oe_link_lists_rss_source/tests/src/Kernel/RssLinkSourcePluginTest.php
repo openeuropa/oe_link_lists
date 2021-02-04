@@ -192,11 +192,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   }
 
   /**
-   * Tests the plugin.
+   * Tests the plugin configuration.
+   *
+   * Tests that the RSS plugin configuration generates the necessary
+   * aggregator feeds and items.
    *
    * @covers ::preSave
    */
-  public function testPlugin(): void {
+  public function testPluginConfiguration(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
     $item_storage = $entity_type_manager->getStorage('aggregator_item');
@@ -216,7 +219,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $link_list_storage->create($values);
 
-    // Create a standard link list configuration array.
+    // Configure the link list.
     $configuration = [
       'source' => [
         'plugin' => 'rss',
