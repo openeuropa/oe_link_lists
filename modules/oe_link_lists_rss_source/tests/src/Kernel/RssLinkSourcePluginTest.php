@@ -13,6 +13,7 @@ use Drupal\Core\Form\SubformState;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -30,10 +31,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'user',
     'aggregator',
     'options',
     'system',
+    'language',
+    'content_translation',
     'oe_link_lists',
+    'oe_link_lists_test',
     'oe_link_lists_rss_source',
   ];
 
@@ -90,6 +95,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   protected function setUp() {
     parent::setUp();
 
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('link_list');
+    $this->installConfig([
+      'oe_link_lists',
+      'system',
+      'language',
+      'content_translation',
+    ]);
     $this->installConfig('aggregator');
     $this->installEntitySchema('aggregator_feed');
     $this->installEntitySchema('aggregator_item');
@@ -132,6 +145,10 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
       ->willReturn($http_client_mock);
 
     $this->container->set('http_client_factory', $http_client_factory_mock);
+
+    ConfigurableLanguage::createFromLangcode('fr')->save();
+    ConfigurableLanguage::createFromLangcode('de')->save();
+    \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
   }
 
   /**
@@ -175,83 +192,101 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   }
 
   /**
-   * Tests the plugin submit handler.
+   * Tests the plugin configuration.
    *
-   * @covers ::submitConfigurationForm
+   * Tests that the RSS plugin configuration generates the necessary
+   * aggregator feeds and items.
+   *
+   * @covers ::preSave
    */
-  public function testPluginSubmitConfiguration(): void {
-    $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
+  public function testPluginConfiguration(): void {
     $entity_type_manager = $this->container->get('entity_type.manager');
     $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
     $item_storage = $entity_type_manager->getStorage('aggregator_item');
 
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
-    $plugin = $plugin_manager->createInstance('rss');
-    $this->assertEquals(['url' => ''], $plugin->getConfiguration());
+    // Confirm there are no aggregates before creating the plugin.
+    $this->assertCount(0, $feed_storage->loadMultiple());
+    $this->assertCount(0, $item_storage->loadMultiple());
 
-    // Try to submit the plugin with an empty URL.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', '');
-    $plugin->submitConfigurationForm($form, $form_state);
+    // Create a link list.
+    $link_list_storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    $values = [
+      'bundle' => 'dynamic',
+      'title' => 'My link list',
+      'administrative_title' => 'Link list 1',
+    ];
 
-    // Add a valid RSS feed.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/atom.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->create($values);
 
-    // Verify the configuration of the plugin.
-    $this->assertEquals([
-      'url' => 'http://www.example.com/atom.xml',
-    ], $plugin->getConfiguration());
+    // Configure the link list.
+    $configuration = [
+      'source' => [
+        'plugin' => 'rss',
+        'plugin_configuration' => [
+          'url' => 'http://www.example.com/atom.xml',
+        ],
+      ],
+      'display' => [
+        'plugin' => 'bar',
+        'plugin_configuration' => ['link' => FALSE],
+      ],
+    ];
 
-    // One feed with two items should be imported.
-    $this->assertCount(1, $feed_storage->loadMultiple());
-    $this->assertCount(2, $item_storage->loadMultiple());
-    $feeds = $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']);
+    $link_list->setConfiguration($configuration);
+    $this->assertEquals($configuration, $link_list->getConfiguration());
+
+    $link_list->save();
+
+    // Assert the aggregator feeds and items.
+    $feeds = $feed_storage->loadMultiple();
     $this->assertCount(1, $feeds);
-
-    // Save the update time of the feed for later comparison.
-    $feed = reset($feeds);
-    $last_checked_time = $feed->getLastCheckedTime();
-
-    // Run a new instance of the plugin and refer to the same RSS feed.
-    $plugin = $plugin_manager->createInstance('rss');
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/atom.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
-
-    $feed_storage->resetCache();
-    $item_storage->resetCache();
-    // Still one feed and two items should be present.
-    $this->assertCount(1, $feed_storage->loadMultiple());
+    $this->assertEqual($feeds[1]->getUrl(), 'http://www.example.com/atom.xml');
     $this->assertCount(2, $item_storage->loadMultiple());
-    $feeds = $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']);
-    $this->assertCount(1, $feeds);
-    // The feed should have not been checked for updates.
-    $feed = reset($feeds);
-    $this->assertEquals($last_checked_time, $feed->getLastCheckedTime());
 
-    // Add a new feed.
-    $form = [];
-    $form_state = new FormState();
-    $form_state->setValue('url', 'http://www.example.com/rss.xml');
-    $plugin->submitConfigurationForm($form, $form_state);
+    // Test with adding translation.
+    $link_list->addTranslation('fr', $link_list->toArray());
 
-    // Verify the configuration of the plugin.
-    $this->assertEquals([
-      'url' => 'http://www.example.com/rss.xml',
-    ], $plugin->getConfiguration());
+    $configuration['source']['plugin_configuration']['url'] = 'http://ec.europa.eu/rss.xml';
+    $translation = $link_list->getTranslation('fr');
+    $translation->setConfiguration($configuration);
 
-    $feed_storage->resetCache();
-    $item_storage->resetCache();
-    // Two feeds are present now.
+    $expected_source = [
+      'plugin' => 'rss',
+      'plugin_configuration' => [
+        'url' => 'http://ec.europa.eu/rss.xml',
+      ],
+    ];
+    $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
+
+    $translation->save();
+
+    // New aggregator items were added.
+    $feeds = $feed_storage->loadMultiple();
+    $this->assertCount(2, $feeds);
+    $this->assertEqual($feeds[1]->getUrl(), 'http://www.example.com/atom.xml');
+    $this->assertEqual($feeds[2]->getUrl(), 'http://ec.europa.eu/rss.xml');
+    $this->assertCount(4, $item_storage->loadMultiple());
+
+    // Add translation with an existing rss source.
+    $link_list->addTranslation('de', $link_list->toArray());
+
+    $translation = $link_list->getTranslation('de');
+    $translation->setConfiguration($configuration);
+
+    $expected_source = [
+      'plugin' => 'rss',
+      'plugin_configuration' => [
+        'url' => 'http://ec.europa.eu/rss.xml',
+      ],
+    ];
+    $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
+
+    $translation->save();
+
+    // No aggregator items were added.
     $this->assertCount(2, $feed_storage->loadMultiple());
-    $this->assertCount(9, $item_storage->loadMultiple());
-    $this->assertCount(1, $feed_storage->loadByProperties(['url' => 'http://www.example.com/atom.xml']));
-    $this->assertCount(1, $feed_storage->loadByProperties(['url' => 'http://www.example.com/rss.xml']));
+    $this->assertCount(4, $item_storage->loadMultiple());
   }
 
   /**

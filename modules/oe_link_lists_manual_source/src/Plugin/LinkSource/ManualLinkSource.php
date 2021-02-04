@@ -16,6 +16,7 @@ use Drupal\oe_link_lists_manual_source\Event\ManualLinkResolverEvent;
 use Drupal\oe_link_lists_manual_source\Event\ManualLinksResolverEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Link source plugin that allows to enter links manually.
@@ -114,7 +115,39 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     // Nothing to do here as we copy the referenced link IDs to the plugin
-    // configuration inside oe_link_lists_manual_link_list_presave().
+    // configuration inside preSave().
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(ContentEntityInterface $entity): void {
+    parent::preSave($entity);
+
+    if ($entity->get('links')->isEmpty()) {
+      // If there are no referenced links we don't have to do anything.
+      return;
+    }
+
+    // Set the referenced link list links onto the plugin configuration and
+    // update each link with their parent (link list) entity.
+    $ids = [];
+    foreach ($entity->get('links')->getValue() as $value) {
+      $ids[$value['target_revision_id']] = [
+        'entity_id' => $value['target_id'],
+        'entity_revision_id' => $value['target_revision_id'],
+      ];
+
+      // @todo move this to IEF directly where the entity is being built.
+      $link = $this->entityTypeManager->getStorage('link_list_link')->load($value['target_id']);
+      $link->setParentEntity($entity, 'links');
+      $link->save();
+    }
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
+    $configuration = $entity->getConfiguration();
+    $configuration['source']['plugin_configuration']['links'] = $ids;
+    $entity->setConfiguration($configuration);
   }
 
   /**

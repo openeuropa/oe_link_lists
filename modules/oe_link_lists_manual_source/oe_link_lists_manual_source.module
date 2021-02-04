@@ -13,6 +13,23 @@ use Drupal\oe_link_lists_manual_source\Entity\LinkListLink;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function oe_link_lists_manual_source_module_implements_alter(&$implementations, $hook) {
+  if ($hook !== 'link_list_presave') {
+    return;
+  }
+
+  // We need to make sure that this module's presave implementation goes first
+  // so that we can can initialize the manual source plugin and configuration.
+  $group = $implementations['oe_link_lists_manual_source'];
+  unset($implementations['oe_link_lists_manual_source']);
+  $implementations = [
+    'oe_link_lists_manual_source' => $group,
+  ] + $implementations;
+}
+
+/**
  * Implements hook_entity_type_build().
  */
 function oe_link_lists_manual_source_entity_type_build(array &$entity_types) {
@@ -24,43 +41,18 @@ function oe_link_lists_manual_source_entity_type_build(array &$entity_types) {
 
 /**
  * Implements hook_ENTITY_TYPE_presave() for the link list entity type.
- *
- * For link lists that use the ManualLinkSource plugin we need to copy the links
- * from the reference field into the plugin configuration. This needs to happen
- * at this stage to ensure new referenced links have been created.
  */
 function oe_link_lists_manual_source_link_list_presave(EntityInterface $entity) {
   /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
-  $configuration = $entity->getConfiguration();
-
   if ($entity->bundle() !== 'manual') {
     return;
   }
 
+  $configuration = $entity->getConfiguration();
   $configuration['source'] = [
     'plugin' => 'manual_links',
     'plugin_configuration' => [],
   ];
-
-  if ($entity->get('links')->isEmpty()) {
-    // If there are no referenced links we don't have to do anything.
-    $entity->setConfiguration($configuration);
-    return;
-  }
-
-  $ids = [];
-  foreach ($entity->get('links')->getValue() as $value) {
-    $ids[$value['target_revision_id']] = [
-      'entity_id' => $value['target_id'],
-      'entity_revision_id' => $value['target_revision_id'],
-    ];
-
-    // @todo move this to IEF directly where the entity is being built.
-    $link = LinkListLink::load($value['target_id']);
-    $link->setParentEntity($entity, 'links');
-    $link->save();
-  }
-  $configuration['source']['plugin_configuration']['links'] = $ids;
   $entity->setConfiguration($configuration);
 }
 

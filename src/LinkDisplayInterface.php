@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
@@ -30,5 +31,13 @@ interface LinkDisplayInterface extends PluginFormInterface, ConfigurableInterfac
    *   The render array.
    */
   public function build(LinkCollectionInterface $links): array;
+
+  /**
+   * Called when parent entity's presave hook is invoked.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The parent entity.
+   */
+  public function preSave(ContentEntityInterface $entity): void;
 
 }

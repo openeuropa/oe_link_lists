@@ -6,6 +6,7 @@ namespace Drupal\oe_link_lists;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
@@ -79,6 +80,13 @@ abstract class LinkDisplayPluginBase extends PluginBase implements LinkDisplayIn
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // Empty in many cases.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(ContentEntityInterface $entity): void {
     // Empty in many cases.
   }
 
