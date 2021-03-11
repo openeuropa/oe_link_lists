@@ -1,24 +1,31 @@
 # Change Log
 
-## [0.9.0](https://github.com/openeuropa/oe_link_lists/tree/0.9.0) (2021-01-22)
+## [0.10.0](https://github.com/openeuropa/oe_link_lists/tree/0.10.0) (2021-03-11)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.9.0...0.10.0)
+
+**Merged pull requests:**
+
+- EWPP-646: Implement preSave\(\). [\#78](https://github.com/openeuropa/oe_link_lists/pull/78) ([drishu](https://github.com/drishu))
+
+## [0.9.0](https://github.com/openeuropa/oe_link_lists/tree/0.9.0) (2021-01-25)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.8.0...0.9.0)
 
 **Merged pull requests:**
 
+- EWPP-0000: Update changelog for release 0.9.0. [\#77](https://github.com/openeuropa/oe_link_lists/pull/77) ([22Alexandra](https://github.com/22Alexandra))
 - EWPP-529: Replace scaffold library. [\#76](https://github.com/openeuropa/oe_link_lists/pull/76) ([sergepavle](https://github.com/sergepavle))
 - EWPP-491: Fixing link source Ajax form. [\#71](https://github.com/openeuropa/oe_link_lists/pull/71) ([upchuk](https://github.com/upchuk))
 
 ## [0.8.0](https://github.com/openeuropa/oe_link_lists/tree/0.8.0) (2020-12-11)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.7.0...0.8.0)
 
 **Merged pull requests:**
 
+- Release-0.8.0: Update changelog. [\#74](https://github.com/openeuropa/oe_link_lists/pull/74) ([nagyad](https://github.com/nagyad))
 - EWPP-405: Add IEF reference removal policy config to manual links. [\#73](https://github.com/openeuropa/oe_link_lists/pull/73) ([nagyad](https://github.com/nagyad))
 - EWPP-516: Update docker images. [\#72](https://github.com/openeuropa/oe_link_lists/pull/72) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.7.0](https://github.com/openeuropa/oe_link_lists/tree/0.7.0) (2020-08-06)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.6.0...0.7.0)
 
 **Merged pull requests:**
@@ -30,7 +37,6 @@
 - OPENEUROPA-3315: Update internal bundle label to Internal content. [\#66](https://github.com/openeuropa/oe_link_lists/pull/66) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.6.0](https://github.com/openeuropa/oe_link_lists/tree/0.6.0) (2020-06-22)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.5.0...0.6.0)
 
 **Merged pull requests:**
@@ -41,7 +47,6 @@
 - OPENEUROPA-0000: Opening to other manual link bundles. [\#53](https://github.com/openeuropa/oe_link_lists/pull/53) ([upchuk](https://github.com/upchuk))
 
 ## [0.5.0](https://github.com/openeuropa/oe_link_lists/tree/0.5.0) (2020-04-08)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.1...0.5.0)
 
 **Merged pull requests:**
@@ -54,7 +59,6 @@
 - OPENEUROPA-2732: Add render cache keys and test. [\#46](https://github.com/openeuropa/oe_link_lists/pull/46) ([imanoleguskiza](https://github.com/imanoleguskiza))
 
 ## [0.4.1](https://github.com/openeuropa/oe_link_lists/tree/0.4.1) (2020-03-04)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.0...0.4.1)
 
 **Merged pull requests:**
@@ -63,7 +67,6 @@
 - OPENEUROPA-2759: Display plugin non-translatable fix. [\#55](https://github.com/openeuropa/oe_link_lists/pull/55) ([upchuk](https://github.com/upchuk))
 
 ## [0.4.0](https://github.com/openeuropa/oe_link_lists/tree/0.4.0) (2020-03-03)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.3.0...0.4.0)
 
 **Merged pull requests:**
@@ -77,7 +80,6 @@
 - OPENEUROPA-2710: CRUD Permissions. [\#45](https://github.com/openeuropa/oe_link_lists/pull/45) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.3.0](https://github.com/openeuropa/oe_link_lists/tree/0.3.0) (2020-02-05)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.2.0...0.3.0)
 
 **Merged pull requests:**
@@ -91,7 +93,6 @@
 - OPENEUROPA- 2578 - Link list translatability [\#36](https://github.com/openeuropa/oe_link_lists/pull/36) ([upchuk](https://github.com/upchuk))
 
 ## [0.2.0](https://github.com/openeuropa/oe_link_lists/tree/0.2.0) (2019-12-16)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.1.0...0.2.0)
 
 **Merged pull requests:**
@@ -102,9 +103,6 @@
 - OPENEUROPA-2512: Make sure the manual links source respects the limit parameter. [\#34](https://github.com/openeuropa/oe_link_lists/pull/34) ([imanoleguskiza](https://github.com/imanoleguskiza))
 
 ## [0.1.0](https://github.com/openeuropa/oe_link_lists/tree/0.1.0) (2019-12-02)
-
-[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/da88046d74e26f5d94016ebb022a38e889edbad4...0.1.0)
-
 **Merged pull requests:**
 
 - Update CHANGELOG.md for release 0.1.0. [\#33](https://github.com/openeuropa/oe_link_lists/pull/33) ([ademarco](https://github.com/ademarco))
