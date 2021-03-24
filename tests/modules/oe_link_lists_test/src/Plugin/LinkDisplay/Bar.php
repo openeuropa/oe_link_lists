@@ -15,6 +15,7 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  *   id = "bar",
  *   label = @Translation("Bar"),
  *   description = @Translation("Bar description."),
+ *   bundles = { "dynamic", "manual" }
  * )
  */
 class Bar extends LinkDisplayPluginBase {

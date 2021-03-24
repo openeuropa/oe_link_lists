@@ -18,7 +18,8 @@ use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
  * @LinkSource(
  *   id = "complex_form",
  *   label = @Translation("Complex Form Source"),
- *   description = @Translation("Complex Form Source description.")
+ *   description = @Translation("Complex Form Source description."),
+ *   bundles = { "dynamic" }
  * )
  */
 class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLinkListPluginInterface {

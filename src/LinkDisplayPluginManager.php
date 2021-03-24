@@ -38,4 +38,30 @@ class LinkDisplayPluginManager extends DefaultPluginManager implements LinkDispl
     $this->setCacheBackend($cache_backend, 'link_display_plugins');
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginsAsOptions(string $bundle = NULL, string $link_source = NULL): array {
+    $options = $this->getPluginsAsOptionsByBundle($bundle);
+
+    $definitions = $this->getDefinitions();
+
+    foreach ($options as $plugin_id => $label) {
+      if ($link_source && isset($definitions[$plugin_id]['link_sources']) && !empty($definitions[$plugin_id]['link_sources']) && !in_array($link_source, $definitions[$plugin_id]['link_sources'])) {
+        // If we have a link source to filter by, remove the ones that don't
+        // match.
+        unset($options[$plugin_id]);
+        continue;
+      }
+
+      if (!$link_source && isset($definitions[$plugin_id]['link_sources']) && !empty($definitions[$plugin_id]['link_sources'])) {
+        // If we don't have a link source specified, remove all the ones that
+        // are restricted to a given link source.
+        unset($options[$plugin_id]);
+      }
+    }
+
+    return $options;
+  }
+
 }

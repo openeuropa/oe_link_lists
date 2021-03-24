@@ -10,6 +10,12 @@ oe_link_lists.link_list_type.*:
       label: 'Label'
     uuid:
       type: string
+    configurable_link_source_plugins:
+      type: boolean
+      label: 'Whether this bundle should allow to select link source plugins'
+    auto_link_source:
+      type: string
+      label: 'Whether this bundle works with only one link source, automatically configured on it'
 
 field.value.link_list_configuration:
   type: mapping

@@ -12,6 +12,7 @@ use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
  *   id = "translatable_form",
  *   label = @Translation("Translatable form display"),
  *   description = @Translation("Translatable form display description."),
+ *   bundles = { "dynamic", "manual" }
  * )
  */
 class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginInterface {

@@ -8,6 +8,9 @@
 declare(strict_types = 1);
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\oe_link_lists\Entity\LinkListInterface;
+use Drupal\oe_link_lists\Entity\LinkListType;
 
 /**
  * Implements hook_ENTITY_TYPE_presave().
@@ -15,6 +18,20 @@ use Drupal\Core\Entity\EntityInterface;
 function oe_link_lists_link_list_presave(EntityInterface $entity) {
   /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
   $config = $entity->getConfiguration();
+
+  // If the link list type works automatically with a given link source plugin,
+  // configure it if it's missing.
+  if (!isset($config['source'])) {
+    $bundle = LinkListType::load($entity->bundle());
+    $auto_plugin = $bundle->getAutomaticLinkSource();
+    if ($auto_plugin) {
+      $config['source'] = [
+        'plugin' => $auto_plugin,
+        'plugin_configuration' => [],
+      ];
+      $entity->setConfiguration($config);
+    }
+  }
 
   if (isset($config['source']) && isset($config['source']['plugin_configuration'])) {
     /** @var \Drupal\oe_link_lists\LinkSourcePluginManager $source_plugin_manager */
@@ -28,5 +45,55 @@ function oe_link_lists_link_list_presave(EntityInterface $entity) {
     $display_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_display');
     $plugin = $display_plugin_manager->createInstance($config['display']['plugin'], $config['display']['plugin_configuration']);
     $plugin->preSave($entity);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter for the link list form.
+ *
+ * We set an #entity_builder onto the form so that when it gets validated or
+ * submitted, the link source plugin gets automatically set onto the link list.
+ *
+ * @todo ensure this works also if embedded in IEF.
+ */
+function oe_link_lists_form_link_list_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+  if (!$link_list instanceof LinkListInterface) {
+    return;
+  }
+
+  $bundle = LinkListType::load($link_list->bundle());
+  $auto_plugin = $bundle->getAutomaticLinkSource();
+  if (!$auto_plugin) {
+    return;
+  }
+
+  $form_state->set('oe_link_lists_auto_plugin', $auto_plugin);
+  $form['#entity_builders'][] = 'oe_link_lists_entity_builder';
+}
+
+/**
+ * Entity builder for the link list entity.
+ *
+ * This is called to auto-set the link source plugin on given bundles.
+ *
+ * @param string $entity_type_id
+ *   The entity type identifier.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity updated with the submitted values.
+ * @param array $form
+ *   The complete form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ */
+function oe_link_lists_entity_builder($entity_type_id, EntityInterface $entity, array $form, FormStateInterface $form_state) {
+  $configuration = $entity->getConfiguration();
+  if (!isset($configuration['source'])) {
+    $auto_plugin = $form_state->get('oe_link_lists_auto_plugin');
+    $configuration['source'] = [
+      'plugin' => $auto_plugin,
+      'plugin_configuration' => [],
+    ];
+    $entity->setConfiguration($configuration);
   }
 }

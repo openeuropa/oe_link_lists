@@ -10,13 +10,13 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  * Plugin implementation of the link_display.
  *
  * @LinkDisplay(
- *   id = "foo",
- *   label = @Translation("Foo"),
- *   description = @Translation("Foo description."),
- *   bundles = { "dynamic", "manual" }
+ *   id = "display_on_foo",
+ *   label = @Translation("Display on foo"),
+ *   description = @Translation("Display plugin only available on the Foo bundle."),
+ *   bundles = { "foo" }
  * )
  */
-class Foo extends LinkDisplayPluginBase {
+class DisplayOnFoo extends LinkDisplayPluginBase {
 
   /**
    * {@inheritdoc}

@@ -16,7 +16,8 @@ use Drupal\oe_link_lists\Plugin\ExternalLinkSourcePluginBase;
  * @LinkSource(
  *   id = "bar",
  *   label = @Translation("Bar"),
- *   description = @Translation("Bar description.")
+ *   description = @Translation("Bar description."),
+ *   bundles = { "dynamic" }
  * )
  */
 class Bar extends ExternalLinkSourcePluginBase {

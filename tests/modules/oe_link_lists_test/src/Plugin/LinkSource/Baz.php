@@ -17,7 +17,8 @@ use Drupal\oe_link_lists\LinkSourcePluginBase;
  * @LinkSource(
  *   id = "baz",
  *   label = @Translation("Baz"),
- *   description = @Translation("Baz description.")
+ *   description = @Translation("Baz description."),
+ *   bundles = { "dynamic" }
  * )
  */
 class Baz extends LinkSourcePluginBase {

@@ -10,9 +10,17 @@ namespace Drupal\oe_link_lists;
 trait LinkListPluginManagerTrait {
 
   /**
-   * {@inheritdoc}
+   * Returns a list of plugins to be used as form options.
+   *
+   * It uses plugin id as key and plugin label as value.
+   *
+   * @param string $bundle
+   *   The bundle to retrieve the plugins for.
+   *
+   * @return array
+   *   The options.
    */
-  public function getPluginsAsOptions(): array {
+  protected function getPluginsAsOptionsByBundle(string $bundle = NULL): array {
     $definitions = $this->getDefinitions();
     $options = [];
     foreach ($definitions as $name => $definition) {
@@ -20,7 +28,23 @@ trait LinkListPluginManagerTrait {
       if ($internal) {
         continue;
       }
-      $options[$name] = $definition['label'];
+
+      if (!$bundle) {
+        // If no bundle is passed, it means we can return them all.
+        $options[$name] = $definition['label'];
+        continue;
+      }
+
+      if (!isset($definition['bundles']) || empty($definition['bundles'])) {
+        // If the plugin has no restriction, we include it.
+        $options[$name] = $definition['label'];
+        continue;
+      }
+
+      $definition_bundles = $definition['bundles'];
+      if (in_array($bundle, $definition_bundles)) {
+        $options[$name] = $definition['label'];
+      }
     }
 
     return $options;

@@ -38,4 +38,11 @@ class LinkSourcePluginManager extends DefaultPluginManager implements LinkSource
     $this->setCacheBackend($cache_backend, 'link_source_plugins');
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginsAsOptions(string $bundle = NULL): array {
+    return $this->getPluginsAsOptionsByBundle($bundle);
+  }
+
 }

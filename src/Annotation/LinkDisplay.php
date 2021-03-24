@@ -46,4 +46,24 @@ class LinkDisplay extends Plugin {
    */
   public $internal = FALSE;
 
+  /**
+   * The link list bundles this plugin should work with.
+   *
+   * This attribute is optional and if left empty, it means the plugin will be
+   * considered for all bundles.
+   *
+   * @var array
+   */
+  public $bundles = [];
+
+  /**
+   * The link source plugins this display should work with.
+   *
+   * This attribute is optional and if left empty, it means the plugin will be
+   * considered for all link sources.
+   *
+   * @var array
+   */
+  public $link_sources = [];
+
 }

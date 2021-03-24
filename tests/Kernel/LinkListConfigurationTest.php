@@ -194,6 +194,60 @@ class LinkListConfigurationTest extends KernelTestBase {
   }
 
   /**
+   * Tests that a link list configuration has both plugin types configured.
+   */
+  public function testLinkListConfigurationConstraint(): void {
+    $link_list_storage = \Drupal::entityTypeManager()->getStorage('link_list');
+    $values = [
+      'bundle' => 'dynamic',
+      'title' => 'My link list',
+      'administrative_title' => 'Link list 1',
+    ];
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->create($values);
+
+    $configuration = [
+      'source' => [],
+      'display' => [
+        'plugin' => 'bar',
+        'plugin_configuration' => [
+          'link' => FALSE,
+        ],
+      ],
+    ];
+
+    $link_list->setConfiguration($configuration);
+    $violations = $link_list->validate();
+    $this->assertEquals(1, $violations->count());
+    $violation = $violations->get(0);
+    $this->assertEquals('There is no link source selected', $violation->getMessage());
+
+    $configuration = [
+      'source' => [
+        'plugin' => 'foo',
+        'plugin_configuration' => [
+          'url' => 'http://google.com',
+        ],
+      ],
+      'display' => [],
+    ];
+
+    $link_list->setConfiguration($configuration);
+    $violations = $link_list->validate();
+    $this->assertEquals(1, $violations->count());
+    $violation = $violations->get(0);
+    $this->assertEquals('There is no link display selected', $violation->getMessage());
+
+    $configuration = [
+      'source' => [],
+      'display' => [],
+    ];
+    $link_list->setConfiguration($configuration);
+    $violations = $link_list->validate();
+    $this->assertEquals(2, $violations->count());
+  }
+
+  /**
    * Translates an array of link list configuration.
    *
    * Runs through each value recursively and appends the "FR" string.

@@ -4,3 +4,6 @@ package: Testing
 
 type: module
 core: 8.x
+
+dependencies:
+  - oe_link_lists:oe_link_lists

@@ -15,6 +15,7 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  *   id = "title",
  *   label = @Translation("Title"),
  *   description = @Translation("Simple title link list."),
+ *   bundles = { "dynamic", "manual" }
  * )
  */
 class Title extends LinkDisplayPluginBase {

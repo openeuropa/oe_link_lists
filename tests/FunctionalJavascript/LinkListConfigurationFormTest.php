@@ -9,6 +9,7 @@ use Drupal\Core\Http\ClientFactory;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\Tests\oe_link_lists\Traits\NativeBrowserValidationTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -19,11 +20,12 @@ use Psr\Http\Message\RequestInterface;
  *
  * @group oe_link_lists
  */
-class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
+class LinkListConfigurationFormTest extends WebDriverTestBase {
 
   use ContentTypeCreationTrait;
   use NodeCreationTrait;
   use NativeBrowserValidationTrait;
+  use LinkListTestTrait;
 
   /**
    * The link storage.
@@ -92,6 +94,8 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     $web_user = $this->drupalCreateUser([
       'create dynamic link list',
       'edit dynamic link list',
+      'create foo link list',
+      'edit foo link list',
       'view link list',
       'access link list canonical page',
     ]);
@@ -104,22 +108,80 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
   public function testLinkListDisplayConfiguration(): void {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
 
+    $this->drupalGet('link_list/add/foo');
+    // Assert we can only see the source plugins that work with the Foo
+    // bundle.
+    $this->assertFieldSelectOptions('Link source', [
+      'display_for_foo',
+    ]);
+
+    // Assert we can only see the display plugins that work with the Foo
+    // bundle.
+    $this->assertFieldSelectOptions('Link display', [
+      'display_on_foo',
+    ]);
+
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
     $this->getSession()->getPage()->fillField('Title', 'The title');
     $this->assertSession()->selectExists('Link source');
 
+    // Assert we can only see the source plugins that work with the Dynamic
+    // bundle.
+    $this->assertFieldSelectOptions('Link source', [
+      'rss',
+      'complex_form',
+      'baz',
+      'qux',
+      'foo',
+      'bar',
+    ]);
+
+    // Assert we can only see the display plugins that work with the Dynamic
+    // bundle.
+    $this->assertFieldSelectOptions('Link display', [
+      'title',
+      'baz',
+      'foo',
+      'bar',
+      'translatable_form',
+    ]);
+
+    // Pick a source plugin that will allow another display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Foo');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertFieldSelectOptions('Link display', [
+      'title',
+      'baz',
+      'foo',
+      'display_for_foo',
+      'bar',
+      'translatable_form',
+    ]);
+
+    // Select the display plugin that has been just made available.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Display for Foo');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Change to another source plugin to test the available display plugins
+    // reflect this.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'RSS');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEmpty($this->getSession()->getPage()->findField('Link display')->find('css', "option[selected=selected]"));
+    $this->assertFieldSelectOptions('Link display', [
+      'title',
+      'baz',
+      'foo',
+      'bar',
+      'translatable_form',
+    ]);
+    $this->assertSession()->fieldExists('The resource URL');
+    $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
+
     // Select and configure the display plugin.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
-
-    // Select and configure the source plugin. We use the RSS plugin for this
-    // test.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'RSS');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->fieldExists('The resource URL');
-    $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
 
     // Save the link list.
     $this->getSession()->getPage()->pressButton('Save');

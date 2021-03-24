@@ -33,7 +33,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @LinkSource(
  *   id = "internal",
  *   label = @Translation("Internal"),
- *   description = @Translation("Source plugin that links to internal entities.")
+ *   description = @Translation("Source plugin that links to internal entities."),
+ *   bundles = { "dynamic" }
  * )
  */
 class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactoryPluginInterface {

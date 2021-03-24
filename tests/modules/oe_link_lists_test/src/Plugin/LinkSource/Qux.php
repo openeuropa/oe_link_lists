@@ -18,7 +18,8 @@ use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
  * @LinkSource(
  *   id = "qux",
  *   label = @Translation("Qux"),
- *   description = @Translation("Qux description.")
+ *   description = @Translation("Qux description."),
+ *   bundles = { "dynamic" }
  * )
  */
 class Qux extends LinkSourcePluginBase implements TranslatableLinkListPluginInterface {

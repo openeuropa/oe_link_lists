@@ -50,6 +50,9 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->fillField('Title', 'Test list');
     $this->getSession()->getPage()->fillField('Administrative title', 'List 1');
 
+    // Assert we don't see a Link source selector.
+    $this->assertSession()->fieldNotExists('Link Source');
+
     // Select and configure the display plugin.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
     $this->assertSession()->assertWaitOnAjaxRequest();
