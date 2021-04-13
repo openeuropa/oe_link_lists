@@ -12,7 +12,7 @@ use Drupal\oe_link_lists\Plugin\ExternalLinkSourcePluginBase;
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "display_for_foo",
+ *   id = "source_on_foo",
  *   label = @Translation("Source on Foo"),
  *   description = @Translation("Link source available only on Foo bundle"),
  *   bundles = { "foo" }

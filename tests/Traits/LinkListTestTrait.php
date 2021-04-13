@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Drupal\Tests\oe_link_lists\Traits;
 
-use Behat\Mink\Element\NodeElement;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 
 /**
@@ -36,34 +35,6 @@ trait LinkListTestTrait {
     }
 
     return reset($entities);
-  }
-
-  /**
-   * Checks if a select element contains the specified options.
-   *
-   * @param string $name
-   *   The field name.
-   * @param array $expected_options
-   *   An array of expected options.
-   */
-  protected function assertFieldSelectOptions(string $name, array $expected_options): void {
-    $select = $this->getSession()->getPage()->find('named', [
-      'select',
-      $name,
-    ]);
-
-    if (!$select) {
-      $this->fail('Unable to find select ' . $name);
-    }
-
-    $options = $select->findAll('css', 'option');
-    array_walk($options, function (NodeElement &$option) {
-      $option = $option->getValue();
-    });
-    $options = array_filter($options);
-    sort($options);
-    sort($expected_options);
-    $this->assertIdentical($options, $expected_options);
   }
 
 }

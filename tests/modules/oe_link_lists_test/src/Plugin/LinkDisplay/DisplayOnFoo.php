@@ -4,7 +4,6 @@ namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
 use Drupal\Core\Link;
 use Drupal\oe_link_lists\LinkCollectionInterface;
-use Drupal\oe_link_lists\LinkDisplayPluginBase;
 
 /**
  * Plugin implementation of the link_display.
@@ -16,7 +15,7 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  *   bundles = { "foo" }
  * )
  */
-class DisplayOnFoo extends LinkDisplayPluginBase {
+class DisplayOnFoo extends GenericDisplayBase {
 
   /**
    * {@inheritdoc}

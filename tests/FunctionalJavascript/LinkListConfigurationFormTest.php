@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Drupal\Tests\oe_link_lists\FunctionalJavascript;
 
+use Behat\Mink\Element\NodeElement;
 use Drupal\aggregator\FeedStorageInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
@@ -112,7 +113,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Assert we can only see the source plugins that work with the Foo
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
-      'display_for_foo',
+      'source_on_foo',
     ]);
 
     // Assert we can only see the display plugins that work with the Foo
@@ -363,6 +364,34 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // The default button label is shown.
     $this->assertSession()->linkExists($node->label());
     $this->assertSession()->linkByHrefExists($node->toUrl()->toString());
+  }
+
+  /**
+   * Checks if a select element contains the specified options.
+   *
+   * @param string $name
+   *   The field name.
+   * @param array $expected_options
+   *   An array of expected options.
+   */
+  protected function assertFieldSelectOptions(string $name, array $expected_options): void {
+    $select = $this->getSession()->getPage()->find('named', [
+      'select',
+      $name,
+    ]);
+
+    if (!$select) {
+      $this->fail('Unable to find select ' . $name);
+    }
+
+    $options = $select->findAll('css', 'option');
+    array_walk($options, function (NodeElement &$option) {
+      $option = $option->getValue();
+    });
+    $options = array_filter($options);
+    sort($options);
+    sort($expected_options);
+    $this->assertIdentical($options, $expected_options);
   }
 
 }
