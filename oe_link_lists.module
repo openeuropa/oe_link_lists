@@ -23,7 +23,7 @@ function oe_link_lists_link_list_presave(EntityInterface $entity) {
   // configure it if it's missing.
   if (!isset($config['source'])) {
     $bundle = LinkListType::load($entity->bundle());
-    $auto_plugin = $bundle->getAutomaticLinkSource();
+    $auto_plugin = $bundle->getDefaultLinkSource();
     if ($auto_plugin) {
       $config['source'] = [
         'plugin' => $auto_plugin,

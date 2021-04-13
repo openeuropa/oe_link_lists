@@ -96,7 +96,7 @@ class LinkListForm extends ContentEntityForm {
     $configuration = $entity->getConfiguration();
     if (!isset($configuration['source'])) {
       $bundle = $this->entityTypeManager->getStorage('link_list_type')->load($this->entity->bundle());
-      $auto_plugin = $bundle->getAutomaticLinkSource();
+      $auto_plugin = $bundle->getDefaultLinkSource();
       if (!$auto_plugin) {
         return $entity;
       }

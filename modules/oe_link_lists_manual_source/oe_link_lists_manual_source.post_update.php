@@ -49,6 +49,6 @@ function oe_link_lists_manual_source_post_update_00001() {
 function oe_link_lists_manual_source_post_update_00002() {
   $link_list_type = LinkListType::load('manual');
   $link_list_type->set('configurable_link_source_plugins', FALSE);
-  $link_list_type->set('auto_link_source', 'manual_links');
+  $link_list_type->set('default_link_source', 'manual_links');
   $link_list_type->save();
 }

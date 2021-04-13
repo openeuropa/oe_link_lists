@@ -39,7 +39,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "label",
  *     "uuid",
  *     "configurable_link_source_plugins",
- *     "auto_link_source",
+ *     "default_link_source",
  *   }
  * )
  */
@@ -74,7 +74,7 @@ class LinkListType extends ConfigEntityBundleBase {
    *
    * @var string
    */
-  protected $auto_link_source;
+  protected $default_link_source;
 
   /**
    * Returns true if the bundle shows the link source selection on the form.
@@ -82,18 +82,18 @@ class LinkListType extends ConfigEntityBundleBase {
    * @return bool
    *   Whether it's configurable.
    */
-  public function configurableLinkSourcePlugins(): bool {
+  public function isLinkSourceConfigurable(): bool {
     return (bool) $this->configurable_link_source_plugins;
   }
 
   /**
-   * Returns the links source plugin this bundle works with automatically.
+   * Returns the default links source plugin this bundle works with.
    *
    * @return string|null
    *   The link source plugin.
    */
-  public function getAutomaticLinkSource(): ?string {
-    return $this->auto_link_source;
+  public function getDefaultLinkSource(): ?string {
+    return $this->default_link_source;
   }
 
 }

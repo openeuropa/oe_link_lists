@@ -241,7 +241,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // Only certain bundles expose the choice of the link source plugin.
     /** @var \Drupal\oe_link_lists\Entity\LinkListType $bundle */
     $bundle = $this->entityTypeManager->getStorage('link_list_type')->load($link_list->bundle());
-    if (!$bundle->configurableLinkSourcePlugins()) {
+    if (!$bundle->isLinkSourceConfigurable()) {
       return;
     }
 

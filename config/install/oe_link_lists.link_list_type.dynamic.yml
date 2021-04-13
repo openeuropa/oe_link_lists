@@ -4,4 +4,4 @@ dependencies: {  }
 id: dynamic
 label: Dynamic
 configurable_link_source_plugins: true
-auto_link_source: null
+default_link_source: null

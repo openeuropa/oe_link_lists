@@ -4,4 +4,4 @@ dependencies: {  }
 id: manual
 label: Manual
 configurable_link_source_plugins: false
-auto_link_source: manual_links
+default_link_source: manual_links
