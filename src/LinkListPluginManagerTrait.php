@@ -35,7 +35,7 @@ trait LinkListPluginManagerTrait {
         continue;
       }
 
-      if (!isset($definition['bundles']) || empty($definition['bundles'])) {
+      if (!is_array($definition['bundles']) || empty($definition['bundles'])) {
         // If the plugin has no restriction, we include it.
         $options[$name] = $definition['label'];
         continue;

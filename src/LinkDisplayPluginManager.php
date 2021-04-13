@@ -47,14 +47,20 @@ class LinkDisplayPluginManager extends DefaultPluginManager implements LinkDispl
     $definitions = $this->getDefinitions();
 
     foreach ($options as $plugin_id => $label) {
-      if ($link_source && isset($definitions[$plugin_id]['link_sources']) && !empty($definitions[$plugin_id]['link_sources']) && !in_array($link_source, $definitions[$plugin_id]['link_sources'])) {
+      if (!is_array($definitions[$plugin_id]['link_sources']) || empty($definitions[$plugin_id]['link_sources'])) {
+        // If no link sources are defined on the plugin to restrict for, we
+        // allow it.
+        continue;
+      }
+
+      if ($link_source && !in_array($link_source, $definitions[$plugin_id]['link_sources'])) {
         // If we have a link source to filter by, remove the ones that don't
         // match.
         unset($options[$plugin_id]);
         continue;
       }
 
-      if (!$link_source && isset($definitions[$plugin_id]['link_sources']) && !empty($definitions[$plugin_id]['link_sources'])) {
+      if (!$link_source) {
         // If we don't have a link source specified, remove all the ones that
         // are restricted to a given link source.
         unset($options[$plugin_id]);
