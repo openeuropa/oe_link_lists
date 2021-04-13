@@ -116,11 +116,19 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'source_on_foo',
     ]);
 
+    // Assert that since we have only 1 available source, it is by default
+    // selected.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="source_on_foo"]')->getAttribute('selected'));
+
     // Assert we can only see the display plugins that work with the Foo
     // bundle.
     $this->assertFieldSelectOptions('Link display', [
       'display_on_foo',
     ]);
+
+    // Assert that since we have only 1 available display, it is by default
+    // selected.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="display_on_foo"]')->getAttribute('selected'));
 
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');

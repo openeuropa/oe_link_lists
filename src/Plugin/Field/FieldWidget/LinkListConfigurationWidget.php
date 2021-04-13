@@ -266,12 +266,20 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $plugin_id = $this->getConfigurationPluginId($link_list, 'source');
     }
 
+    $source_plugin_options = $this->linkSourcePluginManager->getPluginsAsOptions($link_list->bundle());
+
+    // If we don't have a plugin ID and there is only one available option,
+    // use that as the default.
+    if (!$plugin_id && count($source_plugin_options) === 1) {
+      $plugin_id = key($source_plugin_options);
+    }
+
     $element['link_source']['plugin'] = [
       '#type' => 'select',
       '#title' => t('Link source'),
       '#empty_option' => $this->t('None'),
       '#empty_value' => '',
-      '#options' => $this->linkSourcePluginManager->getPluginsAsOptions($link_list->bundle()),
+      '#options' => $source_plugin_options,
       '#required' => TRUE,
       '#ajax' => [
         'callback' => [$this, 'pluginConfigurationAjaxCallback'],
@@ -368,6 +376,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     }
 
     $display_plugin_options = $this->linkDisplayPluginManager->getPluginsAsOptions($link_list->bundle(), $link_source_plugin_id);
+
+    // If we don't have a plugin ID and there is only one available option,
+    // use that as the default.
+    if (!$plugin_id && count($display_plugin_options) === 1) {
+      $plugin_id = key($display_plugin_options);
+    }
 
     if ($display_plugin_options) {
       $element['link_display']['plugin'] = [
