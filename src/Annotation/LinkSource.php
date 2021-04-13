@@ -54,7 +54,7 @@ class LinkSource extends Plugin {
    * This attribute is optional and if left empty, it means the plugin will be
    * considered for all bundles.
    *
-   * @var array
+   * @var string[]
    */
   public $bundles = [];
 

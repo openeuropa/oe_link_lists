@@ -12,7 +12,7 @@ use Drupal\oe_link_lists\Entity\LinkListType;
 /**
  * Update all the bundles to use the link source plugin selection.
  */
-function oe_link_lists_post_update_0001() {
+function oe_link_lists_post_update_00001() {
   $link_list_types = LinkListType::loadMultiple();
   foreach ($link_list_types as $id => $link_list_type) {
     if ($id === 'manual') {

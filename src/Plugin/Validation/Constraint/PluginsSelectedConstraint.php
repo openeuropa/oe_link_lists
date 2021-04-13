@@ -25,7 +25,7 @@ class PluginsSelectedConstraint extends Constraint {
   public $noLinkSource = 'There is no link source selected';
 
   /**
-   * Message to show when there is no link source selected.
+   * Message to show when there is no link display selected.
    *
    * @var string
    */

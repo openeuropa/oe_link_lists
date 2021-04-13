@@ -8,6 +8,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -40,11 +41,14 @@ class LinkListForm extends ContentEntityForm {
    *   The current user account.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, AccountProxyInterface $account, MessengerInterface $messenger) {
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time, AccountProxyInterface $account, MessengerInterface $messenger, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->account = $account;
     $this->messenger = $messenger;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -56,7 +60,8 @@ class LinkListForm extends ContentEntityForm {
       $container->get('entity_type.bundle.info'),
       $container->get('datetime.time'),
       $container->get('current_user'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -78,6 +83,32 @@ class LinkListForm extends ContentEntityForm {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildEntity(array $form, FormStateInterface $form_state) {
+    $entity = parent::buildEntity($form, $form_state);
+
+    // Automatically set the link source plugin onto the link lists that have
+    // been configured to have an auto-plugin.
+    $configuration = $entity->getConfiguration();
+    if (!isset($configuration['source'])) {
+      $bundle = $this->entityTypeManager->getStorage('link_list_type')->load($this->entity->bundle());
+      $auto_plugin = $bundle->getAutomaticLinkSource();
+      if (!$auto_plugin) {
+        return $entity;
+      }
+
+      $configuration['source'] = [
+        'plugin' => $auto_plugin,
+        'plugin_configuration' => [],
+      ];
+      $entity->setConfiguration($configuration);
+    }
+
+    return $entity;
   }
 
   /**
