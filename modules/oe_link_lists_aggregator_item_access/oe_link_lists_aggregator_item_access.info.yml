@@ -1,5 +1,5 @@
-name: OpenEuropa Aggregator item access
-description: Provides a permission to view aggregator feed items.
+name: 'OpenEuropa Aggregator item access'
+description: 'Provides a permission to view aggregator feed items.'
 package: OpenEuropa
 
 type: module

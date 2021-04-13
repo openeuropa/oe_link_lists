@@ -17,9 +17,15 @@ Before enabling this module, make sure the following module is present in your c
 
 ```json
 "require": {
-    "drupal/composite_reference": "~1.0@alpha2"
+    "drupal/composite_reference": "~1.0@alpha2",
+    "drupal/entity_reference_revisions": "^1.7",
+    "drupal/inline_entity_form": "~1.0-rc8"
 }
 ```
+
+Moreover, the following Inline Entity Form issue patch is required:
+
+* https://www.drupal.org/project/inline_entity_form/issues/2875716
 
 ## Marking a link list link bundle as overridable
 Bundles of this entity type can be marked as “overridable” to mean that the

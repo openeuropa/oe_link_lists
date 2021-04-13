@@ -1,5 +1,5 @@
-name: OpenEuropa Internal Link Lists
-description: Provides a source plugin that collect links from existing entities.
+name: 'OpenEuropa Internal Link Lists'
+description: 'Provides a source plugin that collect links from existing entities.'
 package: OpenEuropa
 
 type: module

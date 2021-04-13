@@ -1,5 +1,5 @@
-name: OpenEuropa RSS Link Lists
-description: Provides support for dynamic link lists extracted from an RSS source.
+name: 'OpenEuropa RSS Link Lists'
+description: 'Provides support for dynamic link lists extracted from an RSS source.'
 package: OpenEuropa
 
 type: module

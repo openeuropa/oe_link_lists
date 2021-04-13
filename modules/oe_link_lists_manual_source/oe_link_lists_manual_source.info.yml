@@ -1,5 +1,5 @@
-name: OpenEuropa Manual Link Lists
-description: OpenEuropa Manual Link Lists provides all the necesary configuration to create manual link lists.
+name: 'OpenEuropa Manual Link Lists'
+description: 'OpenEuropa Manual Link Lists provides all the necesary configuration to create manual link lists.'
 package: OpenEuropa
 
 type: module
