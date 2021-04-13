@@ -15,9 +15,8 @@ class PluginsSelectedConstraintValidator extends ConstraintValidator {
   /**
    * {@inheritdoc}
    */
-  public function validate($value, Constraint $constraint) {
+  public function validate($item, Constraint $constraint) {
     /** @var \Drupal\oe_link_lists\Plugin\Field\FieldType\LinkListConfigurationItem $item */
-    $item = $value;
     if (!$item->getEntity()->isDefaultTranslation()) {
       // When we translate link lists, the configuration values are smaller as
       // they contain only the translatable values. So we don't need to validate

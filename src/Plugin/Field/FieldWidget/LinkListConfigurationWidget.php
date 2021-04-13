@@ -140,8 +140,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     };
 
     $element['#type'] = 'container';
-    $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
     if (!isset($element['#attributes']['id'])) {
+      $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
       $element['#attributes'] = [
         'id' => 'link-list-element-wrapper-' . $wrapper_suffix,
       ];
@@ -359,7 +359,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // Now we need to determine what is the selected link source plugin. This
     // can be found in two ways: either from the form submission or to check
     // the current link list configuration.
-    $link_source_plugin_id = NestedArray::getValue($form_state->getStorage(), [
+    $link_source_plugin_id = $form_state->get([
       'plugin_select',
       'link_source',
     ]);
