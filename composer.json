@@ -9,7 +9,7 @@
         "php": ">=7.2",
         "drupal/core": "^8.8.2",
         "drupal/entity_reference_revisions": "^1.7",
-        "drupal/inline_entity_form": "^1.0-rc8"
+        "drupal/inline_entity_form": "^1.0-rc9"
     },
     "require-dev": {
         "composer/installers": "~1.5",
@@ -59,7 +59,7 @@
         },
         "patches": {
             "drupal/inline_entity_form": {
-                "https://www.drupal.org/project/inline_entity_form/issues/2875716": "https://www.drupal.org/files/issues/2020-11-05/ief_removed_references_2875716-89.patch"
+                "https://www.drupal.org/project/inline_entity_form/issues/2875716": "https://www.drupal.org/files/issues/2021-04-15/ief_removed_references_2875716-103.patch"
             }
         },
         "drupal-scaffold": {
