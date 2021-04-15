@@ -174,14 +174,14 @@ class LinkList extends EditorialContentEntityBase implements LinkListInterface {
       }
     }
 
-    if (isset($config['source']) && isset($config['source']['plugin_configuration'])) {
+    if (isset($config['source']['plugin']) && isset($config['source']['plugin_configuration'])) {
       /** @var \Drupal\oe_link_lists\LinkSourcePluginManager $source_plugin_manager */
       $source_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_source');
       $plugin = $source_plugin_manager->createInstance($config['source']['plugin'], $config['source']['plugin_configuration']);
       $plugin->preSave($this);
     }
 
-    if (isset($config['display']) && isset($config['display']['plugin_configuration'])) {
+    if (isset($config['display']['plugin']) && isset($config['display']['plugin_configuration'])) {
       /** @var \Drupal\oe_link_lists\LinkDisplayPluginManager $display_plugin_manager */
       $display_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_display');
       $plugin = $display_plugin_manager->createInstance($config['display']['plugin'], $config['display']['plugin_configuration']);
