@@ -230,8 +230,6 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     ];
 
     $link_list->setConfiguration($configuration);
-    $this->assertEquals($configuration, $link_list->getConfiguration());
-
     $link_list->save();
 
     // Assert the aggregator feeds and items.
