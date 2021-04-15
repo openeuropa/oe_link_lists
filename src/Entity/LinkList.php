@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists\Entity;
 
 use Drupal\Core\Entity\EditorialContentEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\oe_link_lists\LinkListConfigurationManager;
@@ -149,6 +150,43 @@ class LinkList extends EditorialContentEntityBase implements LinkListInterface {
 
     // Invalidate the block cache to update the derivatives.
     \Drupal::service('plugin.manager.block')->clearCachedDefinitions();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    $config = $this->getConfiguration();
+
+    // If the link list type works automatically with a given link source
+    // plugin, configure it if it's missing.
+    if (!isset($config['source'])) {
+      $bundle = LinkListType::load($this->bundle());
+      $auto_plugin = $bundle->getDefaultLinkSource();
+      if ($auto_plugin) {
+        $config['source'] = [
+          'plugin' => $auto_plugin,
+          'plugin_configuration' => [],
+        ];
+        $this->setConfiguration($config);
+      }
+    }
+
+    if (isset($config['source']) && isset($config['source']['plugin_configuration'])) {
+      /** @var \Drupal\oe_link_lists\LinkSourcePluginManager $source_plugin_manager */
+      $source_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_source');
+      $plugin = $source_plugin_manager->createInstance($config['source']['plugin'], $config['source']['plugin_configuration']);
+      $plugin->preSave($this);
+    }
+
+    if (isset($config['display']) && isset($config['display']['plugin_configuration'])) {
+      /** @var \Drupal\oe_link_lists\LinkDisplayPluginManager $display_plugin_manager */
+      $display_plugin_manager = \Drupal::service('plugin.manager.oe_link_lists.link_display');
+      $plugin = $display_plugin_manager->createInstance($config['display']['plugin'], $config['display']['plugin_configuration']);
+      $plugin->preSave($this);
+    }
   }
 
   /**
