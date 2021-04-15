@@ -52,7 +52,7 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $this->drupalGet('link_list/add');
     $this->getSession()->getPage()->fillField('Administrative title', 'Internal plugin test');
     $this->getSession()->getPage()->fillField('Title', 'Internal list');
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Internal');

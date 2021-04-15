@@ -228,7 +228,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
         ],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => ['link' => FALSE],
       ],
     ];

@@ -99,7 +99,7 @@ class LinkListAccessTest extends KernelTestBase {
         ],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
       ],
     ];
 

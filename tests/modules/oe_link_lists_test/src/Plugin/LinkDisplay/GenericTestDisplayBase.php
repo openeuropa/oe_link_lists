@@ -4,19 +4,12 @@ namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
 use Drupal\Core\Link;
 use Drupal\oe_link_lists\LinkCollectionInterface;
+use Drupal\oe_link_lists\LinkDisplayPluginBase;
 
 /**
- * Plugin implementation of the link_display.
- *
- * @LinkDisplay(
- *   id = "display_for_foo",
- *   label = @Translation("Display for Foo"),
- *   description = @Translation("Display plugin only available for the Foo link source."),
- *   bundles = { "dynamic" },
- *   link_sources = { "foo" }
- * )
+ * A generic base class for test display plugins.
  */
-class DisplayForFoo extends GenericDisplayBase {
+class GenericTestDisplayBase extends LinkDisplayPluginBase {
 
   /**
    * {@inheritdoc}

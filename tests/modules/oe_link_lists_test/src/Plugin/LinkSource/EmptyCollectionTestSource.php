@@ -12,13 +12,13 @@ use Drupal\oe_link_lists\Plugin\ExternalLinkSourcePluginBase;
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "foo",
- *   label = @Translation("Foo"),
- *   description = @Translation("Foo description."),
+ *   id = "test_empty_collection",
+ *   label = @Translation("Empty collection"),
+ *   description = @Translation("A source that will return an empty collection."),
  *   bundles = { "dynamic" }
  * )
  */
-class Foo extends ExternalLinkSourcePluginBase {
+class EmptyCollectionTestSource extends ExternalLinkSourcePluginBase {
 
   /**
    * {@inheritdoc}

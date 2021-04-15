@@ -129,10 +129,10 @@ class LinkListTest extends EntityKernelTestBase {
 
     $configuration = [
       'source' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_cache_metadata',
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => ['link' => FALSE],
       ],
     ];

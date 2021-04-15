@@ -10,19 +10,18 @@ use Drupal\oe_link_lists\DefaultLink;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
 use Drupal\oe_link_lists\LinkSourcePluginBase;
-use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
 
 /**
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "qux",
- *   label = @Translation("Qux"),
- *   description = @Translation("Qux description."),
+ *   id = "test_example_source",
+ *   label = @Translation("Example source"),
+ *   description = @Translation("A source that provides a few example links."),
  *   bundles = { "dynamic" }
  * )
  */
-class Qux extends LinkSourcePluginBase implements TranslatableLinkListPluginInterface {
+class ExampleTestSource extends LinkSourcePluginBase {
 
   /**
    * {@inheritdoc}
@@ -44,23 +43,7 @@ class Qux extends LinkSourcePluginBase implements TranslatableLinkListPluginInte
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
-    return [
-      'my_string' => '',
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['my_string'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('The translatable string'),
-      '#required' => TRUE,
-      '#default_value' => $this->configuration['my_string'],
-    ];
-
     return $form;
   }
 
@@ -68,18 +51,7 @@ class Qux extends LinkSourcePluginBase implements TranslatableLinkListPluginInte
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $this->configuration['my_string'] = $form_state->getValue('my_string');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getTranslatableParents(): array {
-    return [
-      [
-        'my_string',
-      ],
-    ];
+    // Do nothing.
   }
 
 }

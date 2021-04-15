@@ -13,13 +13,13 @@ use Drupal\oe_link_lists\LinkSourcePluginBase;
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "source_on_foo",
- *   label = @Translation("Source on Foo"),
- *   description = @Translation("Link source available only on Foo bundle"),
+ *   id = "test_foo_bundle_only_source",
+ *   label = @Translation("Source for foo bundle"),
+ *   description = @Translation("Link source available only for the foo bundle"),
  *   bundles = { "foo" }
  * )
  */
-class SourceOnFoo extends LinkSourcePluginBase {
+class FooBundleOnlyTestSource extends LinkSourcePluginBase {
 
   /**
    * {@inheritdoc}

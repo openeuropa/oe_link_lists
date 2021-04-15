@@ -65,13 +65,13 @@ class LinkListConfigurationTest extends KernelTestBase {
     // Create a standard link list configuration array.
     $configuration = [
       'source' => [
-        'plugin' => 'foo',
+        'plugin' => 'test_empty_collection',
         'plugin_configuration' => [
           'url' => 'http://google.com',
         ],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => [
           'link' => FALSE,
         ],
@@ -100,13 +100,13 @@ class LinkListConfigurationTest extends KernelTestBase {
     $translation->setConfiguration($translated_configuration);
     $expected = [
       'source' => [
-        'plugin' => 'foo',
+        'plugin' => 'test_empty_collection',
         'plugin_configuration' => [
           'url' => 'http://google.com',
         ],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => [
           'link' => FALSE,
         ],
@@ -136,7 +136,7 @@ class LinkListConfigurationTest extends KernelTestBase {
 
     // Add a source plugin that has a translatable configuration and set the
     // new configuration onto the original list.
-    $configuration['source']['plugin'] = 'qux';
+    $configuration['source']['plugin'] = 'test_translatable';
     $configuration['source']['plugin_configuration'] = [
       'my_string' => 'Original string',
     ];
@@ -146,7 +146,7 @@ class LinkListConfigurationTest extends KernelTestBase {
     // Translate this new configuration and set it on the translation.
     $translated_configuration = $configuration;
     $this->translateConfiguration($translated_configuration);
-    $expected['source']['plugin'] = 'qux';
+    $expected['source']['plugin'] = 'test_translatable';
     $expected['source']['plugin_configuration'] = [
       // The source plugin configuration is translatable so it got translated.
       'my_string' => 'Original string FR',
@@ -179,12 +179,12 @@ class LinkListConfigurationTest extends KernelTestBase {
     // In the translation, we essentially force the change of the source plugin
     // (which should not be technically allowed) but ensure that as the source
     // plugin doesn't change, its configuration remains in place.
-    $translated_configuration['source']['plugin'] = 'baz';
+    $translated_configuration['source']['plugin'] = 'test_example_source';
     $translated_configuration['source']['plugin_configuration'] = [];
     $translation = $link_list->addTranslation('fr');
     $translation->setConfiguration($translated_configuration);
     $expected_source = [
-      'plugin' => 'qux',
+      'plugin' => 'test_translatable',
       'plugin_configuration' => [
         // The original (translatable) string has been kept.
         'my_string' => 'Original string',
@@ -224,7 +224,7 @@ class LinkListConfigurationTest extends KernelTestBase {
 
     $configuration = [
       'source' => [
-        'plugin' => 'foo',
+        'plugin' => 'test_empty_collection',
         'plugin_configuration' => [
           'url' => 'http://google.com',
         ],

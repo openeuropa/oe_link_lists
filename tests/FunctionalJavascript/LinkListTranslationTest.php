@@ -57,13 +57,13 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('Title', 'Title test');
 
     // Select and configure the source plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'Complex Form Source');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Complex form');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The source translatable string', 'I can be translated');
     $this->getSession()->getPage()->fillField('The source non translatable string', 'I cannot be translated');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Translatable form display');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Translatable form');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The display translatable string', 'I can be translated');
     $this->getSession()->getPage()->fillField('The display non translatable string', 'I cannot be translated');
@@ -115,11 +115,11 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $link_list = $link_list_storage->create($values);
     $configuration = [
       'source' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_cache_metadata',
         'plugin_configuration' => ['url' => 'http://example.com'],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => ['link' => FALSE],
       ],
     ];

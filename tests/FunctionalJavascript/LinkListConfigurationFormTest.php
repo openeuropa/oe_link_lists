@@ -113,22 +113,22 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Assert we can only see the source plugins that work with the Foo
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
-      'source_on_foo',
+      'test_foo_bundle_only_source',
     ]);
 
     // Assert that since we have only 1 available source, it is by default
     // selected.
-    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="source_on_foo"]')->getAttribute('selected'));
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="test_foo_bundle_only_source"]')->getAttribute('selected'));
 
     // Assert we can only see the display plugins that work with the Foo
     // bundle.
     $this->assertFieldSelectOptions('Link display', [
-      'display_on_foo',
+      'test_foo_bundle_display',
     ]);
 
     // Assert that since we have only 1 available display, it is by default
     // selected.
-    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="display_on_foo"]')->getAttribute('selected'));
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="test_foo_bundle_display"]')->getAttribute('selected'));
 
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
@@ -139,37 +139,37 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
       'rss',
-      'complex_form',
-      'baz',
-      'qux',
-      'foo',
-      'bar',
+      'test_cache_metadata',
+      'test_complex_form',
+      'test_empty_collection',
+      'test_example_source',
+      'test_translatable',
     ]);
 
     // Assert we can only see the display plugins that work with the Dynamic
     // bundle.
     $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
       'title',
-      'baz',
-      'foo',
-      'bar',
-      'translatable_form',
     ]);
 
     // Pick a source plugin that will allow another display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Empty collection');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_empty_source_only_display',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
       'title',
-      'baz',
-      'foo',
-      'display_for_foo',
-      'bar',
-      'translatable_form',
     ]);
 
     // Select the display plugin that has been just made available.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Display for Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Display for empty source');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Change to another source plugin to test the available display plugins
@@ -178,17 +178,17 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertEmpty($this->getSession()->getPage()->findField('Link display')->find('css', "option[selected=selected]"));
     $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
       'title',
-      'baz',
-      'foo',
-      'bar',
-      'translatable_form',
     ]);
     $this->assertSession()->fieldExists('The resource URL');
     $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
 
@@ -198,7 +198,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->load(1);
     $configuration = $link_list->getConfiguration();
-    $this->assertEquals('foo', $configuration['display']['plugin']);
+    $this->assertEquals('test_link_tag', $configuration['display']['plugin']);
     $this->assertEquals(['title' => NULL, 'more' => []], $configuration['display']['plugin_configuration']);
 
     // Change the Source plugin to none.
@@ -219,7 +219,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     // Change the display plugin to make it configurable.
     $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Bar');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Titles with optional link');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->checkboxChecked('Link');
     $this->getSession()->getPage()->uncheckField('Link');
@@ -229,7 +229,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->load(1);
     $configuration = $link_list->getConfiguration();
-    $this->assertEquals('bar', $configuration['display']['plugin']);
+    $this->assertEquals('test_configurable_title', $configuration['display']['plugin']);
     $this->assertEquals([
       'link' => FALSE,
     ], $configuration['display']['plugin_configuration']);
@@ -254,7 +254,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->pageTextNotContains('Display link to see all');
 
     // Select and configure the source plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'Baz');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Save the link list.

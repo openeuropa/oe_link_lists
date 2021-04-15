@@ -120,7 +120,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Baz');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Markup');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Select and configure the source plugin.

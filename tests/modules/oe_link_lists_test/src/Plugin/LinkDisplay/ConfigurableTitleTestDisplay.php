@@ -12,13 +12,13 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  * Plugin implementation of the link_display.
  *
  * @LinkDisplay(
- *   id = "bar",
- *   label = @Translation("Bar"),
- *   description = @Translation("Bar description."),
+ *   id = "test_configurable_title",
+ *   label = @Translation("Titles with optional link"),
+ *   description = @Translation("Displays the list as titles, optionally linked to their source."),
  *   bundles = { "dynamic", "manual" }
  * )
  */
-class Bar extends LinkDisplayPluginBase {
+class ConfigurableTitleTestDisplay extends LinkDisplayPluginBase {
 
   /**
    * {@inheritdoc}

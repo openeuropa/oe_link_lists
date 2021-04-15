@@ -9,20 +9,19 @@ use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultLink;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
-use Drupal\oe_link_lists\LinkSourcePluginBase;
 use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
 
 /**
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "complex_form",
- *   label = @Translation("Complex Form Source"),
- *   description = @Translation("Complex Form Source description."),
+ *   id = "test_translatable",
+ *   label = @Translation("Translatable source"),
+ *   description = @Translation("A source with translatable configuration."),
  *   bundles = { "dynamic" }
  * )
  */
-class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLinkListPluginInterface {
+class TranslatableTestSource extends ExampleTestSource implements TranslatableLinkListPluginInterface {
 
   /**
    * {@inheritdoc}
@@ -46,8 +45,7 @@ class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLink
    */
   public function defaultConfiguration() {
     return [
-      'translatable_string' => '',
-      'non_translatable_string' => '',
+      'my_string' => '',
     ];
   }
 
@@ -55,23 +53,11 @@ class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLink
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['complex_form'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('The complex form parent'),
-    ];
-
-    $form['complex_form']['translatable_string'] = [
+    $form['my_string'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('The source translatable string'),
+      '#title' => $this->t('The translatable string'),
       '#required' => TRUE,
-      '#default_value' => $this->configuration['translatable_string'],
-    ];
-
-    $form['complex_form']['non_translatable_string'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('The source non translatable string'),
-      '#required' => TRUE,
-      '#default_value' => $this->configuration['non_translatable_string'],
+      '#default_value' => $this->configuration['my_string'],
     ];
 
     return $form;
@@ -81,8 +67,7 @@ class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLink
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $this->configuration['translatable_string'] = $form_state->getValue(['complex_form', 'translatable_string']);
-    $this->configuration['non_translatable_string'] = $form_state->getValue(['complex_form', 'non_translatable_string']);
+    $this->configuration['my_string'] = $form_state->getValue('my_string');
   }
 
   /**
@@ -91,8 +76,7 @@ class ComplexFormSource extends LinkSourcePluginBase implements TranslatableLink
   public function getTranslatableParents(): array {
     return [
       [
-        'complex_form',
-        'translatable_string',
+        'my_string',
       ],
     ];
   }

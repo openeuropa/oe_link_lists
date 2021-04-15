@@ -14,13 +14,13 @@ use Drupal\oe_link_lists\Plugin\ExternalLinkSourcePluginBase;
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "bar",
- *   label = @Translation("Bar"),
- *   description = @Translation("Bar description."),
+ *   id = "test_cache_metadata",
+ *   label = @Translation("Cache metadata"),
+ *   description = @Translation("Source that returns extra cache metadata information."),
  *   bundles = { "dynamic" }
  * )
  */
-class Bar extends ExternalLinkSourcePluginBase {
+class CacheMetadataTestSource extends ExternalLinkSourcePluginBase {
 
   /**
    * {@inheritdoc}

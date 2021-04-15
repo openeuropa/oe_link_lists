@@ -9,13 +9,13 @@ use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
  * Plugin implementation of the link_display.
  *
  * @LinkDisplay(
- *   id = "translatable_form",
- *   label = @Translation("Translatable form display"),
- *   description = @Translation("Translatable form display description."),
+ *   id = "test_translatable_form",
+ *   label = @Translation("Translatable form"),
+ *   description = @Translation("A display that comes with a translatable form."),
  *   bundles = { "dynamic", "manual" }
  * )
  */
-class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginInterface {
+class TranslatableFormTestDisplay extends LinkTagTestDisplay implements TranslatableLinkListPluginInterface {
 
   /**
    * {@inheritdoc}
