@@ -53,16 +53,9 @@ class LinkDisplayPluginManager extends DefaultPluginManager implements LinkDispl
         continue;
       }
 
-      if ($link_source && !in_array($link_source, $definitions[$plugin_id]['link_sources'])) {
-        // If we have a link source to filter by, remove the ones that don't
-        // match.
-        unset($options[$plugin_id]);
-        continue;
-      }
-
-      if (!$link_source) {
-        // If we don't have a link source specified, remove all the ones that
-        // are restricted to a given link source.
+      // If no link source was specified, or it's not in the list of supported
+      // ones, skip the plugin.
+      if (!$link_source || !in_array($link_source, $definitions[$plugin_id]['link_sources'])) {
         unset($options[$plugin_id]);
       }
     }
