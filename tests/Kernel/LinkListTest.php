@@ -6,6 +6,10 @@ namespace Drupal\Tests\oe_link_lists\Kernel;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+use Drupal\oe_link_lists\LinkDisplayInterface;
+use Drupal\oe_link_lists\LinkDisplayPluginManagerInterface;
+use Drupal\oe_link_lists\LinkSourceInterface;
+use Drupal\oe_link_lists\LinkSourcePluginManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -140,9 +144,6 @@ class LinkListTest extends EntityKernelTestBase {
     $link_list->setConfiguration($configuration);
     $link_list->save();
 
-    // Assert the display plugin preSave was called.
-    $this->assertEqual($link_list->getRevisionLogMessage(), 'Bar presave was called.');
-
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
@@ -166,6 +167,62 @@ class LinkListTest extends EntityKernelTestBase {
     // The renderer service adds required cache contexts to render arrays, so
     // we just assert the presence of the context added by the source plugin.
     $this->assertContains('user.is_super_user', $build['#cache']['contexts']);
+  }
+
+  /**
+   * Tests that the source and display plugin presave methods are invoked.
+   */
+  public function testPluginPreSave(): void {
+    $link_list = $this->container->get('entity_type.manager')
+      ->getStorage('link_list')
+      ->create([
+        'bundle' => 'dynamic',
+        'title' => $this->randomString(),
+        'administrative_title' => $this->randomString(),
+        'configuration' => [
+          'source' => [
+            'plugin' => 'mocked_source',
+            'plugin_configuration' => [],
+          ],
+          'display' => [
+            'plugin' => 'mocked_display',
+            'plugin_configuration' => [
+              'random_config' => 'random_value',
+            ],
+          ],
+        ],
+      ]);
+
+    $mocked_source = $this->createMock(LinkSourceInterface::class);
+    $mocked_source
+      ->expects($this->once())
+      ->method('preSave')
+      ->with($link_list);
+
+    $mocked_source_manager = $this->createMock(LinkSourcePluginManagerInterface::class);
+    $mocked_source_manager
+      ->expects($this->once())
+      ->method('createInstance')
+      ->with('mocked_source', [])
+      ->willReturn($mocked_source);
+
+    $mocked_display = $this->createMock(LinkDisplayInterface::class);
+    $mocked_display
+      ->expects($this->once())
+      ->method('preSave')
+      ->with($link_list);
+
+    $mocked_display_manager = $this->createMock(LinkDisplayPluginManagerInterface::class);
+    $mocked_display_manager
+      ->expects($this->once())
+      ->method('createInstance')
+      ->with('mocked_display', ['random_config' => 'random_value'])
+      ->willReturn($mocked_display);
+
+    $this->container->set('plugin.manager.oe_link_lists.link_source', $mocked_source_manager);
+    $this->container->set('plugin.manager.oe_link_lists.link_display', $mocked_display_manager);
+
+    $link_list->save();
   }
 
 }

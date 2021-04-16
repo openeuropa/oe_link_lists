@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\oe_link_lists\LinkCollectionInterface;
@@ -49,16 +48,6 @@ class ConfigurableTitleTestDisplay extends LinkDisplayPluginBase {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['link'] = $form_state->getValue('link');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function preSave(ContentEntityInterface $entity): void {
-    parent::preSave($entity);
-
-    /** @var \Drupal\oe_link_lists\Entity\LinkList $entity */
-    $entity->setRevisionLogMessage('Bar presave was called.');
   }
 
   /**
