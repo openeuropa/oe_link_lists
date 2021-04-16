@@ -41,8 +41,7 @@ trait LinkListPluginManagerTrait {
         continue;
       }
 
-      $definition_bundles = $definition['bundles'];
-      if (in_array($bundle, $definition_bundles)) {
+      if (in_array($bundle, $definition['bundles'])) {
         $options[$name] = $definition['label'];
       }
     }
