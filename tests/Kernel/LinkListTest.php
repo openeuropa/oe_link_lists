@@ -159,9 +159,9 @@ class LinkListTest extends EntityKernelTestBase {
     $this->assertEquals([
       'bar_test_tag:1',
       'bar_test_tag:2',
-      'bar_test_tag_list',
       'link_list:1',
       'link_list_view',
+      'test_cache_metadata_tag',
     ], $build['#cache']['tags']);
     $this->assertEquals(1800, $build['#cache']['max-age']);
     // The renderer service adds required cache contexts to render arrays, so

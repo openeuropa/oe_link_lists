@@ -34,7 +34,7 @@ class CacheMetadataTestSource extends ExternalLinkSourcePluginBase {
     $collection
       // Cache contexts are validated so we need to use an existing one.
       ->addCacheContexts(['user.is_super_user'])
-      ->addCacheTags(['bar_test_tag_list'])
+      ->addCacheTags(['test_cache_metadata_tag'])
       ->mergeCacheMaxAge(1800);
 
     return $collection;
