@@ -96,7 +96,9 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'create dynamic link list',
       'edit dynamic link list',
       'create foo link list',
+      'create single_plugin link list',
       'edit foo link list',
+      'edit single_plugin link list',
       'view link list',
       'access link list canonical page',
     ]);
@@ -109,26 +111,38 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
   public function testLinkListDisplayConfiguration(): void {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
 
-    $this->drupalGet('link_list/add/foo');
-    // Assert we can only see the source plugins that work with the Foo
-    // bundle.
+    $this->drupalGet('link_list/add/single_plugin');
+    // Assert we can see only the source plugins that have no bundle
+    // restrictions.
     $this->assertFieldSelectOptions('Link source', [
-      'test_foo_bundle_only_source',
+      'test_no_bundle_restriction_source',
     ]);
-
     // Assert that since we have only 1 available source, it is by default
     // selected.
-    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="test_foo_bundle_only_source"]')->getAttribute('selected'));
-
-    // Assert we can only see the display plugins that work with the Foo
-    // bundle.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="test_no_bundle_restriction_source"]')->getAttribute('selected'));
+    // Assert we can see only the display plugins that have no bundle
+    // restrictions.
     $this->assertFieldSelectOptions('Link display', [
-      'test_foo_bundle_display',
+      'test_no_bundle_restriction_display',
     ]);
-
     // Assert that since we have only 1 available display, it is by default
     // selected.
-    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="test_foo_bundle_display"]')->getAttribute('selected'));
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="test_no_bundle_restriction_display"]')->getAttribute('selected'));
+
+    $this->drupalGet('link_list/add/foo');
+    // Assert we can only see the source plugins that work with the Foo
+    // bundle (or that don't have a bundle restriction).
+    $this->assertFieldSelectOptions('Link source', [
+      'test_foo_bundle_only_source',
+      'test_no_bundle_restriction_source',
+    ]);
+
+    // Assert we can only see the display plugins that work with the Foo
+    // bundle (or that don't have a bundle restriction).
+    $this->assertFieldSelectOptions('Link display', [
+      'test_foo_bundle_display',
+      'test_no_bundle_restriction_display',
+    ]);
 
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
@@ -144,6 +158,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_empty_collection',
       'test_example_source',
       'test_translatable',
+      'test_no_bundle_restriction_source',
     ]);
 
     // Assert we can only see the display plugins that work with the Dynamic
@@ -153,6 +168,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_link_tag',
       'test_markup',
       'test_translatable_form',
+      'test_no_bundle_restriction_display',
       'title',
     ]);
 
@@ -165,6 +181,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_link_tag',
       'test_markup',
       'test_translatable_form',
+      'test_no_bundle_restriction_display',
       'title',
     ]);
 
@@ -182,6 +199,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_link_tag',
       'test_markup',
       'test_translatable_form',
+      'test_no_bundle_restriction_display',
       'title',
     ]);
     $this->assertSession()->fieldExists('The resource URL');

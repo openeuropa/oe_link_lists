@@ -1,0 +1,6 @@
+langcode: en
+status: true
+dependencies: {  }
+id: single_plugin
+label: 'Single plugin bundle'
+configurable_link_source_plugins: true
