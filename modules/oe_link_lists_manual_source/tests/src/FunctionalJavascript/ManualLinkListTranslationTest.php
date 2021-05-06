@@ -22,7 +22,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'manual', TRUE);

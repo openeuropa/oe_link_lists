@@ -41,7 +41,12 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
     parent::setUp();
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);

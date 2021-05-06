@@ -9,7 +9,6 @@ declare(strict_types = 1);
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
-use Drupal\oe_link_lists_manual_source\Entity\LinkListLink;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
 
 /**
