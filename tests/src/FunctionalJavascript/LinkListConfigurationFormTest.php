@@ -395,6 +395,13 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // The default button label is shown.
     $this->assertSession()->linkExists($node->label());
     $this->assertSession()->linkByHrefExists($node->toUrl()->toString());
+
+    // Remove node used in the "See all" button.
+    $node->delete();
+    $this->getSession()->reload();
+    $this->assertSession()->linkExists('Example');
+    $this->assertSession()->linkExists('European Commission');
+    $this->assertSession()->linkByHrefNotExists($node->toUrl()->toString());
   }
 
   /**

@@ -182,15 +182,15 @@ class LinkListViewBuilder extends EntityViewBuilder {
     if ($link_list->getTitle()) {
       $display_plugin_configuration['title'] = $link_list->getTitle();
     }
+    $cacheable_metadata = new CacheableMetadata();
     if (isset($configuration['more']) && isset($configuration['size']) && $configuration['size'] > 0) {
-      $display_plugin_configuration['more'] = $this->prepareMoreLink($configuration['more']);
+      $display_plugin_configuration['more'] = $this->prepareMoreLink($configuration['more'], $cacheable_metadata);
     }
 
-    $access_cacheability = new CacheableMetadata();
     foreach ($links as $key => $link) {
       /** @var \Drupal\oe_link_lists\LinkInterface $link */
       $access = $link->access('view', NULL, TRUE);
-      $access_cacheability->addCacheableDependency($access);
+      $cacheable_metadata->addCacheableDependency($access);
 
       if (!$access->isAllowed()) {
         unset($links[$key]);
@@ -204,7 +204,7 @@ class LinkListViewBuilder extends EntityViewBuilder {
     // Apply the cacheability information of the link collection to the render
     // array.
     CacheableMetadata::createFromObject($links)
-      ->merge($access_cacheability)
+      ->merge($cacheable_metadata)
       ->applyTo($build);
 
     return $build;
@@ -239,13 +239,15 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *
    * @param array $more
    *   The link configuration.
+   * @param \Drupal\Core\Cache\CacheableMetadata|null $cacheable_metadata
+   *   The cacheable metadata.
    *
    * @return \Drupal\Core\Link|null
    *   The Link object or NULL if one is not needed.
    *
    * @SuppressWarnings(PHPMD.CyclomaticComplexity)
    */
-  protected function prepareMoreLink(array $more): ?Link {
+  protected function prepareMoreLink(array $more, CacheableMetadata $cacheable_metadata = NULL): ?Link {
     if ($more['button'] === 'no') {
       return NULL;
     }
@@ -277,6 +279,9 @@ class LinkListViewBuilder extends EntityViewBuilder {
       $url = Url::fromUri("entity:{$more['target']['entity_type']}/{$more['target']['entity_id']}");
       if (!$overridden_title) {
         $entity = $this->entityTypeManager->getStorage($more['target']['entity_type'])->load($more['target']['entity_id']);
+        if ($cacheable_metadata) {
+          $cacheable_metadata->addCacheableDependency($entity);
+        }
         $title = $entity->label();
       }
       return Link::fromTextAndUrl($title, $url);
