@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -246,6 +247,7 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *   The Link object or NULL if one is not needed.
    *
    * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   protected function prepareMoreLink(array $more, CacheableMetadata $cacheable_metadata = NULL): ?Link {
     if ($more['button'] === 'no') {
@@ -279,6 +281,9 @@ class LinkListViewBuilder extends EntityViewBuilder {
       $url = Url::fromUri("entity:{$more['target']['entity_type']}/{$more['target']['entity_id']}");
       if (!$overridden_title) {
         $entity = $this->entityTypeManager->getStorage($more['target']['entity_type'])->load($more['target']['entity_id']);
+        if (!$entity instanceof ContentEntityInterface) {
+          return NULL;
+        }
         if ($cacheable_metadata) {
           $cacheable_metadata->addCacheableDependency($entity);
         }
