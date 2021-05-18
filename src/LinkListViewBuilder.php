@@ -240,16 +240,15 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *
    * @param array $more
    *   The link configuration.
-   * @param \Drupal\Core\Cache\CacheableMetadata|null $cacheable_metadata
+   * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
    *   The cacheable metadata.
    *
    * @return \Drupal\Core\Link|null
    *   The Link object or NULL if one is not needed.
    *
    * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
-  protected function prepareMoreLink(array $more, CacheableMetadata $cacheable_metadata = NULL): ?Link {
+  protected function prepareMoreLink(array $more, CacheableMetadata $cacheable_metadata): ?Link {
     if ($more['button'] === 'no') {
       return NULL;
     }
@@ -284,9 +283,7 @@ class LinkListViewBuilder extends EntityViewBuilder {
         if (!$entity instanceof ContentEntityInterface) {
           return NULL;
         }
-        if ($cacheable_metadata) {
-          $cacheable_metadata->addCacheableDependency($entity);
-        }
+        $cacheable_metadata->addCacheableDependency($entity);
         $title = $entity->label();
       }
       return Link::fromTextAndUrl($title, $url);
