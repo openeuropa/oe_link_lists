@@ -92,12 +92,12 @@ class LinkListTest extends EntityKernelTestBase {
 
       $uuid = $link_list->uuid();
       $definition = $block_manager->getDefinition("oe_link_list_block:$uuid");
-      $this->assertEqual($definition['admin_label'], $value['administrative_title']);
+      $this->assertEquals($definition['admin_label'], $value['administrative_title']);
 
       /** @var \Drupal\Core\Block\BlockPluginInterface $plugin */
       $plugin = $block_manager->createInstance("oe_link_list_block:$uuid");
       $build = $plugin->build();
-      $this->assertEqual('full', $build['#view_mode']);
+      $this->assertEquals('full', $build['#view_mode']);
       $this->assertTrue(isset($build['#link_list']));
     }
 
@@ -141,7 +141,7 @@ class LinkListTest extends EntityKernelTestBase {
     $link_list->save();
 
     // Assert the display plugin preSave was called.
-    $this->assertEqual($link_list->getRevisionLogMessage(), 'Bar presave was called.');
+    $this->assertEquals($link_list->getRevisionLogMessage(), 'Bar presave was called.');
 
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
     $build = $builder->view($link_list);

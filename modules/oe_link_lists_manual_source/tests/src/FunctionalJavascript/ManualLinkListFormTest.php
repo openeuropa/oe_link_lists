@@ -252,7 +252,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     // View the link list and assert that we don't have the link as it was not
     // yet resolved.
     $this->drupalGet($link_list->toUrl());
-    $this->assertNoLink('Link title');
+    $this->assertSession()->linkNotExists('Link title');
 
     // Instruct the subscriber to resolve the internal route links.
     \Drupal::state()->set('oe_link_lists_manual_source_test_subscriber_resolve', TRUE);
