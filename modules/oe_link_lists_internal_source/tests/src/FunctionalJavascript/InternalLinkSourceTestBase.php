@@ -17,6 +17,11 @@ abstract class InternalLinkSourceTestBase extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'oe_link_lists_test',
     'oe_link_lists_internal_source',
