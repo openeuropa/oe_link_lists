@@ -96,12 +96,12 @@ class LinkListTest extends EntityKernelTestBase {
 
       $uuid = $link_list->uuid();
       $definition = $block_manager->getDefinition("oe_link_list_block:$uuid");
-      $this->assertEqual($definition['admin_label'], $value['administrative_title']);
+      $this->assertEquals($definition['admin_label'], $value['administrative_title']);
 
       /** @var \Drupal\Core\Block\BlockPluginInterface $plugin */
       $plugin = $block_manager->createInstance("oe_link_list_block:$uuid");
       $build = $plugin->build();
-      $this->assertEqual('full', $build['#view_mode']);
+      $this->assertEquals('full', $build['#view_mode']);
       $this->assertTrue(isset($build['#link_list']));
     }
 
