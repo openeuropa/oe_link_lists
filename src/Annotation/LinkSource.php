@@ -48,4 +48,14 @@ class LinkSource extends Plugin {
    */
   public $internal = FALSE;
 
+  /**
+   * The link list bundles this plugin should work with.
+   *
+   * This attribute is optional and if left empty, it means the plugin will be
+   * considered for all bundles.
+   *
+   * @var string[]
+   */
+  public $bundles = [];
+
 }

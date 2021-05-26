@@ -12,23 +12,6 @@ use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
 
 /**
- * Implements hook_module_implements_alter().
- */
-function oe_link_lists_manual_source_module_implements_alter(&$implementations, $hook) {
-  if ($hook !== 'link_list_presave') {
-    return;
-  }
-
-  // We need to make sure that this module's presave implementation goes first
-  // so that we can can initialize the manual source plugin and configuration.
-  $group = $implementations['oe_link_lists_manual_source'];
-  unset($implementations['oe_link_lists_manual_source']);
-  $implementations = [
-    'oe_link_lists_manual_source' => $group,
-  ] + $implementations;
-}
-
-/**
  * Implements hook_entity_type_build().
  */
 function oe_link_lists_manual_source_entity_type_build(array &$entity_types) {
@@ -36,23 +19,6 @@ function oe_link_lists_manual_source_entity_type_build(array &$entity_types) {
   if (isset($entity_types['link_list_link'])) {
     $entity_types['link_list_link']->setHandlerClass('inline_form', LinkListLinkInlineForm::class);
   }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave() for the link list entity type.
- */
-function oe_link_lists_manual_source_link_list_presave(EntityInterface $entity) {
-  /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
-  if ($entity->bundle() !== 'manual') {
-    return;
-  }
-
-  $configuration = $entity->getConfiguration();
-  $configuration['source'] = [
-    'plugin' => 'manual_links',
-    'plugin_configuration' => [],
-  ];
-  $entity->setConfiguration($configuration);
 }
 
 /**

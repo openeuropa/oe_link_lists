@@ -139,6 +139,14 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $element['#process'][] = [get_class($this), 'processUntranslatableFields'];
     };
 
+    $element['#type'] = 'container';
+    if (!isset($element['#attributes']['id'])) {
+      $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
+      $element['#attributes'] = [
+        'id' => 'link-list-element-wrapper-' . $wrapper_suffix,
+      ];
+    }
+
     $this->buildLinkSourceElements($items, $delta, $element, $form, $form_state);
     $this->buildLinkDisplayElements($items, $delta, $element, $form, $form_state);
 
@@ -230,8 +238,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
 
-    // Only the dynamic bundle exposes the choice of the link source plugin.
-    if ($link_list->bundle() !== 'dynamic') {
+    // Only certain bundles expose the choice of the link source plugin.
+    /** @var \Drupal\oe_link_lists\Entity\LinkListType $bundle */
+    $bundle = $this->entityTypeManager->getStorage('link_list_type')->load($link_list->bundle());
+    if (!$bundle->isLinkSourceConfigurable()) {
       return;
     }
 
@@ -245,6 +255,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#type' => 'details',
       '#title' => $this->t('The source of the links'),
       '#open' => TRUE,
+      '#element_parents' => $parents,
     ];
 
     $plugin_id = NestedArray::getValue($form_state->getStorage(), [
@@ -255,17 +266,24 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $plugin_id = $this->getConfigurationPluginId($link_list, 'source');
     }
 
-    $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
+    $source_plugin_options = $this->linkSourcePluginManager->getPluginsAsOptions($link_list->bundle());
+
+    // If we don't have a plugin ID and there is only one available option,
+    // use that as the default.
+    if (!$plugin_id && count($source_plugin_options) === 1) {
+      $plugin_id = key($source_plugin_options);
+    }
+
     $element['link_source']['plugin'] = [
       '#type' => 'select',
       '#title' => t('Link source'),
       '#empty_option' => $this->t('None'),
       '#empty_value' => '',
-      '#options' => $this->linkSourcePluginManager->getPluginsAsOptions(),
+      '#options' => $source_plugin_options,
       '#required' => TRUE,
       '#ajax' => [
         'callback' => [$this, 'pluginConfigurationAjaxCallback'],
-        'wrapper' => 'link-source-plugin-configuration' . $wrapper_suffix,
+        'wrapper' => $element['#attributes']['id'],
       ],
       '#default_value' => $plugin_id,
       '#submit' => [
@@ -281,9 +299,6 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // A wrapper that the Ajax callback will replace.
     $element['link_source']['plugin_configuration_wrapper'] = [
       '#type' => 'container',
-      '#attributes' => [
-        'id' => 'link-source-plugin-configuration' . $wrapper_suffix,
-      ],
       '#weight' => 10,
       '#tree' => TRUE,
     ];
@@ -349,38 +364,61 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $plugin_id = $this->getConfigurationPluginId($link_list, 'display');
     }
 
-    $wrapper_suffix = $element['#field_parents'] ? '-' . implode('-', $element['#field_parents']) : '';
-    $element['link_display']['plugin'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Link display'),
-      '#empty_option' => $this->t('None'),
-      '#empty_value' => '',
-      '#required' => TRUE,
-      '#options' => $this->linkDisplayPluginManager->getPluginsAsOptions(),
-      '#ajax' => [
-        'callback' => [$this, 'pluginConfigurationAjaxCallback'],
-        'wrapper' => 'link-display-plugin-configuration' . $wrapper_suffix,
-      ],
-      '#submit' => [
-        [get_class($this), 'selectPlugin'],
-      ],
-      '#default_value' => $plugin_id,
-      '#executes_submit_callback' => TRUE,
-      '#plugin_select' => 'link_display',
-      '#limit_validation_errors' => [
-        array_merge($parents, ['plugin']),
-      ],
-    ];
+    // Now we need to determine what is the selected link source plugin. This
+    // can be found in two ways: either from the form submission or to check
+    // the current link list configuration.
+    $link_source_plugin_id = $form_state->get([
+      'plugin_select',
+      'link_source',
+    ]);
+    if (!$link_source_plugin_id) {
+      $link_source_plugin_id = $this->getConfigurationPluginId($link_list, 'link_source');
+    }
 
-    // A wrapper that the Ajax callback will replace.
-    $element['link_display']['plugin_configuration_wrapper'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'id' => 'link-display-plugin-configuration' . $wrapper_suffix,
-      ],
-      '#weight' => 10,
-      '#tree' => TRUE,
-    ];
+    $display_plugin_options = $this->linkDisplayPluginManager->getPluginsAsOptions($link_list->bundle(), $link_source_plugin_id);
+
+    // If we don't have a plugin ID and there is only one available option,
+    // use that as the default.
+    if (!$plugin_id && count($display_plugin_options) === 1) {
+      $plugin_id = key($display_plugin_options);
+    }
+
+    if ($display_plugin_options) {
+      $element['link_display']['plugin'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Link display'),
+        '#empty_option' => $this->t('None'),
+        '#empty_value' => '',
+        '#required' => TRUE,
+        '#options' => $display_plugin_options,
+        '#ajax' => [
+          'callback' => [$this, 'pluginConfigurationAjaxCallback'],
+          'wrapper' => $element['#attributes']['id'],
+        ],
+        '#submit' => [
+          [get_class($this), 'selectPlugin'],
+        ],
+        '#default_value' => $plugin_id,
+        '#executes_submit_callback' => TRUE,
+        '#plugin_select' => 'link_display',
+        '#limit_validation_errors' => [
+          array_merge($parents, ['plugin']),
+        ],
+        '#access' => !empty($display_plugin_options),
+      ];
+
+      // A wrapper that the Ajax callback will replace.
+      $element['link_display']['plugin_configuration_wrapper'] = [
+        '#type' => 'container',
+        '#weight' => 10,
+        '#tree' => TRUE,
+      ];
+    }
+    else {
+      $element['link_display']['no_plugin'] = [
+        '#markup' => $this->t('There are no display plugins available for your chosen link source.'),
+      ];
+    }
 
     if ($plugin_id) {
       $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'display');
@@ -559,7 +597,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $element = NestedArray::getValue($form, array_merge($widget_state['array_parents'], [$delta]));
       $configuration['display'] = $this->extractPluginConfiguration('link_display', $element, $form_state);
 
-      if ($link_list->bundle() === 'dynamic') {
+      if (isset($element['link_source'])) {
         $configuration['source'] = $this->extractPluginConfiguration('link_source', $element, $form_state);
       }
 
@@ -703,8 +741,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public function pluginConfigurationAjaxCallback(array &$form, FormStateInterface $form_state): array {
     $triggering_element = $form_state->getTriggeringElement();
-    $element = NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -1));
-    return $element['plugin_configuration_wrapper'];
+    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -2));
   }
 
   /**

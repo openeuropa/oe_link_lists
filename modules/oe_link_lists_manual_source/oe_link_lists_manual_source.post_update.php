@@ -9,6 +9,7 @@ declare(strict_types = 1);
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\oe_link_lists\Entity\LinkListType;
 
 /**
  * Add override third party setting internal bundle.
@@ -40,4 +41,14 @@ function oe_link_lists_manual_source_post_update_00001() {
   $field_config = FieldConfig::load('link_list.manual.links');
   $field_config->setThirdPartySetting('composite_reference', 'composite', TRUE);
   $field_config->save();
+}
+
+/**
+ * Update the manual bundle to configure its link source plugin selection.
+ */
+function oe_link_lists_manual_source_post_update_00002() {
+  $link_list_type = LinkListType::load('manual');
+  $link_list_type->set('configurable_link_source_plugins', FALSE);
+  $link_list_type->set('default_link_source', 'manual_links');
+  $link_list_type->save();
 }

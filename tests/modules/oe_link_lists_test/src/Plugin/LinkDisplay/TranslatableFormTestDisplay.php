@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -9,12 +11,13 @@ use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
  * Plugin implementation of the link_display.
  *
  * @LinkDisplay(
- *   id = "translatable_form",
- *   label = @Translation("Translatable form display"),
- *   description = @Translation("Translatable form display description."),
+ *   id = "test_translatable_form",
+ *   label = @Translation("Translatable form"),
+ *   description = @Translation("A display that comes with a translatable form."),
+ *   bundles = { "dynamic", "manual" }
  * )
  */
-class TranslatableFormDisplay extends Foo implements TranslatableLinkListPluginInterface {
+class TranslatableFormTestDisplay extends LinkTagTestDisplay implements TranslatableLinkListPluginInterface {
 
   /**
    * {@inheritdoc}

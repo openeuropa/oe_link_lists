@@ -67,7 +67,7 @@ class InternalSourceTranslationTest extends InternalLinkSourceTestBase {
     $this->getSession()->getPage()->fillField('Title', 'Internal list');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Internal');

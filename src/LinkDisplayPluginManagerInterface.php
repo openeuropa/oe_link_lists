@@ -16,9 +16,14 @@ interface LinkDisplayPluginManagerInterface extends PluginManagerInterface {
    *
    * It uses plugin id as key and plugin label as value.
    *
+   * @param string $bundle
+   *   The bundle to retrieve the plugins for.
+   * @param string|null $link_source
+   *   The link source the display plugin should work with.
+   *
    * @return array
    *   The options.
    */
-  public function getPluginsAsOptions(): array;
+  public function getPluginsAsOptions(string $bundle = NULL, string $link_source = NULL): array;
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
 use Drupal\Core\Link;
@@ -7,15 +9,9 @@ use Drupal\oe_link_lists\LinkCollectionInterface;
 use Drupal\oe_link_lists\LinkDisplayPluginBase;
 
 /**
- * Plugin implementation of the link_display.
- *
- * @LinkDisplay(
- *   id = "foo",
- *   label = @Translation("Foo"),
- *   description = @Translation("Foo description."),
- * )
+ * A generic base class for test display plugins.
  */
-class Foo extends LinkDisplayPluginBase {
+class GenericTestDisplayBase extends LinkDisplayPluginBase {
 
   /**
    * {@inheritdoc}

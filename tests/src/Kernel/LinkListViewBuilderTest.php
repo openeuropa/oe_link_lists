@@ -78,10 +78,10 @@ class LinkListViewBuilderTest extends KernelTestBase {
     ]);
     $configuration = [
       'source' => [
-        'plugin' => 'baz',
+        'plugin' => 'test_cache_metadata',
       ],
       'display' => [
-        'plugin' => 'foo',
+        'plugin' => 'test_link_tag',
         'plugin_configuration' => ['link' => FALSE],
       ],
     ];

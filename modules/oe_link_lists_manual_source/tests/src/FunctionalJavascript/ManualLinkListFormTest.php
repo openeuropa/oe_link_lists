@@ -50,8 +50,11 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->fillField('Title', 'Test list');
     $this->getSession()->getPage()->fillField('Administrative title', 'List 1');
 
+    // Assert we don't see a Link source selector.
+    $this->assertSession()->fieldNotExists('Link Source');
+
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Create an external link.
@@ -227,7 +230,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->fillField('Administrative title', 'List 1');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal_route');

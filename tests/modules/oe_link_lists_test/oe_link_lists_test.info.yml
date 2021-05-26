@@ -1,6 +1,9 @@
-name: OpenEuropa Link Lists Test
-description: Test module for the OpenEuropa Link Lists.
+name: 'OpenEuropa Link Lists Test'
+description: 'Test module for the OpenEuropa Link Lists.'
 package: Testing
 
 type: module
 core_version_requirement: ^8.9 || ^9
+
+dependencies:
+  - oe_link_lists:oe_link_lists

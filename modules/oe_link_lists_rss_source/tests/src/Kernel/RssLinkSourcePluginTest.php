@@ -204,10 +204,6 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $feed_storage = $entity_type_manager->getStorage('aggregator_feed');
     $item_storage = $entity_type_manager->getStorage('aggregator_item');
 
-    // Confirm there are no aggregates before creating the plugin.
-    $this->assertCount(0, $feed_storage->loadMultiple());
-    $this->assertCount(0, $item_storage->loadMultiple());
-
     // Create a link list.
     $link_list_storage = $this->container->get('entity_type.manager')->getStorage('link_list');
     $values = [
@@ -228,14 +224,12 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
         ],
       ],
       'display' => [
-        'plugin' => 'bar',
+        'plugin' => 'test_configurable_title',
         'plugin_configuration' => ['link' => FALSE],
       ],
     ];
 
     $link_list->setConfiguration($configuration);
-    $this->assertEquals($configuration, $link_list->getConfiguration());
-
     $link_list->save();
 
     // Assert the aggregator feeds and items.

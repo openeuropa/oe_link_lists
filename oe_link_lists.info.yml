@@ -1,5 +1,5 @@
-name: OpenEuropa Link Lists
-description: OpenEuropa Link Lists handles manual and dynamic lists of links.
+name: 'OpenEuropa Link Lists'
+description: 'OpenEuropa Link Lists handles manual and dynamic lists of links.'
 package: OpenEuropa
 
 type: module

@@ -24,7 +24,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @LinkSource(
  *   id = "rss",
  *   label = @Translation("RSS"),
- *   description = @Translation("Source plugin that handles external RSS sources.")
+ *   description = @Translation("Source plugin that handles external RSS sources."),
+ *   bundles = { "dynamic" }
  * )
  */
 class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFactoryPluginInterface, TranslatableLinkListPluginInterface {

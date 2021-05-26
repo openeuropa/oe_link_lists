@@ -3,3 +3,5 @@ status: true
 dependencies: {  }
 id: manual
 label: Manual
+configurable_link_source_plugins: false
+default_link_source: manual_links

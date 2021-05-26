@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\oe_link_lists_test\Plugin\LinkDisplay;
 
 use Drupal\oe_link_lists\LinkCollectionInterface;
@@ -12,12 +14,13 @@ use Drupal\oe_link_lists\LinkDisplayPluginBase;
  * asserted in tests.
  *
  * @LinkDisplay(
- *   id = "baz",
- *   label = @Translation("Baz"),
- *   description = @Translation("Baz description."),
+ *   id = "test_markup",
+ *   label = @Translation("Markup"),
+ *   description = @Translation("Displays the link values wrapped in markup."),
+ *   bundles = { "dynamic", "manual" }
  * )
  */
-class Baz extends LinkDisplayPluginBase {
+class MarkupTestDisplay extends LinkDisplayPluginBase {
 
   /**
    * {@inheritdoc}

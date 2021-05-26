@@ -1,7 +1,6 @@
 langcode: en
 status: true
 dependencies: {  }
-id: dynamic
-label: Dynamic
+id: foo
+label: Foo
 configurable_link_source_plugins: true
-default_link_source: null

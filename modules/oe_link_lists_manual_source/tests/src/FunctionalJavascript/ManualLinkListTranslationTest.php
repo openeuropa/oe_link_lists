@@ -66,7 +66,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Baz');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Markup');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Create an external link.
@@ -151,7 +151,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
 
     // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Create some internal links that reference an untranslated node.

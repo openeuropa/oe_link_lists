@@ -9,19 +9,19 @@ use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultLink;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
-use Drupal\oe_link_lists\LinkSourcePluginBase;
 use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
 
 /**
  * Plugin implementation of the link_source.
  *
  * @LinkSource(
- *   id = "qux",
- *   label = @Translation("Qux"),
- *   description = @Translation("Qux description.")
+ *   id = "test_translatable",
+ *   label = @Translation("Translatable source"),
+ *   description = @Translation("A source with translatable configuration."),
+ *   bundles = { "dynamic" }
  * )
  */
-class Qux extends LinkSourcePluginBase implements TranslatableLinkListPluginInterface {
+class TranslatableTestSource extends ExampleTestSource implements TranslatableLinkListPluginInterface {
 
   /**
    * {@inheritdoc}

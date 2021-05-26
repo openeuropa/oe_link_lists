@@ -4,11 +4,13 @@ declare(strict_types = 1);
 
 namespace Drupal\Tests\oe_link_lists\FunctionalJavascript;
 
+use Behat\Mink\Element\NodeElement;
 use Drupal\aggregator\FeedStorageInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\Tests\oe_link_lists\Traits\NativeBrowserValidationTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -19,11 +21,12 @@ use Psr\Http\Message\RequestInterface;
  *
  * @group oe_link_lists
  */
-class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
+class LinkListConfigurationFormTest extends WebDriverTestBase {
 
   use ContentTypeCreationTrait;
   use NodeCreationTrait;
   use NativeBrowserValidationTrait;
+  use LinkListTestTrait;
 
   /**
    * The link storage.
@@ -97,6 +100,10 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     $web_user = $this->drupalCreateUser([
       'create dynamic link list',
       'edit dynamic link list',
+      'create foo link list',
+      'create single_plugin link list',
+      'edit foo link list',
+      'edit single_plugin link list',
       'view link list',
       'access link list canonical page',
     ]);
@@ -109,22 +116,104 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
   public function testLinkListDisplayConfiguration(): void {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
 
+    $this->drupalGet('link_list/add/single_plugin');
+    // Assert we can see only the source plugins that have no bundle
+    // restrictions.
+    $this->assertFieldSelectOptions('Link source', [
+      'test_no_bundle_restriction_source',
+    ]);
+    // Assert that since we have only 1 available source, it is by default
+    // selected.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link source')->find('css', 'option[value="test_no_bundle_restriction_source"]')->getAttribute('selected'));
+    // Assert we can see only the display plugins that have no bundle
+    // restrictions.
+    $this->assertFieldSelectOptions('Link display', [
+      'test_no_bundle_restriction_display',
+    ]);
+    // Assert that since we have only 1 available display, it is by default
+    // selected.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('Link display')->find('css', 'option[value="test_no_bundle_restriction_display"]')->getAttribute('selected'));
+
+    $this->drupalGet('link_list/add/foo');
+    // Assert we can only see the source plugins that work with the Foo
+    // bundle (or that don't have a bundle restriction).
+    $this->assertFieldSelectOptions('Link source', [
+      'test_foo_bundle_only_source',
+      'test_no_bundle_restriction_source',
+    ]);
+
+    // Assert we can only see the display plugins that work with the Foo
+    // bundle (or that don't have a bundle restriction).
+    $this->assertFieldSelectOptions('Link display', [
+      'test_foo_bundle_display',
+      'test_no_bundle_restriction_display',
+    ]);
+
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
     $this->getSession()->getPage()->fillField('Title', 'The title');
     $this->assertSession()->selectExists('Link source');
 
-    // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Foo');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
+    // Assert we can only see the source plugins that work with the Dynamic
+    // bundle.
+    $this->assertFieldSelectOptions('Link source', [
+      'rss',
+      'test_cache_metadata',
+      'test_complex_form',
+      'test_empty_collection',
+      'test_example_source',
+      'test_translatable',
+      'test_no_bundle_restriction_source',
+    ]);
 
-    // Select and configure the source plugin. We use the RSS plugin for this
-    // test.
+    // Assert we can only see the display plugins that work with the Dynamic
+    // bundle.
+    $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
+      'test_no_bundle_restriction_display',
+      'title',
+    ]);
+
+    // Pick a source plugin that will allow another display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Empty collection');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_empty_source_only_display',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
+      'test_no_bundle_restriction_display',
+      'title',
+    ]);
+
+    // Select the display plugin that has been just made available.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Display for empty source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Change to another source plugin to test the available display plugins
+    // reflect this.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'RSS');
     $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEmpty($this->getSession()->getPage()->findField('Link display')->find('css', "option[selected=selected]"));
+    $this->assertFieldSelectOptions('Link display', [
+      'test_configurable_title',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
+      'test_no_bundle_restriction_display',
+      'title',
+    ]);
     $this->assertSession()->fieldExists('The resource URL');
     $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
+
+    // Select and configure the display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
 
     // Save the link list.
     $this->getSession()->getPage()->pressButton('Save');
@@ -132,7 +221,7 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->load(1);
     $configuration = $link_list->getConfiguration();
-    $this->assertEquals('foo', $configuration['display']['plugin']);
+    $this->assertEquals('test_link_tag', $configuration['display']['plugin']);
     $this->assertEquals(['title' => NULL, 'more' => []], $configuration['display']['plugin_configuration']);
 
     // Change the Source plugin to none.
@@ -153,7 +242,7 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
 
     // Change the display plugin to make it configurable.
     $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Bar');
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Titles with optional link');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->checkboxChecked('Link');
     $this->getSession()->getPage()->uncheckField('Link');
@@ -163,7 +252,7 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->load(1);
     $configuration = $link_list->getConfiguration();
-    $this->assertEquals('bar', $configuration['display']['plugin']);
+    $this->assertEquals('test_configurable_title', $configuration['display']['plugin']);
     $this->assertEquals([
       'link' => FALSE,
     ], $configuration['display']['plugin_configuration']);
@@ -188,7 +277,7 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->pageTextNotContains('Display link to see all');
 
     // Select and configure the source plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'Baz');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Save the link list.
@@ -306,6 +395,34 @@ class LinkListDisplayConfigurationFormTest extends WebDriverTestBase {
     // The default button label is shown.
     $this->assertSession()->linkExists($node->label());
     $this->assertSession()->linkByHrefExists($node->toUrl()->toString());
+  }
+
+  /**
+   * Checks if a select element contains the specified options.
+   *
+   * @param string $name
+   *   The field name.
+   * @param array $expected_options
+   *   An array of expected options.
+   */
+  protected function assertFieldSelectOptions(string $name, array $expected_options): void {
+    $select = $this->getSession()->getPage()->find('named', [
+      'select',
+      $name,
+    ]);
+
+    if (!$select) {
+      $this->fail('Unable to find select ' . $name);
+    }
+
+    $options = $select->findAll('css', 'option');
+    array_walk($options, function (NodeElement &$option) {
+      $option = $option->getValue();
+    });
+    $options = array_filter($options);
+    sort($options);
+    sort($expected_options);
+    $this->assertIdentical($options, $expected_options);
   }
 
 }

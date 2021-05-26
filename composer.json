@@ -7,15 +7,15 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.3",
-        "drupal/core": "^8.9 || ^9",
-        "drupal/entity_reference_revisions": "^1.9",
-        "drupal/inline_entity_form": "^1.0-rc9"
+        "drupal/core": "^8.9 || ^9"
     },
     "require-dev": {
         "composer/installers": "~1.5",
         "drupal/core-composer-scaffold": "^8.9 || ^9",
         "drupal/config_devel": "~1.2",
         "drupal/composite_reference": "~1.0-alpha2",
+        "drupal/entity_reference_revisions": "^1.9",
+        "drupal/inline_entity_form": "^1.0-rc9",
         "drupal/drupal-extension": "~4.0",
         "drush/drush": "~10.3",
         "openeuropa/oe_multilingual": "dev-master",

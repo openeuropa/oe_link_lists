@@ -16,9 +16,12 @@ interface LinkSourcePluginManagerInterface extends PluginManagerInterface {
    *
    * It uses plugin id as key and plugin label as value.
    *
+   * @param string $bundle
+   *   The bundle to retrieve the plugins for.
+   *
    * @return array
    *   The options.
    */
-  public function getPluginsAsOptions(): array;
+  public function getPluginsAsOptions(string $bundle = NULL): array;
 
 }
