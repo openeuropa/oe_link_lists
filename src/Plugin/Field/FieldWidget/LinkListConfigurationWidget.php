@@ -610,8 +610,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#open' => TRUE,
     ];
 
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
-    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $link_list = $this->getLinkListFromForm($form, $form_state);
     $plugin_id = NestedArray::getValue($form_state->getStorage(), [
       'plugin_select',
       'no_results_behaviour',

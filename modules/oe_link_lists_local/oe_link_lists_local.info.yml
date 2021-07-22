@@ -1,0 +1,10 @@
+name: 'OpenEuropa Link Lists Local'
+description: 'Provides support for creating localized (referenced) link lists in a field.'
+package: OpenEuropa
+
+type: module
+core_version_requirement: ^8.9 || ^9
+
+dependencies:
+  - oe_link_lists:oe_link_lists
+  - inline_entity_form:inline_entity_form

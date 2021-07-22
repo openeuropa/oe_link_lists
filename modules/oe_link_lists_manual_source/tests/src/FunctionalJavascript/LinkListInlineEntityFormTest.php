@@ -17,11 +17,6 @@ class LinkListInlineEntityFormTest extends ManualLinkListTestBase {
   ];
 
   /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'classy';
-
-  /**
    * Default user permissions.
    *
    * @var array
@@ -54,6 +49,10 @@ class LinkListInlineEntityFormTest extends ManualLinkListTestBase {
 
     // Select and configure the display plugin.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Create a link.

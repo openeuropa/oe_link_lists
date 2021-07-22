@@ -1,0 +1,13 @@
+oe_link_lists_local.settings:
+  type: mapping
+  label: 'Local link lists field settings'
+  mapping:
+    local:
+      type: boolean
+      label: 'Whether the field references a local link list.'
+
+field.field.*.*.*.third_party.oe_link_lists_local:
+  type: oe_link_lists_local.settings
+
+core.base_field_override.*.*.*.third_party.oe_link_lists_local:
+  type: oe_link_lists_local.settings
