@@ -42,7 +42,10 @@ class LinkListLinkTypeForm extends BundleEntityFormBase {
       '#default_value' => $entity_type->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => [
-        'exists' => ['Drupal\oe_link_lists_manual_source\Entity\LinkListLinkType', 'load'],
+        'exists' => [
+          'Drupal\oe_link_lists_manual_source\Entity\LinkListLinkType',
+          'load',
+        ],
         'source' => ['label'],
       ],
       '#description' => $this->t('A unique machine-readable name for this link list link type. It must only contain lowercase letters, numbers, and underscores.'),

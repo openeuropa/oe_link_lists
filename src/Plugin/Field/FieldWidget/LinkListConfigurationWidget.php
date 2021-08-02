@@ -518,7 +518,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
 
     // This element behaves like an entity autocomplete form element but has
     // extra custom validation to allow any routes to be specified.
-    $name = $first_parent . '[' . implode('][', array_merge($parents, ['more', 'button'])) . ']';
+    $name = $first_parent . '[' . implode('][', array_merge($parents, [
+      'more',
+      'button',
+    ])) . ']';
     $element['link_display']['more']['more_target'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Target'),
@@ -549,7 +552,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         ],
       ],
     ];
-    $title_override_name = $first_parent . '[' . implode('][', array_merge($parents, ['more', 'more_title_override'])) . ']';
+    $title_override_name = $first_parent . '[' . implode('][', array_merge($parents, [
+      'more',
+      'more_title_override',
+    ])) . ']';
     $element['link_display']['more']['more_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Button label'),
@@ -577,7 +583,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public static function selectPlugin(array $form, FormStateInterface $form_state): void {
     $triggering_element = $form_state->getTriggeringElement();
-    NestedArray::setValue($form_state->getStorage(), ['plugin_select', $triggering_element['#plugin_select']], $triggering_element['#value']);
+    NestedArray::setValue($form_state->getStorage(), [
+      'plugin_select',
+      $triggering_element['#plugin_select'],
+    ], $triggering_element['#value']);
     $form_state->setRebuild(TRUE);
   }
 
@@ -630,7 +639,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
 
     $configuration = [];
 
-    $plugin_id = $form_state->getValue(array_merge($element['#parents'], [$plugin_type, 'plugin']));
+    $plugin_id = $form_state->getValue(array_merge($element['#parents'], [
+      $plugin_type,
+      'plugin',
+    ]));
     if ($plugin_id) {
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $plugin_managers[$plugin_type]->createInstance($plugin_id);
@@ -780,7 +792,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         'handler' => $element['#selection_handler'],
       ]);
       if (!$handler->validateReferenceableEntities([$entity_id])) {
-        $form_state->setError($element, t('The referenced entity (%type: %id) does not exist.', ['%type' => $element['#target_type'], '%id' => $entity_id]));
+        $form_state->setError($element, t('The referenced entity (%type: %id) does not exist.', [
+          '%type' => $element['#target_type'],
+          '%id' => $entity_id,
+        ]));
       }
 
       // Either an error or a valid entity is present. Exit early.

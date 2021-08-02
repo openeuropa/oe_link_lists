@@ -59,8 +59,14 @@ class ComplexFormTestSource extends ExampleTestSource implements TranslatableLin
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $this->configuration['translatable_string'] = $form_state->getValue(['complex_form', 'translatable_string']);
-    $this->configuration['non_translatable_string'] = $form_state->getValue(['complex_form', 'non_translatable_string']);
+    $this->configuration['translatable_string'] = $form_state->getValue([
+      'complex_form',
+      'translatable_string',
+    ]);
+    $this->configuration['non_translatable_string'] = $form_state->getValue([
+      'complex_form',
+      'non_translatable_string',
+    ]);
   }
 
   /**

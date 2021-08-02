@@ -99,7 +99,10 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
     $link = $event->hasLink() ? $event->getLink() : NULL;
     $bundle = \Drupal::entityTypeManager()->getStorage('link_list_link_type')->load($this->bundle())->label();
     $title = $link instanceof LinkInterface ? $link->getTitle() : $this->t('Unresolved');
-    return $this->t('@bundle link: @title', ['@bundle' => $bundle, '@title' => $title]);
+    return $this->t('@bundle link: @title', [
+      '@bundle' => $bundle,
+      '@title' => $title,
+    ]);
   }
 
   /**

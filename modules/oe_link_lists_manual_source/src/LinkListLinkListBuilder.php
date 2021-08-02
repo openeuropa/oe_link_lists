@@ -28,7 +28,7 @@ class LinkListLinkListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity): array {
-    /* @var \Drupal\oe_link_lists\Entity\LinkListLink $entity */
+    /** @var \Drupal\oe_link_lists\Entity\LinkListLink $entity */
     $row['id'] = $entity->id();
 
     $row['name'] = Link::createFromRoute(

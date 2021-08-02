@@ -70,11 +70,17 @@ class LinkListAccessTest extends KernelTestBase {
     $published->setPublished()->save();
 
     // An unpublished one.
-    $unpublished_entity = Node::create(['title' => 'Unpublished', 'type' => 'page']);
+    $unpublished_entity = Node::create([
+      'title' => 'Unpublished',
+      'type' => 'page',
+    ]);
     $unpublished_entity->setUnpublished()->save();
 
     // A node with a published revision and a pending unpublished revision.
-    $pending_unpublished = Node::create(['title' => 'Published revision', 'type' => 'page']);
+    $pending_unpublished = Node::create([
+      'title' => 'Published revision',
+      'type' => 'page',
+    ]);
     $pending_unpublished->setPublished()->save();
     // Create the pending revision.
     $pending_unpublished->setTitle('Unpublished revision');
