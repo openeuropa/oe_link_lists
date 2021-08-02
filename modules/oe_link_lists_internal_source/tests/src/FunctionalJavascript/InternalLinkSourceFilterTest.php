@@ -178,7 +178,12 @@ class InternalLinkSourceFilterTest extends InternalLinkSourceTestBase {
     ], $link_list->getConfiguration()['source']['plugin_configuration']);
 
     // Enable the CreationTime plugin to work on nodes.
-    \Drupal::service('state')->set('internal_source_test_creation_time_applicable_entity_types', ['node' => ['page', 'news']]);
+    \Drupal::service('state')->set('internal_source_test_creation_time_applicable_entity_types', [
+      'node' => [
+        'page',
+        'news',
+      ],
+    ]);
 
     // Edit the list.
     $this->drupalGet($link_list->toUrl('edit-form'));

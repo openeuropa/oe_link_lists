@@ -166,7 +166,10 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $link */
     $links = \Drupal::entityTypeManager()->getStorage('link_list_link')->loadByProperties(['title' => 'Overridden title']);
     $link = reset($links);
-    $link->addTranslation('fr', ['title' => 'Titre redéfinie', 'teaser' => 'Teaser redéfinie'])->save();
+    $link->addTranslation('fr', [
+      'title' => 'Titre redéfinie',
+      'teaser' => 'Teaser redéfinie',
+    ])->save();
 
     // Assert the rendering in English.
     $this->assertSession()->linkExists('Overridden title');

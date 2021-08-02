@@ -282,7 +282,10 @@ class LinkCollectionTest extends UnitTestCase {
     $collection->add($link_two);
     $this->assertEquals(['test_context_1', 'test_context_2'], $collection->getCacheContexts());
 
-    $collection->addCacheContexts(['collection_context_1', 'collection_context_2']);
+    $collection->addCacheContexts([
+      'collection_context_1',
+      'collection_context_2',
+    ]);
     $this->assertEquals([
       'collection_context_1',
       'collection_context_2',
@@ -350,10 +353,22 @@ class LinkCollectionTest extends UnitTestCase {
    */
   public function invalidArgumentDataProvider(): array {
     return [
-      'string' => ['test', 'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got string.'],
-      'double' => [3.14, 'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got double.'],
-      'object' => [new \stdClass(), 'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got stdClass.'],
-      'url class' => [new Url('<front>'), 'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got Drupal\Core\Url.'],
+      'string' => [
+        'test',
+        'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got string.',
+      ],
+      'double' => [
+        3.14,
+        'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got double.',
+      ],
+      'object' => [
+        new \stdClass(),
+        'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got stdClass.',
+      ],
+      'url class' => [
+        new Url('<front>'),
+        'Invalid argument type: expected Drupal\oe_link_lists\LinkInterface, got Drupal\Core\Url.',
+      ],
     ];
   }
 

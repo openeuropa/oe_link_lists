@@ -56,7 +56,10 @@ class LinkListLinkTest extends EntityKernelTestBase {
 
     // Create a content type.
     $node_type_storage = $entity_type_manager->getStorage('node_type');
-    $type = $node_type_storage->create(['name' => 'Test content type', 'type' => 'test_ct']);
+    $type = $node_type_storage->create([
+      'name' => 'Test content type',
+      'type' => 'test_ct',
+    ]);
     $type->save();
 
     $values = [
@@ -132,7 +135,10 @@ class LinkListLinkTest extends EntityKernelTestBase {
 
     // Create a content type.
     $node_type_storage = $entity_type_manager->getStorage('node_type');
-    $type = $node_type_storage->create(['name' => 'Test content type', 'type' => 'test_ct']);
+    $type = $node_type_storage->create([
+      'name' => 'Test content type',
+      'type' => 'test_ct',
+    ]);
     $type->save();
 
     $values = [
