@@ -56,6 +56,13 @@ class LinkListViewBuilder extends EntityViewBuilder {
   protected $entityTypeManager;
 
   /**
+   * The no_results_behaviour plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface
+   */
+  protected $noResultsBehaviourPluginManager;
+
+  /**
    * Constructs a new LinkListViewBuilder.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -76,13 +83,18 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *   The event dispatcher.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager
+   *   The no_results_behaviour plugin manager.
+   *
+   * @SuppressWarnings(PHPMD.ExcessiveParameterList)
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityRepositoryInterface $entity_repository, LanguageManagerInterface $language_manager, Registry $theme_registry = NULL, EntityDisplayRepositoryInterface $entity_display_repository = NULL, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EventDispatcherInterface $event_dispatcher, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeInterface $entity_type, EntityRepositoryInterface $entity_repository, LanguageManagerInterface $language_manager, Registry $theme_registry = NULL, EntityDisplayRepositoryInterface $entity_display_repository = NULL, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EventDispatcherInterface $event_dispatcher, EntityTypeManagerInterface $entity_type_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager) {
     parent::__construct($entity_type, $entity_repository, $language_manager, $theme_registry, $entity_display_repository);
     $this->linkSourceManager = $link_source_plugin_manager;
     $this->linkDisplayManager = $link_display_plugin_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->entityTypeManager = $entity_type_manager;
+    $this->noResultsBehaviourPluginManager = $no_results_behaviour_manager;
   }
 
   /**
@@ -98,7 +110,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
       $container->get('plugin.manager.oe_link_lists.link_source'),
       $container->get('plugin.manager.oe_link_lists.link_display'),
       $container->get('event_dispatcher'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('plugin.manager.oe_link_lists.no_results_behaviour')
     );
   }
 
@@ -198,15 +211,25 @@ class LinkListViewBuilder extends EntityViewBuilder {
       }
     }
 
+    // We need to run a check on the "no_results_behaviour" plugin to maintain
+    // a level of BC.
+    if ($links->isEmpty() && isset($configuration['no_results_behaviour']['plugin'])) {
+      $no_results_behaviour_plugin = $configuration['no_results_behaviour']['plugin'];
+      $no_results_behaviour_plugin_configuration = $configuration['no_results_behaviour']['plugin_configuration'] ?? [];
+      /** @var \Drupal\oe_link_lists\NoResultsBehaviourInterface $plugin */
+      $plugin = $this->noResultsBehaviourPluginManager->createInstance($no_results_behaviour_plugin, $no_results_behaviour_plugin_configuration);
+      $build = $plugin->build($link_list);
+      $cacheable_metadata->addCacheableDependency($links);
+      $cacheable_metadata->applyTo($build);
+
+      return $build;
+    }
+
     /** @var \Drupal\oe_link_lists\LinkDisplayInterface $plugin */
     $plugin = $this->linkDisplayManager->createInstance($display_plugin, $display_plugin_configuration);
     $build = $plugin->build($links);
-
-    // Apply the cacheability information of the link collection to the render
-    // array.
-    CacheableMetadata::createFromObject($links)
-      ->merge($cacheable_metadata)
-      ->applyTo($build);
+    $cacheable_metadata->addCacheableDependency($links);
+    $cacheable_metadata->applyTo($build);
 
     return $build;
   }

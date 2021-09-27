@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\oe_link_lists\Plugin\LinkDisplay;
 
 use Drupal\Core\Link;

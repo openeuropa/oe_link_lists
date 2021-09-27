@@ -133,6 +133,10 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
 
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
     // Save the link list.
     $this->getSession()->getPage()->pressButton('Save');
 

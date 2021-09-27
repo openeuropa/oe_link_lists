@@ -26,16 +26,26 @@ class LinkListConfigurationManager {
   protected $linkDisplayManager;
 
   /**
+   * The no_results_behaviour plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface
+   */
+  protected $noResultsBehaviourPluginManager;
+
+  /**
    * LinkListConfigurationManager constructor.
    *
    * @param \Drupal\oe_link_lists\LinkSourcePluginManagerInterface $linkSourceManager
    *   The link source manager.
    * @param \Drupal\oe_link_lists\LinkDisplayPluginManagerInterface $linkDisplayManager
    *   The link display manager.
+   * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $noResultsBehaviourPluginManager
+   *   The no_results_behaviour plugin manager.
    */
-  public function __construct(LinkSourcePluginManagerInterface $linkSourceManager, LinkDisplayPluginManagerInterface $linkDisplayManager) {
+  public function __construct(LinkSourcePluginManagerInterface $linkSourceManager, LinkDisplayPluginManagerInterface $linkDisplayManager, NoResultsBehaviourPluginManagerInterface $noResultsBehaviourPluginManager) {
     $this->linkSourceManager = $linkSourceManager;
     $this->linkDisplayManager = $linkDisplayManager;
+    $this->noResultsBehaviourPluginManager = $noResultsBehaviourPluginManager;
   }
 
   /**
@@ -148,6 +158,15 @@ class LinkListConfigurationManager {
     if ($display_plugin instanceof TranslatableLinkListPluginInterface) {
       $plugin_parents = $this->getPluginTranslatableParents($display_plugin, [
         'display',
+        'plugin_configuration',
+      ]);
+      $parents = array_merge($parents, $plugin_parents);
+    }
+
+    $no_results_behaviour_plugin = isset($configuration['no_results_behaviour']['plugin']) ? $this->noResultsBehaviourPluginManager->createInstance($configuration['no_results_behaviour']['plugin']) : NULL;
+    if ($no_results_behaviour_plugin instanceof TranslatableLinkListPluginInterface) {
+      $plugin_parents = $this->getPluginTranslatableParents($no_results_behaviour_plugin, [
+        'no_results_behaviour',
         'plugin_configuration',
       ]);
       $parents = array_merge($parents, $plugin_parents);
