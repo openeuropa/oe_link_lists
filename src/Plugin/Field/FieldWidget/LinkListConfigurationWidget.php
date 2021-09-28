@@ -5,8 +5,6 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -16,11 +14,11 @@ use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
-use Drupal\Core\Url;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists\LinkDisplayPluginManagerInterface;
 use Drupal\oe_link_lists\LinkListConfigurationManager;
 use Drupal\oe_link_lists\LinkSourcePluginManagerInterface;
+use Drupal\oe_link_lists\MoreLinkPluginManagerInterface;
 use Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -82,6 +80,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
   protected $noResultsBehaviourPluginManager;
 
   /**
+   * The more_link plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\MoreLinkPluginManagerInterface
+   */
+  protected $moreLinkPluginManager;
+
+  /**
    * Constructs a LinkListConfigurationWidget object.
    *
    * @param string $plugin_id
@@ -106,10 +111,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The link list configuration manager.
    * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager
    *   The no_results_behaviour plugin manager.
+   * @param \Drupal\oe_link_lists\MoreLinkPluginManagerInterface $more_link_manager
+   *   The more_link plugin manager.
    *
    * @SuppressWarnings(PHPMD.ExcessiveParameterList)
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager, MoreLinkPluginManagerInterface $more_link_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
     $this->linkSourcePluginManager = $link_source_plugin_manager;
@@ -118,6 +125,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     $this->elementInfoManager = $element_info_manager;
     $this->linkListConfigurationManager = $link_list_configuration_manager;
     $this->noResultsBehaviourPluginManager = $no_results_behaviour_manager;
+    $this->moreLinkPluginManager = $more_link_manager;
   }
 
   /**
@@ -135,7 +143,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.element_info'),
       $container->get('oe_link_list.link_list_configuration_manager'),
-      $container->get('plugin.manager.oe_link_lists.no_results_behaviour')
+      $container->get('plugin.manager.oe_link_lists.no_results_behaviour'),
+      $container->get('plugin.manager.oe_link_lists.more_link')
     );
   }
 
@@ -146,10 +155,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $entity */
     $entity = $items->getEntity();
     $element['#translatable_parents'] = [];
+    $element['#is_translation'] = FALSE;
     if (!$entity->isDefaultTranslation()) {
       $element['#translatable_parents'] = $this->linkListConfigurationManager->getTranslatableParents($items->first());
       $element['#process'][] = [get_class($this), 'processUntranslatableFields'];
-    };
+      $element['#is_translation'] = TRUE;
+    }
 
     $element['#type'] = 'container';
     if (!isset($element['#attributes']['id'])) {
@@ -187,14 +198,14 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public static function processUntranslatableFields(array &$element, FormStateInterface $form_state): array {
     $translatable_parents = $element['#translatable_parents'] ?? [];
-    if (!$translatable_parents) {
-      return $element;
-    }
 
     $parents = [];
-    foreach (array_keys($translatable_parents) as $parents_string) {
-      $parents[] = explode('][', $parents_string);
+    if ($translatable_parents) {
+      foreach (array_keys($translatable_parents) as $parents_string) {
+        $parents[] = explode('][', $parents_string);
+      }
     }
+
     static::disableNonTranslatableElements($element, $parents);
 
     return $element;
@@ -329,9 +340,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#plugin' => $plugin,
       ];
 
-      if (!empty($element['#translatable_parents'])) {
-        // If we are translating the entity and we have elements that we are
-        // translating, add a process to the plugin form to handle them.
+      if ($element['#is_translation'] === TRUE) {
+        // If we are translating the entity, process the form to disable all
+        // the non-translatable form elements.
         $process = [get_class($this), 'processUntranslatableFields'];
         $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
         $element['link_source']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
@@ -441,22 +452,20 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#plugin' => $plugin,
       ];
 
-      if (!empty($element['#translatable_parents'])) {
-        // If we are translating the entity and we have elements that we are
-        // translating, add a process to the plugin form to handle them.
+      if ($element['#is_translation'] === TRUE) {
+        // If we are translating the entity, process the form to disable all
+        // the non-translatable form elements.
         $process = [get_class($this), 'processUntranslatableFields'];
         $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
         $element['link_display']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
       }
     }
 
-    $this->buildGeneralConfigurationForm($items, $delta, $element, $form, $form_state);
+    $this->buildMoreLinkConfigurationForm($items, $delta, $element, $form, $form_state);
   }
 
   /**
-   * Builds the general configuration form.
-   *
-   * Configures the size of the list and "See all" button.
+   * Configures the size of the list and "More link" plugin.
    *
    * @param \Drupal\Core\Field\FieldItemListInterface $items
    *   The field items.
@@ -469,9 +478,11 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
    */
-  protected function buildGeneralConfigurationForm(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
+  protected function buildMoreLinkConfigurationForm(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $this->getLinkListFromForm($form, $form_state);
     $configuration = $link_list->getConfiguration();
+    $more_link_plugin_options = $this->moreLinkPluginManager->getPluginsAsOptions();
 
     $parents = array_merge($element['#field_parents'], [
       $items->getName(),
@@ -490,13 +501,22 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#weight' => 10,
       '#options' => $options,
       '#default_value' => $configuration['size'] ?? 0,
+      '#access' => !empty($more_link_plugin_options),
     ];
-
     $name = $first_parent . '[' . implode('][', array_merge($parents, ['size'])) . ']';
-    $element['link_display']['more'] = [
-      '#type' => 'fieldset',
+
+    $parents = array_merge($element['#field_parents'], [
+      $items->getName(),
+      $delta,
+      'link_display',
+      'more_link',
+    ]);
+
+    $element['link_display']['more_link'] = [
+      '#type' => 'details',
+      '#title' => $this->t('More link'),
       '#weight' => 11,
-      '#title' => $this->t('Display button to see all links'),
+      '#open' => TRUE,
       '#states' => [
         'invisible' => [
           'select[name="' . $name . '"]' => ['value' => 0],
@@ -504,83 +524,72 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       ],
     ];
 
-    $element['link_display']['more']['button'] = [
-      '#type' => 'radios',
-      '#title' => '',
-      '#default_value' => $configuration['more']['button'] ?? 'no',
-      '#options' => [
-        'no' => $this->t('No, do not display "See all" button'),
-        'custom' => $this->t('Yes, display a custom button'),
-      ],
-    ];
+    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
+      'plugin_select',
+      'more_link',
+    ]);
 
-    $default_target = '';
-    if (isset($configuration['more']['target'])) {
-      if ($configuration['more']['target']['type'] === 'entity') {
-        if ($entity = $this->entityTypeManager->getStorage($configuration['more']['target']['entity_type'])->load($configuration['more']['target']['entity_id'])) {
-          $default_target = EntityAutocomplete::getEntityLabels([$entity]);
-        }
-      }
-      if ($configuration['more']['target']['type'] === 'custom') {
-        $default_target = $configuration['more']['target']['url'];
-      }
+    // If we don't have a selected plugin ID, take it from the configuration.
+    // However, only do so if we are not part of an Ajax rebuild.
+    if (!$plugin_id && !$form_state->getTriggeringElement()) {
+      $plugin_id = $this->getConfigurationPluginId($link_list, 'more_link');
     }
 
-    // This element behaves like an entity autocomplete form element but has
-    // extra custom validation to allow any routes to be specified.
-    $name = $first_parent . '[' . implode('][', array_merge($parents, [
-      'more',
-      'button',
-    ])) . ']';
-    $element['link_display']['more']['more_target'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Target'),
-      '#description' => $this->t('This can be an external link or you can autocomplete to find internal content.'),
-      '#target_type' => 'node',
-      '#selection_handler' => 'default',
-      '#autocreate' => FALSE,
-      '#process' => $this->elementInfoManager->getInfoProperty('entity_autocomplete', '#process'),
-      '#default_value' => $default_target,
-      '#element_validate' => [[get_class($this), 'validateMoreTarget']],
-      '#states' => [
-        'visible' => [
-          'input[name="' . $name . '"]' => ['value' => 'custom'],
+    if ($more_link_plugin_options) {
+      $element['link_display']['more_link']['plugin'] = [
+        '#type' => 'select',
+        '#title' => $this->t('More link'),
+        '#empty_option' => $this->t('None'),
+        '#empty_value' => '',
+        '#options' => $more_link_plugin_options,
+        '#ajax' => [
+          'callback' => [$this, 'pluginConfigurationAjaxCallback'],
+          'wrapper' => $element['#attributes']['id'],
+          'parents_slice' => 3,
         ],
-        'required' => [
-          'input[name="' . $name . '"]' => ['value' => 'custom'],
+        '#submit' => [
+          [get_class($this), 'selectPlugin'],
         ],
-      ],
-    ];
+        '#default_value' => $plugin_id,
+        '#executes_submit_callback' => TRUE,
+        '#plugin_select' => 'more_link',
+        '#limit_validation_errors' => [
+          array_merge($parents, ['plugin']),
+        ],
+        '#access' => !empty($more_link_plugin_options),
+      ];
 
-    $element['link_display']['more']['more_title_override'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Override the button label. Defaults to "See all" or the referenced entity label.'),
-      '#default_value' => isset($configuration['more']['title_override']) && !is_null($configuration['more']['title_override']),
-      '#states' => [
-        'visible' => [
-          'input[name="' . $name . '"]' => ['value' => 'custom'],
-        ],
-      ],
-    ];
-    $title_override_name = $first_parent . '[' . implode('][', array_merge($parents, [
-      'more',
-      'more_title_override',
-    ])) . ']';
-    $element['link_display']['more']['more_title'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Button label'),
-      '#default_value' => $configuration['more']['title_override'] ?? '',
-      '#element_validate' => [[get_class($this), 'validateMoreLinkOverride']],
-      '#states' => [
-        'visible' => [
-          'input[name="' . $name . '"]' => ['value' => 'custom'],
-          'input[name="' . $title_override_name . '"]' => ['checked' => TRUE],
-        ],
-        'required' => [
-          'input[name="' . $title_override_name . '"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
+      // A wrapper that the Ajax callback will replace.
+      $element['link_display']['more_link']['plugin_configuration_wrapper'] = [
+        '#type' => 'container',
+        '#weight' => 10,
+        '#tree' => TRUE,
+      ];
+    }
+    else {
+      $element['link_display']['more_link']['no_plugin'] = [
+        '#markup' => $this->t('There are no plugins available.'),
+      ];
+    }
+
+    if ($plugin_id) {
+      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'more_link');
+      /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
+      $plugin = $this->moreLinkPluginManager->createInstance($plugin_id, $existing_config);
+
+      $element['link_display']['more_link']['plugin_configuration_wrapper'][$plugin_id] = [
+        '#process' => [[get_class($this), 'processPluginConfiguration']],
+        '#plugin' => $plugin,
+      ];
+
+      if ($element['#is_translation'] === TRUE) {
+        // If we are translating the entity, process the form to disable all
+        // the non-translatable form elements.
+        $process = [get_class($this), 'processUntranslatableFields'];
+        $element['link_display']['more_link']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
+        $element['link_display']['more_link']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
+      }
+    }
   }
 
   /**
@@ -675,9 +684,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#plugin' => $plugin,
       ];
 
-      if (!empty($element['#translatable_parents'])) {
-        // If we are translating the entity and we have elements that we are
-        // translating, add a process to the plugin form to handle them.
+      if ($element['#is_translation'] === TRUE) {
+        // If we are translating the entity, process the form to disable all
+        // the non-translatable form elements.
         $process = [get_class($this), 'processUntranslatableFields'];
         $element['no_results_behaviour']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
         $element['no_results_behaviour']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
@@ -709,7 +718,6 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     parent::extractFormValues($items, $form, $form_state);
 
     $field_name = $items->getName();
-    $link_list = $this->getLinkListFromForm($form, $form_state);
     $widget_state = self::getWidgetState($form['#parents'], $field_name, $form_state);
 
     foreach ($items as $delta => $value) {
@@ -717,14 +725,32 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       // Extracting the element from the form needs to take into account to full
       // form because the widget state is set relative to the full form.
       $element = NestedArray::getValue($form_state->getCompleteForm(), array_merge($widget_state['array_parents'], [$delta]));
+      // Extract the display plugin configuration and the pager size.
       $configuration['display'] = $this->extractPluginConfiguration('link_display', $element, $form_state);
+      $configuration['size'] = (int) $form_state->getValue(array_merge($element['#parents'], [
+        'link_display',
+        'size',
+      ]));
+
+      // Extract the no_results_behaviour plugin configuration.
       $configuration['no_results_behaviour'] = $this->extractPluginConfiguration('no_results_behaviour', $element, $form_state);
 
+      // Extract the link_source plugin configuration. We need to check if the
+      // element is there because there can be link lists with preset
+      // link source plugins.
       if (isset($element['link_source'])) {
         $configuration['source'] = $this->extractPluginConfiguration('link_source', $element, $form_state);
       }
 
-      $this->applyGeneralListConfiguration($configuration, $element, $form_state);
+      // Extract the more_link plugin configuration. We need to check if the
+      // element is there because not all link lists with a limit may want to
+      // configure a more_link.
+      if (isset($element['link_display']['more_link'])) {
+        // The more_link plugin config is embedded within the link display
+        // config element.
+        $element['#plugin_type_parents'] = ['link_display'];
+        $configuration['more_link'] = $this->extractPluginConfiguration('more_link', $element, $form_state);
+      }
       $this->linkListConfigurationManager->setConfiguration($configuration, $items->get($delta));
     }
   }
@@ -772,21 +798,34 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       'link_source' => $this->linkSourcePluginManager,
       'link_display' => $this->linkDisplayPluginManager,
       'no_results_behaviour' => $this->noResultsBehaviourPluginManager,
+      'more_link' => $this->moreLinkPluginManager,
     ];
 
     $configuration = [];
 
-    $plugin_id = $form_state->getValue(array_merge($element['#parents'], [
+    $parents = $element['#parents'];
+    if (isset($element['#plugin_type_parents'])) {
+      $parents = array_merge($parents, $element['#plugin_type_parents']);
+    }
+    $plugin_id = $form_state->getValue(array_merge($parents, [
       $plugin_type,
       'plugin',
     ]));
+
     if ($plugin_id) {
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $plugin_managers[$plugin_type]->createInstance($plugin_id);
 
-      if (isset($element[$plugin_type]['plugin_configuration_wrapper'][$plugin_id])) {
-        $subform_state = SubformState::createForSubform($element[$plugin_type]['plugin_configuration_wrapper'][$plugin_id], $form_state->getCompleteForm(), $form_state);
-        $plugin->submitConfigurationForm($element[$plugin_type]['plugin_configuration_wrapper'][$plugin_id], $subform_state);
+      $plugin_configuration_parents = !isset($element['#plugin_type_parents']) ? [] : $element['#plugin_type_parents'];
+      $plugin_configuration_parents = array_merge($plugin_configuration_parents, [
+        $plugin_type,
+        'plugin_configuration_wrapper',
+        $plugin_id,
+      ]);
+      $plugin_configuration_element = NestedArray::getValue($element, $plugin_configuration_parents, $exists);
+      if ($exists) {
+        $subform_state = SubformState::createForSubform($plugin_configuration_element, $form_state->getCompleteForm(), $form_state);
+        $plugin->submitConfigurationForm($plugin_configuration_element, $subform_state);
       }
 
       // Add the link display plugin configuration.
@@ -795,68 +834,6 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     }
 
     return $configuration;
-  }
-
-  /**
-   * Applies the general list configuration to the overall config values.
-   *
-   * @param array $configuration
-   *   The list configuration.
-   * @param array $element
-   *   The single widget form element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   */
-  protected function applyGeneralListConfiguration(array &$configuration, array $element, FormStateInterface $form_state): void {
-    $parents = array_merge($element['#parents'], ['link_display']);
-
-    // Add the rest of the list configuration.
-    $configuration['size'] = (int) $form_state->getValue(array_merge($parents, ['size']));
-    if ($configuration['size'] === 0) {
-      // If we show all items, we clear any other configuration.
-      $configuration['more'] = [
-        'button' => 'no',
-      ];
-
-      return;
-    }
-
-    $more = $form_state->getValue(array_merge($parents, ['more']));
-    if ($more['button'] === 'no') {
-      // If we don't show all items but we don't want a More button, we clear
-      // any other configuration.
-      $configuration['more'] = [
-        'button' => 'no',
-      ];
-
-      return;
-    }
-
-    $configuration['more'] = [
-      'button' => $more['button'],
-    ];
-
-    $configuration['more']['title_override'] = (bool) $more['more_title_override'] ? $more['more_title'] : NULL;
-
-    // Get the target for the More button.
-    $target = $more['more_target'];
-    $id = EntityAutocomplete::extractEntityIdFromAutocompleteInput($target);
-    if (is_numeric($id)) {
-      // If we  get an ID, it means we are dealing with a URL.
-      $configuration['more']['target'] = [
-        'type' => 'entity',
-        'entity_type' => 'node',
-        'entity_id' => $id,
-      ];
-
-      return;
-    }
-
-    // Otherwise it's a custom URL.
-    $configuration['more']['target'] = [
-      'type' => 'custom',
-      'url' => $target,
-    ];
   }
 
   /**
@@ -890,106 +867,11 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public function pluginConfigurationAjaxCallback(array &$form, FormStateInterface $form_state): array {
     $triggering_element = $form_state->getTriggeringElement();
-    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -2));
-  }
-
-  /**
-   * Validates the target element.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   *
-   * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-   * @SuppressWarnings(PHPMD.NPathComplexity)
-   */
-  public static function validateMoreTarget(array $element, FormStateInterface $form_state): void {
-    $uri = trim($element['#value']);
-
-    $button_parents = array_merge(
-      array_slice($element['#parents'], 0, -1),
-      ['button']
-    );
-    $button = $form_state->getValue($button_parents);
-    if ($uri === '') {
-      if ($button === 'custom') {
-        $form_state->setError($element, t('The target is required if you want to override the "See all" button.'));
-      }
-      // No other validation is needed if the uri is empty.
-      return;
+    $parent_slice = -2;
+    if (isset($triggering_element['#ajax']['parents_slice'])) {
+      $parent_slice = 0 - $triggering_element['#ajax']['parents_slice'];
     }
-
-    // @see \Drupal\link\Plugin\Field\FieldWidget\LinkWidget::getUserEnteredStringAsUri()
-    $entity_id = EntityAutocomplete::extractEntityIdFromAutocompleteInput($uri);
-    if ($entity_id !== NULL) {
-      /** @var \Drupal\Core\Entity\EntityReferenceSelection\SelectionInterface $handler */
-      $handler = \Drupal::service('plugin.manager.entity_reference_selection')->getInstance([
-        'target_type' => $element['#target_type'],
-        'handler' => $element['#selection_handler'],
-      ]);
-      if (!$handler->validateReferenceableEntities([$entity_id])) {
-        $form_state->setError($element, t('The referenced entity (%type: %id) does not exist.', [
-          '%type' => $element['#target_type'],
-          '%id' => $entity_id,
-        ]));
-      }
-
-      // Either an error or a valid entity is present. Exit early.
-      return;
-    }
-
-    if (parse_url($uri, PHP_URL_SCHEME) === NULL) {
-      if (strpos($uri, '<front>') === 0) {
-        $uri = '/' . substr($uri, strlen('<front>'));
-      }
-      $uri = 'internal:' . $uri;
-    }
-
-    // @see \Drupal\link\Plugin\Field\FieldWidget\LinkWidget::validateUriElement()
-    if (
-      parse_url($uri, PHP_URL_SCHEME) === 'internal' &&
-      !in_array($element['#value'][0], ['/', '?', '#'], TRUE) &&
-      substr($element['#value'], 0, 7) !== '<front>'
-    ) {
-      $form_state->setError($element, t('The specified target is invalid. Manually entered paths should start with one of the following characters: / ? #'));
-    }
-
-    try {
-      $url = Url::fromUri($uri);
-    }
-    catch (\InvalidArgumentException $exception) {
-      // Mark the url as invalid.
-      $url = FALSE;
-    }
-    if ($url === FALSE || ($url->isExternal() && !in_array(parse_url($url->getUri(), PHP_URL_SCHEME), UrlHelper::getAllowedProtocols()))) {
-      $form_state->setError($element, t('The path %uri is invalid.', ['%uri' => $uri]));
-    }
-  }
-
-  /**
-   * Validates the more link override is there if the checkbox is checked.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   */
-  public static function validateMoreLinkOverride(array $element, FormStateInterface $form_state): void {
-    $title = trim($element['#value']);
-    if ($title !== '') {
-      // If we have an override, nothing to validate.
-      return;
-    }
-
-    $override_parents = array_merge(
-      array_slice($element['#parents'], 0, -1),
-      ['more_title_override']
-    );
-    $more_title_override = $form_state->getValue($override_parents);
-    if ((bool) $more_title_override) {
-      $form_state->setError($element, t('The button label is required if you want to override the "See all" button title.'));
-    }
+    return NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, $parent_slice));
   }
 
   /**
