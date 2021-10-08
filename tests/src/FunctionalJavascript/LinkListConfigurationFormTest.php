@@ -161,6 +161,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_cache_metadata',
       'test_complex_form',
       'test_empty_collection',
+      'test_empty_collection_with_cache',
       'test_example_source',
       'test_translatable',
       'test_no_bundle_restriction_source',
@@ -214,6 +215,14 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
+
+    // Select and configure the no results behaviour plugin.
+    $this->assertFieldSelectOptions('No results behaviour', [
+      'hide_list',
+      'text_message',
+    ]);
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Save the link list.
     $this->getSession()->getPage()->pressButton('Save');
@@ -278,6 +287,10 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     // Select and configure the source plugin.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Save the link list.

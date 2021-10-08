@@ -73,6 +73,11 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('The display translatable string', 'I can be translated');
     $this->getSession()->getPage()->fillField('The display non translatable string', 'I cannot be translated');
 
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Text message');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('The message you want shown', 'The no results text');
+
     // Configure the non-plugin configuration options.
     $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
     $this->getSession()->getPage()->findField('Yes, display a custom button')->click();
@@ -97,11 +102,13 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->assertSession()->fieldDisabled('Number of items');
     $this->assertSession()->fieldDisabled('configuration[0][link_display][more][button]');
     $this->assertSession()->fieldDisabled('configuration[0][link_display][more][more_title_override]');
+    $this->assertSession()->fieldDisabled('No results behaviour');
 
     $this->assertSession()->fieldEnabled('The source translatable string');
     $this->assertSession()->fieldEnabled('The display translatable string');
     $this->assertSession()->fieldEnabled('Target');
     $this->assertSession()->fieldEnabled('Button label');
+    $this->assertSession()->fieldEnabled('The message you want shown');
   }
 
   /**
@@ -126,6 +133,10 @@ class LinkListTranslationTest extends WebDriverTestBase {
       'display' => [
         'plugin' => 'test_configurable_title',
         'plugin_configuration' => ['link' => FALSE],
+      ],
+      'no_results_behaviour' => [
+        'plugin' => 'hide_list',
+        'plugin_configuration' => [],
       ],
     ];
 

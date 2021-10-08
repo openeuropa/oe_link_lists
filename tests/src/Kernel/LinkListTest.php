@@ -167,6 +167,43 @@ class LinkListTest extends EntityKernelTestBase {
     // The renderer service adds required cache contexts to render arrays, so
     // we just assert the presence of the context added by the source plugin.
     $this->assertContains('user.is_super_user', $build['#cache']['contexts']);
+
+    // Test that the no results behaviour plugins render correctly.
+    $configuration['source']['plugin'] = 'test_empty_collection_with_cache';
+    $configuration['no_results_behaviour']['plugin'] = 'hide_list';
+    $configuration['no_results_behaviour']['plugin_configuration'] = [];
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+    $this->assertEquals("", $html);
+    $this->assertEquals([
+      'config:user.role.anonymous',
+      'link_list:1',
+      'link_list_view',
+      'test_cache_metadata_tag',
+      'user:0',
+    ], $build['#cache']['tags']);
+
+    $configuration['no_results_behaviour']['plugin'] = 'text_message';
+    $configuration['no_results_behaviour']['plugin_configuration'] = [
+      'text' => 'the no results text',
+    ];
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+    $this->assertEquals('the no results text', $html);
+    $this->assertEquals([
+      'config:user.role.anonymous',
+      'link_list:1',
+      'link_list_view',
+      'test_cache_metadata_tag',
+      'user:0',
+    ], $build['#cache']['tags']);
   }
 
   /**

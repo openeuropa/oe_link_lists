@@ -76,6 +76,12 @@ class LinkListConfigurationTest extends KernelTestBase {
           'link' => FALSE,
         ],
       ],
+      'no_results_behaviour' => [
+        'plugin' => 'text_message',
+        'plugin_configuration' => [
+          'text' => 'the no results text',
+        ],
+      ],
       'size' => 0,
       'more' => [
         'button' => 'no',
@@ -111,6 +117,12 @@ class LinkListConfigurationTest extends KernelTestBase {
           'link' => FALSE,
         ],
       ],
+      'no_results_behaviour' => [
+        'plugin' => 'text_message',
+        'plugin_configuration' => [
+          'text' => 'the no results text FR',
+        ],
+      ],
       'size' => 0,
       'more' => [
         'button' => 'no',
@@ -126,6 +138,11 @@ class LinkListConfigurationTest extends KernelTestBase {
     // Assert that the actual configuration value stored in the translation
     // contains only translatable keys.
     $expected_partial = [
+      'no_results_behaviour' => [
+        'plugin_configuration' => [
+          'text' => 'the no results text FR',
+        ],
+      ],
       'more' => [
         'target' => [
           'test' => 'test FR',
@@ -160,6 +177,11 @@ class LinkListConfigurationTest extends KernelTestBase {
       'source' => [
         'plugin_configuration' => [
           'my_string' => 'Original string FR',
+        ],
+      ],
+      'no_results_behaviour' => [
+        'plugin_configuration' => [
+          'text' => 'the no results text FR',
         ],
       ],
       'more' => [

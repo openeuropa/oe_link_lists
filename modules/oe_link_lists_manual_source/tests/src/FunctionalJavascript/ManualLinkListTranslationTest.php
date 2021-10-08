@@ -69,6 +69,10 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Markup');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
     // Create an external link.
     $this->createInlineExternalLink('http://example.com', 'Test title', 'Test teaser');
     $this->createInlineInternalLink('1', 'Overridden title', 'Overridden teaser');
@@ -152,6 +156,10 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
 
     // Select and configure the display plugin.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Create some internal links that reference an untranslated node.

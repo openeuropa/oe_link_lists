@@ -110,6 +110,11 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     // Select the user option and save the content.
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'user');
     $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
     $this->getSession()->getPage()->pressButton('Save');
 
     // Go to the edit page of the link list.

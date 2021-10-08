@@ -21,6 +21,7 @@ use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists\LinkDisplayPluginManagerInterface;
 use Drupal\oe_link_lists\LinkListConfigurationManager;
 use Drupal\oe_link_lists\LinkSourcePluginManagerInterface;
+use Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -74,6 +75,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
   protected $linkListConfigurationManager;
 
   /**
+   * The no_results_behaviour plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface
+   */
+  protected $noResultsBehaviourPluginManager;
+
+  /**
    * Constructs a LinkListConfigurationWidget object.
    *
    * @param string $plugin_id
@@ -96,10 +104,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The element info manager.
    * @param \Drupal\oe_link_lists\LinkListConfigurationManager $link_list_configuration_manager
    *   The link list configuration manager.
+   * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager
+   *   The no_results_behaviour plugin manager.
    *
    * @SuppressWarnings(PHPMD.ExcessiveParameterList)
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
     $this->linkSourcePluginManager = $link_source_plugin_manager;
@@ -107,6 +117,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     $this->entityTypeManager = $entity_type_manager;
     $this->elementInfoManager = $element_info_manager;
     $this->linkListConfigurationManager = $link_list_configuration_manager;
+    $this->noResultsBehaviourPluginManager = $no_results_behaviour_manager;
   }
 
   /**
@@ -123,7 +134,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $container->get('plugin.manager.oe_link_lists.link_display'),
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.element_info'),
-      $container->get('oe_link_list.link_list_configuration_manager')
+      $container->get('oe_link_list.link_list_configuration_manager'),
+      $container->get('plugin.manager.oe_link_lists.no_results_behaviour')
     );
   }
 
@@ -149,6 +161,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
 
     $this->buildLinkSourceElements($items, $delta, $element, $form, $form_state);
     $this->buildLinkDisplayElements($items, $delta, $element, $form, $form_state);
+    $this->buildNoResultsBehaviourElements($items, $delta, $element, $form, $form_state);
 
     return $element;
   }
@@ -574,6 +587,109 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
   }
 
   /**
+   * Builds the no results behaviour plugin form elements.
+   *
+   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   *   The field items.
+   * @param int $delta
+   *   The item delta.
+   * @param array $element
+   *   The form element.
+   * @param array $form
+   *   The entire form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  protected function buildNoResultsBehaviourElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
+    $parents = array_merge($element['#field_parents'], [
+      $items->getName(),
+      $delta,
+      'no_results_behaviour',
+    ]);
+
+    $element['no_results_behaviour'] = [
+      '#type' => 'details',
+      '#title' => $this->t('No results behaviour'),
+      '#open' => TRUE,
+    ];
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $form_state->getBuildInfo()['callback_object']->getEntity();
+    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
+      'plugin_select',
+      'no_results_behaviour',
+    ]);
+    if (!$plugin_id) {
+      $plugin_id = $this->getConfigurationPluginId($link_list, 'no_results_behaviour');
+    }
+
+    $no_results_plugin_options = $this->noResultsBehaviourPluginManager->getPluginsAsOptions();
+
+    // If we don't have a plugin ID and there is only one available option,
+    // use that as the default.
+    if (!$plugin_id && count($no_results_plugin_options) === 1) {
+      $plugin_id = key($no_results_plugin_options);
+    }
+
+    if ($no_results_plugin_options) {
+      $element['no_results_behaviour']['plugin'] = [
+        '#type' => 'select',
+        '#description' => $this->t('What should happen if there are no results in the list?'),
+        '#title' => $this->t('No results behaviour'),
+        '#empty_option' => $this->t('None'),
+        '#empty_value' => '',
+        '#required' => TRUE,
+        '#options' => $no_results_plugin_options,
+        '#ajax' => [
+          'callback' => [$this, 'pluginConfigurationAjaxCallback'],
+          'wrapper' => $element['#attributes']['id'],
+        ],
+        '#submit' => [
+          [get_class($this), 'selectPlugin'],
+        ],
+        '#default_value' => $plugin_id,
+        '#executes_submit_callback' => TRUE,
+        '#plugin_select' => 'no_results_behaviour',
+        '#limit_validation_errors' => [
+          array_merge($parents, ['plugin']),
+        ],
+        '#access' => !empty($no_results_plugin_options),
+      ];
+
+      // A wrapper that the Ajax callback will replace.
+      $element['no_results_behaviour']['plugin_configuration_wrapper'] = [
+        '#type' => 'container',
+        '#weight' => 10,
+        '#tree' => TRUE,
+      ];
+    }
+    else {
+      $element['no_results_behaviour']['no_plugin'] = [
+        '#markup' => $this->t('There are no plugins available.'),
+      ];
+    }
+
+    if ($plugin_id) {
+      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'no_results_behaviour');
+      /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
+      $plugin = $this->noResultsBehaviourPluginManager->createInstance($plugin_id, $existing_config);
+
+      $element['no_results_behaviour']['plugin_configuration_wrapper'][$plugin_id] = [
+        '#process' => [[get_class($this), 'processPluginConfiguration']],
+        '#plugin' => $plugin,
+      ];
+
+      if (!empty($element['#translatable_parents'])) {
+        // If we are translating the entity and we have elements that we are
+        // translating, add a process to the plugin form to handle them.
+        $process = [get_class($this), 'processUntranslatableFields'];
+        $element['no_results_behaviour']['plugin_configuration_wrapper'][$plugin_id]['#process'][] = $process;
+        $element['no_results_behaviour']['plugin_configuration_wrapper'][$plugin_id]['#translatable_parents'] = $element['#translatable_parents'];
+      }
+    }
+  }
+
+  /**
    * Submit callback for storing the selected plugin ID.
    *
    * @param array $form
@@ -605,6 +721,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $configuration = [];
       $element = NestedArray::getValue($form, array_merge($widget_state['array_parents'], [$delta]));
       $configuration['display'] = $this->extractPluginConfiguration('link_display', $element, $form_state);
+      $configuration['no_results_behaviour'] = $this->extractPluginConfiguration('no_results_behaviour', $element, $form_state);
 
       if (isset($element['link_source'])) {
         $configuration['source'] = $this->extractPluginConfiguration('link_source', $element, $form_state);
@@ -635,6 +752,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     $plugin_managers = [
       'link_source' => $this->linkSourcePluginManager,
       'link_display' => $this->linkDisplayPluginManager,
+      'no_results_behaviour' => $this->noResultsBehaviourPluginManager,
     ];
 
     $configuration = [];

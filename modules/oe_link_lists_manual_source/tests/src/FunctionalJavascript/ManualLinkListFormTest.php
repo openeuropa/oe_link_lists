@@ -57,6 +57,10 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
     // Create an external link.
     $this->createInlineExternalLink('http://example.com', 'Test title', 'Test teaser');
 
@@ -231,6 +235,10 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
 
     // Select and configure the display plugin.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal_route');

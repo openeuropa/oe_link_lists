@@ -36,6 +36,10 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Internal');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Entity type');
