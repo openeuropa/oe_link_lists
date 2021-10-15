@@ -1,0 +1,246 @@
+<?php
+
+/**
+ * @file
+ * OE link lists local module file.
+ */
+
+declare(strict_types = 1);
+
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\field\FieldConfigInterface;
+use Drupal\oe_link_lists\Entity\LinkListInterface;
+use Drupal\oe_link_lists_local\Form\LinkListInlineForm;
+
+/**
+ * Implements hook_entity_base_field_info().
+ *
+ * Adding a boolean field on the link list entity to denote it should not be
+ * anywhere reused but only used in the context of the entity that created it
+ * as a reference.
+ */
+function oe_link_lists_local_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'link_list') {
+    $fields['local'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Local'))
+      ->setDescription(t('Whether the link list is local to another entity.'))
+      ->setDefaultValue(FALSE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function oe_link_lists_local_entity_type_build(array &$entity_types) {
+  /** @var Drupal\Core\Entity\EntityTypeInterface $link_list */
+  $link_list = $entity_types['link_list'];
+  $link_list->setHandlerClass('inline_form', LinkListInlineForm::class);
+}
+
+/**
+ * Implements hook_entity_query_alter().
+ */
+function oe_link_lists_local_query_entity_query_link_list_alter(SelectInterface $query) {
+  // For link lists that are marked as local, we don't want them findable in
+  // any query made against the link list entities. There are two exceptions to
+  // this, as seen below.
+  $definition = \Drupal::entityTypeManager()->getDefinition('link_list');
+  $data_table = $definition->getDataTable();
+
+  if ($query->hasTag('entity_reference')) {
+    // If the query is given by the entity reference it can be there for
+    // validating a reference, made even with IEF. So in this case we should
+    // not kill the query. And we know this by checking for a condition by IDs.
+    $conditions = $query->conditions();
+    foreach (Element::children($conditions) as $child) {
+      $condition = $conditions[$child];
+      if ($condition['field'] === "$data_table.id") {
+        return;
+      }
+    }
+  }
+
+  if ($query->hasTag('allow_local_link_lists')) {
+    // We need to be able to query in certain places, such as tests, for all
+    // the local link lists so we allow the use of a tag to bypass this
+    // condition.
+    return;
+  }
+
+  $tables = $query->getTables();
+  if (!isset($tables[$data_table])) {
+    $query->join($data_table, $data_table, "$data_table.id = base_table.id");
+  }
+
+  $condition = $query->orConditionGroup();
+  $condition->isNull('local');
+  $condition->condition('local', 0);
+  $query->condition($condition);
+}
+
+/**
+ * Implements hook_query_alter().
+ *
+ * Altering the tagged query for when link lists are being loaded and a
+ * database query is being used. We don't want local link lists to be
+ * queryable.
+ */
+function oe_link_lists_local_query_link_list_load_multiple_alter(AlterableInterface $query) {
+  $conditions = $query->conditions();
+  if (!empty(Element::children($conditions))) {
+    // If there are conditions, it means the query has specific IDs passed to
+    // load, in which case we don't want interfere.
+    return;
+  }
+
+  $tables = $query->getTables();
+  if (isset($tables['revision']['arguments'][':revisionIds[]']) && !empty($tables['revision']['arguments'][':revisionIds[]'])) {
+    // It means the query is used to load a specific revision to a join onto
+    // the revision table on the requested revision ID.
+    return;
+  }
+
+  // If there are no conditions it means the loadMultiple() is being used
+  // without any IDs in which case we want to filter out the local link lists.
+  // We do want to allow the actual loading of a given link list ID.
+  $definition = \Drupal::entityTypeManager()->getDefinition('link_list');
+  $data_table = $definition->getDataTable();
+
+  if (!isset($tables[$data_table])) {
+    $query->join($data_table, $data_table, "$data_table.id = base.id");
+  }
+
+  $condition = $query->orConditionGroup();
+  $condition->isNull('local');
+  $condition->condition('local', 0);
+  $query->condition($condition);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add the option to mark link list entity reference fields as local.
+ */
+function oe_link_lists_local_form_field_config_edit_form_alter(&$form, FormStateInterface $form_state): void {
+  /** @var \Drupal\field\FieldConfigInterface $field_config */
+  $field_config = $form_state->getFormObject()->getEntity();
+  $applicable_field_types = ['entity_reference', 'entity_reference_revisions'];
+  if (!in_array($field_config->getType(), $applicable_field_types)) {
+    return;
+  }
+
+  if ($field_config->getSetting('handler') !== 'default:link_list') {
+    return;
+  }
+
+  $form['local'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Local field'),
+    '#description' => t('Local link list are link lists marked to only be visible in the context of this reference.'),
+    '#default_value' => $field_config->getThirdPartySetting('oe_link_lists_local', 'local') ?? FALSE,
+  ];
+
+  $form['#entity_builders'][] = 'oe_link_lists_local_form_field_config_form_builder';
+}
+
+/**
+ * Entity form builder for the field_config form.
+ *
+ * Saves the local field settings into the field config settings.
+ *
+ * @param string $entity_type
+ *   The name of the entity type.
+ * @param \Drupal\field\FieldConfigInterface $field_config
+ *   The field config.
+ * @param array $form
+ *   The form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function oe_link_lists_local_form_field_config_form_builder(string $entity_type, FieldConfigInterface $field_config, array &$form, FormStateInterface $form_state): void {
+  $field_config->setThirdPartySetting('oe_link_lists_local', 'local', $form_state->getValue('local'));
+}
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ *
+ * Replace the admin title with the actual title if set on the local link list
+ * inline entity form tables.
+ *
+ * Only the alter hook provides us the needed context to be able to determine
+ * if the field is local and this is the reason why this didn't go directly
+ * in the LinkListInlineForm handler.
+ */
+function oe_link_lists_local_inline_entity_form_table_fields_alter(array &$fields, array $context) {
+  if ($context['entity_type'] !== 'link_list') {
+    return;
+  }
+
+  $entity_type = $context['parent_entity_type'];
+  $bundle = $context['parent_bundle'];
+  $field_name = $context['field_name'];
+  $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions($entity_type, $bundle);
+  $field_definition = $field_definitions[$field_name];
+
+  if (!LinkListInlineForm::isFieldLocal($field_definition)) {
+    return;
+  }
+
+  unset($fields['label']);
+  $fields['title'] = [
+    'type' => 'callback',
+    'label' => t('Title'),
+    'callback' => '_oe_link_lists_local_inline_entity_form_title_callback',
+  ];
+
+}
+
+/**
+ * Callback to generate the title of a given link list in a IEF table.
+ *
+ * @param \Drupal\oe_link_lists\Entity\LinkListInterface $link_list
+ *   The link list.
+ *
+ * @see oe_link_lists_local_inline_entity_form_table_fields_alter()
+ *
+ * @return array
+ *   The title.
+ */
+function _oe_link_lists_local_inline_entity_form_title_callback(LinkListInterface $link_list): array {
+  $title = $link_list->getTitle() ?? t('- No title -');
+  return [
+    '#markup' => $title,
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Whenever a BaseFieldOverride entity is saved, we include the local setting
+ * into the exported third party settings if relevant.
+ */
+function oe_link_lists_local_base_field_override_presave(EntityInterface $entity) {
+  /** @var \Drupal\Core\Field\Entity\BaseFieldOverride $entity */
+  $settings = $entity->getItemDefinition()->getSetting('oe_link_lists_local');
+  if (!$settings) {
+    return;
+  }
+
+  if ($entity->getItemDefinition()->getSetting('target_type') !== 'link_list') {
+    return;
+  }
+
+  foreach ($settings as $setting => $value) {
+    $entity->setThirdPartySetting('oe_link_lists_local', $setting, $value);
+  }
+}

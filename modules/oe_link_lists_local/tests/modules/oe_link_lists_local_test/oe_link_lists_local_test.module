@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * The OE Link Lists Local test module.
+ */
+
+declare(strict_types = 1);
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function oe_link_lists_local_test_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() !== 'node') {
+    return $fields;
+  }
+
+  $fields['entity_reference_correct'] = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Simple entity reference'))
+    ->setDescription(t('Simple entity reference field'))
+    ->setSettings([
+      'target_type' => 'link_list',
+      'oe_link_lists_local' => [
+        'local' => TRUE,
+      ],
+    ]);
+
+  $fields['entity_reference_revisions_correct'] = BaseFieldDefinition::create('entity_reference_revisions')
+    ->setLabel(t('Entity reference revisions'))
+    ->setDescription(t('Entity reference revisions field'))
+    ->setSettings([
+      'target_type' => 'link_list',
+      'oe_link_lists_local' => [
+        'local' => TRUE,
+      ],
+    ]);
+
+  $fields['entity_reference_incorrect'] = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Simple entity reference'))
+    ->setDescription(t('Simple entity reference field'))
+    ->setSettings([
+      'target_type' => 'node',
+      'oe_link_lists_local' => [
+        'local' => TRUE,
+      ],
+    ]);
+
+  $fields['entity_reference_revisions_incorrect'] = BaseFieldDefinition::create('entity_reference_revisions')
+    ->setLabel(t('Entity reference revisions'))
+    ->setDescription(t('Entity reference revisions field'))
+    ->setSettings([
+      'target_type' => 'node',
+      'oe_link_lists_local' => [
+        'local' => TRUE,
+      ],
+    ]);
+
+  $fields['link_list'] = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Base field local link list'))
+    ->setDescription(t('Local link list'))
+    ->setSettings([
+      'target_type' => 'link_list',
+      'handler_settings' => ['target_bundles' => ['dynamic' => 'dynamic']],
+      'oe_link_lists_local' => [
+        'local' => TRUE,
+      ],
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'inline_entity_form_complex',
+      'weight' => 10,
+      'settings' => [
+        'revision' => TRUE,
+        'allow_new' => TRUE,
+        'removed_reference' => 'keep',
+        'allow_existing' => FALSE,
+        'allow_duplicate' => FALSE,
+        'override_labels' => TRUE,
+        'label_singular' => 'Base field link list',
+        'label_plural' => 'Base field link lists',
+      ],
+    ]);
+
+  return $fields;
+}
