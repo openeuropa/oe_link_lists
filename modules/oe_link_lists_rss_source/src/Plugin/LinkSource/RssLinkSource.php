@@ -9,6 +9,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultEntityLink;
@@ -95,47 +96,91 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return [
+      'urls' => '',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $this->configuration['urls'] = array_column($form_state->getValue('urls'), 'url');
+  }
+
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $defaults = [];
+    foreach ($this->configuration['urls'] as $key => $url) {
+      $defaults[$key] = ['url' => $url];
+    }
+    $form['urls'] = [
+      '#type' => 'multivalue',
+      '#title' => $this->t('The RSS URLs'),
+      '#description' => $this->t('Add the URLs where the external resources can be found.'),
+      '#required' => TRUE,
+      'url' => [
+        '#type' => 'url',
+        '#title' => $this->t('The resource URL'),
+      ],
+      '#default_value' => $defaults
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(ContentEntityInterface $entity): void {
     parent::preSave($entity);
 
     // Never allow empty values as URL.
-    if (empty($this->configuration['url'])) {
-      return;
-    }
-
-    // Check if a feed entity already exists for the provided URL.
-    if (!empty($this->getFeed())) {
+    if (empty($this->configuration['urls'])) {
       return;
     }
 
     // Create a new feed and run an initial import of its items.
     $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
-    /** @var \Drupal\aggregator\FeedInterface $feed */
-    $feed = $feed_storage->create([
-      'title' => $this->configuration['url'],
-      'url' => $this->configuration['url'],
-    ]);
-    $feed->save();
-    $feed->refreshItems();
+    foreach ($this->configuration['urls'] as $url) {
+      if (!$this->hasFeed($url)) {
+        /** @var \Drupal\aggregator\FeedInterface $feed */
+        $feed = $feed_storage->create([
+          'title' => $url,
+          'url' => $url,
+        ]);
+        $feed->save();
+        $feed->refreshItems();
+      }
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
-    $feed = $this->getFeed();
+    $feeds = $this->getFeeds();
     $link_collection = new LinkCollection();
 
-    if (empty($feed)) {
+    if (empty($feeds)) {
       return $link_collection;
     }
 
-    $link_collection->addCacheableDependency($feed);
+    $feed_ids = [];
+    foreach ($feeds as $feed) {
+      $link_collection->addCacheableDependency($feed);
+      $feed_ids[] = $feed->id();
+    }
 
     /** @var \Drupal\aggregator\ItemStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('aggregator_item');
     $query = $storage->getQuery()
-      ->condition('fid', $feed->id())
+      ->condition('fid', $feed_ids, 'IN')
       ->sort('timestamp', 'DESC')
       ->sort('iid', 'DESC');
     if ($limit) {
@@ -163,22 +208,21 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
   /**
    * Returns a feed entity that matches the current plugin configuration.
    *
-   * @return \Drupal\aggregator\FeedInterface|null
+   * @return \Drupal\aggregator\FeedInterface[]
    *   A feed entity if a matching one is found, NULL otherwise.
    */
-  protected function getFeed(): ?FeedInterface {
-    if (empty($this->configuration['url'])) {
-      return NULL;
+  protected function getFeeds(): array {
+    if (empty($this->configuration['urls'])) {
+      return [];
     }
 
     $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
-    $feeds = $feed_storage->loadByProperties(['url' => $this->configuration['url']]);
+    return $feed_storage->loadByProperties(['url' => $this->configuration['urls']]);
+  }
 
-    if (empty($feeds)) {
-      return NULL;
-    }
-
-    return reset($feeds);
+  protected function hasFeed(string $url) {
+    $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
+    return !empty($feed_storage->loadByProperties(['url' => $url]));
   }
 
   /**
