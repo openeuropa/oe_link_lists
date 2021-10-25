@@ -1,11 +1,22 @@
 # Changelog
 
+## [0.12.0](https://github.com/openeuropa/oe_link_lists/tree/0.12.0) (2021-10-25)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.11.0...0.12.0)
+
+**Merged pull requests:**
+
+- \[EWPP-1552\] EWPP-806: No results behaviour. [\#91](https://github.com/openeuropa/oe_link_lists/pull/91) ([upchuk](https://github.com/upchuk))
+- EWPP-0000: Fix grumphp issues. [\#89](https://github.com/openeuropa/oe_link_lists/pull/89) ([22Alexandra](https://github.com/22Alexandra))
+- EWPP-661: Localized link lists \(IEF\) [\#88](https://github.com/openeuropa/oe_link_lists/pull/88) ([upchuk](https://github.com/upchuk))
+
 ## [0.11.0](https://github.com/openeuropa/oe_link_lists/tree/0.11.0) (2021-06-15)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.10.0...0.11.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.11.0. [\#86](https://github.com/openeuropa/oe_link_lists/pull/86) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - Updating EWPP-901 [\#85](https://github.com/openeuropa/oe_link_lists/pull/85) ([upchuk](https://github.com/upchuk))
 - EWPP-1116: Prevent a crash if the "more" link entity is deleted. [\#84](https://github.com/openeuropa/oe_link_lists/pull/84) ([sergepavle](https://github.com/sergepavle))
 - EWPP-908: Drupal 9 readiness. [\#83](https://github.com/openeuropa/oe_link_lists/pull/83) ([upchuk](https://github.com/upchuk))
