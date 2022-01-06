@@ -334,7 +334,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->drupalGet('link_list/1/edit');
     $this->getSession()->getPage()->selectFieldOption('More link', 'Custom link');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    // The custom_link plugin is now selected so we can see it's fields.
+    // The custom_link plugin is now selected so we can see its fields.
     $this->assertSession()->fieldExists('Target');
     $this->assertSession()->fieldExists('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->assertSession()->checkboxNotChecked('Override the link label. Defaults to "See all" or the referenced entity label.');
@@ -399,7 +399,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       ],
     ], $link_list->getConfiguration()['more_link']);
 
-    // Verify that strings that can be casted to false are rendered.
+    // Verify that strings that can be cast to false are rendered.
     $this->drupalGet('link_list/1/edit');
     $this->getSession()->getPage()->fillField('More link label', '0');
     $this->getSession()->getPage()->pressButton('Save');
@@ -409,20 +409,20 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     // Create some nodes.
     $this->drupalCreateContentType(['type' => 'page']);
-    $node = $this->drupalCreateNode(['title' => 'Page 1']);
+    $node = $this->drupalCreateNode(['title' => 'Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in aliqu']);
     $this->drupalCreateNode(['title' => 'Page 2']);
 
     // Change the "More link" to a local Node, with the custom label.
     $this->drupalGet('link_list/1/edit');
     $target_field = $this->assertSession()->waitForField('Target');
-    $target_field->setValue('Page');
+    $target_field->setValue('Dolor');
     // The autocomplete list is shown on key down event.
     $this->getSession()->getDriver()->keyDown($target_field->getXpath(), ' ');
     $this->assertSession()->waitOnAutocomplete();
-    // Pick the "Page 1" option from the list.
+    // Pick the node with the long title from the list.
     $this->getSession()->getPage()
       ->find('css', '.ui-autocomplete')
-      ->find('xpath', '//a[.="Page 1"]')
+      ->find('xpath', '//a[.="Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in aliqu"]')
       ->click();
     $this->assertSession()->fieldValueEquals('Target', "{$node->label()} ({$node->id()})");
     $this->getSession()->getPage()->fillField('More link label', 'Custom more button');

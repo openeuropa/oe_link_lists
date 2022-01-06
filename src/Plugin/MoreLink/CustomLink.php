@@ -135,6 +135,7 @@ class CustomLink extends MoreLinkPluginBase implements ContainerFactoryPluginInt
       '#default_value' => $default_target,
       '#element_validate' => [[get_class($this), 'validateMoreTarget']],
       '#required' => TRUE,
+      '#maxlength' => 255,
     ];
 
     $form['override'] = [
