@@ -62,33 +62,73 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('Title', 'Title test');
 
     // Select and configure the source plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Configurable non translatable source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Titles with optional link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Configure the "More link" plugin..
+    $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Configurable non translatable more link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Non translatable text message');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+
+    // Try to translate the list.
+    $link_list = $this->getLinkListByTitle('Title test');
+    $url = $link_list->toUrl('drupal:content-translation-add');
+    $url->setRouteParameter('source', 'en');
+    $url->setRouteParameter('target', 'fr');
+    $this->drupalGet($url);
+
+    // Assert that all form elements that are not translatable are disabled. In
+    // this case, all elements should be disabled as there is nothing
+    // translatable.
+    $this->assertSession()->fieldDisabled('Link source');
+    $this->assertSession()->fieldDisabled('The source non translatable string');
+    $this->assertSession()->fieldDisabled('Link display');
+    $this->assertSession()->fieldDisabled('Link');
+    $this->assertSession()->fieldDisabled('Number of items');
+    $this->assertSession()->fieldDisabled('More link');
+    $this->assertSession()->fieldDisabled('The more link configuration');
+    $this->assertSession()->fieldDisabled('No results behaviour');
+    $this->assertSession()->fieldDisabled('The non-translatable message you want shown');
+
+    $this->drupalGet($link_list->toUrl('edit-form'));
+
+    // Select and configure a source plugin with translatable elements.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Complex form');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The source translatable string', 'I can be translated');
     $this->getSession()->getPage()->fillField('The source non translatable string', 'I cannot be translated');
 
-    // Select and configure the display plugin.
+    // Select and configure the display plugin with translatable elements.
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Translatable form');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The display translatable string', 'I can be translated');
     $this->getSession()->getPage()->fillField('The display non translatable string', 'I cannot be translated');
 
-    // Select and configure the no results behaviour plugin.
+    // Select and configure the no results behaviour plugin with translatable
+    // elements.
     $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Text message');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The message you want shown', 'The no results text');
 
-    // Configure the non-plugin configuration options.
+    // Configure the "More link" which also has translatable elements.
     $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
-    $this->getSession()->getPage()->findField('Yes, display a custom button')->click();
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Custom link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('Target', 'http://example.com/more-link');
-    $this->getSession()->getPage()->checkField('Override the button label. Defaults to "See all" or the referenced entity label.');
-    $this->getSession()->getPage()->fillField('Button label', 'Custom more button');
-
+    $this->getSession()->getPage()->checkField('Override the link label. Defaults to "See all" or the referenced entity label.');
+    $this->getSession()->getPage()->fillField('More link label', 'Custom more link');
     $this->getSession()->getPage()->pressButton('Save');
 
     // Try to translate the list.
-    $link_list = $this->getLinkListByTitle('Title test');
     $url = $link_list->toUrl('drupal:content-translation-add');
     $url->setRouteParameter('source', 'en');
     $url->setRouteParameter('target', 'fr');
@@ -100,14 +140,14 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->assertSession()->fieldDisabled('The display non translatable string');
     $this->assertSession()->fieldDisabled('Link display');
     $this->assertSession()->fieldDisabled('Number of items');
-    $this->assertSession()->fieldDisabled('configuration[0][link_display][more][button]');
-    $this->assertSession()->fieldDisabled('configuration[0][link_display][more][more_title_override]');
+    $this->assertSession()->fieldDisabled('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->assertSession()->fieldDisabled('No results behaviour');
+    $this->assertSession()->fieldDisabled('More link');
 
     $this->assertSession()->fieldEnabled('The source translatable string');
     $this->assertSession()->fieldEnabled('The display translatable string');
     $this->assertSession()->fieldEnabled('Target');
-    $this->assertSession()->fieldEnabled('Button label');
+    $this->assertSession()->fieldEnabled('More link label');
     $this->assertSession()->fieldEnabled('The message you want shown');
   }
 

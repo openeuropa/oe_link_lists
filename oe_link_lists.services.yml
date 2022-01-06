@@ -8,10 +8,13 @@ services:
   plugin.manager.oe_link_lists.no_results_behaviour:
     class: Drupal\oe_link_lists\NoResultsBehaviourPluginManager
     parent: default_plugin_manager
+  plugin.manager.oe_link_lists.more_link:
+    class: Drupal\oe_link_lists\MoreLinkPluginManager
+    parent: default_plugin_manager
   oe_link_lists.event_subscriber.default_entity_value_link_resolver:
     class: Drupal\oe_link_lists\EventSubscriber\DefaultEntityValueResolverSubscriber
     tags:
       - { name: event_subscriber }
   oe_link_list.link_list_configuration_manager:
     class: Drupal\oe_link_lists\LinkListConfigurationManager
-    arguments: ['@plugin.manager.oe_link_lists.link_source', '@plugin.manager.oe_link_lists.link_display', '@plugin.manager.oe_link_lists.no_results_behaviour']
+    arguments: ['@plugin.manager.oe_link_lists.link_source', '@plugin.manager.oe_link_lists.link_display', '@plugin.manager.oe_link_lists.no_results_behaviour', '@plugin.manager.oe_link_lists.more_link']
