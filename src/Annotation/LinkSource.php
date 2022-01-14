@@ -58,4 +58,16 @@ class LinkSource extends Plugin {
    */
   public $bundles = [];
 
+  /**
+   * Marks the plugin as deprecated.
+   *
+   * Deprecated plugins are no longer to be used when creating new link lists.
+   * They are typically replaced by other plugins. You will not be able to
+   * select deprecated sources, but you'll still see them when editing link
+   * lists that use them.
+   *
+   * @var bool
+   */
+  public $deprecated = FALSE;
+
 }

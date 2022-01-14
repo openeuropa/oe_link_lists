@@ -19,6 +19,7 @@
         "drupal/drupal-extension": "~4.0",
         "drupal/entity_reference_revisions": "^1.9",
         "drupal/inline_entity_form": "^1.0-rc10",
+        "drupal/multivalue_form_element": "^1.0@beta",
         "drush/drush": "~10.3",
         "drupal/token": "^1.10",
         "egulias/email-validator": "^2.1.22 || ^3.0",

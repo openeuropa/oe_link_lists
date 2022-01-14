@@ -16,9 +16,8 @@ use Psr\Http\Message\RequestInterface;
  * Tests the translatability of the link lists that use the RSS source.
  *
  * @group oe_link_lists
- * @deprecated
  */
-class RssLinkListTranslationTest extends WebDriverTestBase {
+class RssLinksTranslationTest extends WebDriverTestBase {
 
   use LinkListTestTrait;
 
@@ -120,7 +119,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
   /**
    * Tests that a link link list can be translated to use different RSS sources.
    */
-  public function testRssLinkListTranslatability(): void {
+  public function testRssLinksTranslatability(): void {
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Title', 'Test translation');
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
@@ -130,7 +129,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Select and configure the source plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'RSS');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'RSS links');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('The resource URL', 'http://www.example.com/atom.xml');
 

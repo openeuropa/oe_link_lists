@@ -158,7 +158,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
       'configurable_non_translatable_test_source',
-      'rss',
+      'rss_links',
       'test_cache_metadata',
       'test_complex_form',
       'test_empty_collection',
@@ -511,6 +511,101 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
   }
 
   /**
+   * Tests that deprecated link source plugins cannot be used.
+   */
+  public function testDeprecatedLinkSourcePlugins(): void {
+    // When creating a new link list, the deprecated plugin doesn't show.
+    $this->drupalGet('link_list/add/dynamic');
+    $this->assertFieldSelectOptions('Link source', [
+      'configurable_non_translatable_test_source',
+      'rss_links',
+      'test_cache_metadata',
+      'test_complex_form',
+      'test_empty_collection',
+      'test_empty_collection_with_cache',
+      'test_example_source',
+      'test_translatable',
+      'test_no_bundle_restriction_source',
+    ]);
+
+    // If we do have an existing link list using a now-deprecated plugin, the
+    // edit form will still show it.
+    $link_list_storage = \Drupal::entityTypeManager()->getStorage('link_list');
+    $values = [
+      'bundle' => 'dynamic',
+      'title' => 'My link list',
+      'administrative_title' => 'Link list 1',
+    ];
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->create($values);
+    $configuration = [
+      'source' => [
+        'plugin' => 'test_deprecated_source',
+        'plugin_configuration' => [],
+      ],
+      'display' => [
+        'plugin' => 'test_no_bundle_restriction_display',
+        'plugin_configuration' => [],
+      ],
+      'no_results_behaviour' => [
+        'plugin' => 'hide_list',
+        'plugin_configuration' => [],
+      ],
+      'size' => 0,
+      'more' => [],
+    ];
+
+    // Assert that the configuration is set and read in the exact same way.
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->assertFieldSelectOptions('Link source', [
+      'configurable_non_translatable_test_source',
+      'rss_links',
+      'test_cache_metadata',
+      'test_complex_form',
+      'test_deprecated_source',
+      'test_empty_collection',
+      'test_empty_collection_with_cache',
+      'test_example_source',
+      'test_translatable',
+      'test_no_bundle_restriction_source',
+    ]);
+
+    // It's possible to save the link list and use it with the deprecated
+    // plugin.
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains('Saved the Link list 1 Link list.');
+
+    // We can edit again and change the link source to use a supported on.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains('Saved the Link list 1 Link list.');
+
+    $link_list = $this->getLinkListByTitle('My link list', TRUE);
+    $configuration = $link_list->getConfiguration();
+    $this->assertEquals('test_example_source', $configuration['source']['plugin']);
+
+    // If we edit it again, we won't see the deprecated link source option
+    // anymore.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->assertFieldSelectOptions('Link source', [
+      'configurable_non_translatable_test_source',
+      'rss_links',
+      'test_cache_metadata',
+      'test_complex_form',
+      'test_empty_collection',
+      'test_empty_collection_with_cache',
+      'test_example_source',
+      'test_translatable',
+      'test_no_bundle_restriction_source',
+    ]);
+  }
+
+  /**
    * Checks if a select element contains the specified options.
    *
    * @param string $name
@@ -535,7 +630,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $options = array_filter($options);
     sort($options);
     sort($expected_options);
-    $this->assertIdentical($options, $expected_options);
+    $this->assertSame($expected_options, $options);
   }
 
 }
