@@ -33,6 +33,13 @@ class LinkListConfigurationManager {
   protected $noResultsBehaviourPluginManager;
 
   /**
+   * The more_link plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\MoreLinkPluginManagerInterface
+   */
+  protected $moreLinkPluginManager;
+
+  /**
    * LinkListConfigurationManager constructor.
    *
    * @param \Drupal\oe_link_lists\LinkSourcePluginManagerInterface $linkSourceManager
@@ -41,11 +48,14 @@ class LinkListConfigurationManager {
    *   The link display manager.
    * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $noResultsBehaviourPluginManager
    *   The no_results_behaviour plugin manager.
+   * @param \Drupal\oe_link_lists\MoreLinkPluginManagerInterface $moreLinkPluginManager
+   *   The more_link plugin manager.
    */
-  public function __construct(LinkSourcePluginManagerInterface $linkSourceManager, LinkDisplayPluginManagerInterface $linkDisplayManager, NoResultsBehaviourPluginManagerInterface $noResultsBehaviourPluginManager) {
+  public function __construct(LinkSourcePluginManagerInterface $linkSourceManager, LinkDisplayPluginManagerInterface $linkDisplayManager, NoResultsBehaviourPluginManagerInterface $noResultsBehaviourPluginManager, MoreLinkPluginManagerInterface $moreLinkPluginManager) {
     $this->linkSourceManager = $linkSourceManager;
     $this->linkDisplayManager = $linkDisplayManager;
     $this->noResultsBehaviourPluginManager = $noResultsBehaviourPluginManager;
+    $this->moreLinkPluginManager = $moreLinkPluginManager;
   }
 
   /**
@@ -135,13 +145,11 @@ class LinkListConfigurationManager {
    *
    * @return array
    *   The list of parents.
+   *
+   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   public function getTranslatableParents(LinkListConfigurationItem $item) {
-    // We start by adding the values that are not provided by plugins.
-    $parents = [
-      'link_display][more][more_title' => ['more', 'title_override'],
-      'link_display][more][more_target' => ['more', 'target'],
-    ];
+    $parents = [];
 
     $configuration = $this->extractConfiguration($this->getUntranslatedFieldItem($item));
 
@@ -167,6 +175,15 @@ class LinkListConfigurationManager {
     if ($no_results_behaviour_plugin instanceof TranslatableLinkListPluginInterface) {
       $plugin_parents = $this->getPluginTranslatableParents($no_results_behaviour_plugin, [
         'no_results_behaviour',
+        'plugin_configuration',
+      ]);
+      $parents = array_merge($parents, $plugin_parents);
+    }
+
+    $more_link_plugin = isset($configuration['more_link']['plugin']) ? $this->moreLinkPluginManager->createInstance($configuration['more_link']['plugin']) : NULL;
+    if ($more_link_plugin instanceof TranslatableLinkListPluginInterface) {
+      $plugin_parents = $this->getPluginTranslatableParents($more_link_plugin, [
+        'more_link',
         'plugin_configuration',
       ]);
       $parents = array_merge($parents, $plugin_parents);

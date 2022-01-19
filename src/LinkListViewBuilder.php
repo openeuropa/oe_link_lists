@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists;
 
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -17,7 +16,6 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Theme\Registry;
-use Drupal\Core\Url;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -63,6 +61,13 @@ class LinkListViewBuilder extends EntityViewBuilder {
   protected $noResultsBehaviourPluginManager;
 
   /**
+   * The more_link plugin manager.
+   *
+   * @var \Drupal\oe_link_lists\MoreLinkPluginManagerInterface
+   */
+  protected $moreLinkPluginManager;
+
+  /**
    * Constructs a new LinkListViewBuilder.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -85,16 +90,19 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *   The entity type manager.
    * @param \Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager
    *   The no_results_behaviour plugin manager.
+   * @param \Drupal\oe_link_lists\MoreLinkPluginManagerInterface $more_link_manager
+   *   The more_link plugin manager.
    *
    * @SuppressWarnings(PHPMD.ExcessiveParameterList)
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityRepositoryInterface $entity_repository, LanguageManagerInterface $language_manager, Registry $theme_registry = NULL, EntityDisplayRepositoryInterface $entity_display_repository = NULL, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EventDispatcherInterface $event_dispatcher, EntityTypeManagerInterface $entity_type_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager) {
+  public function __construct(EntityTypeInterface $entity_type, EntityRepositoryInterface $entity_repository, LanguageManagerInterface $language_manager, Registry $theme_registry = NULL, EntityDisplayRepositoryInterface $entity_display_repository = NULL, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EventDispatcherInterface $event_dispatcher, EntityTypeManagerInterface $entity_type_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager, MoreLinkPluginManagerInterface $more_link_manager) {
     parent::__construct($entity_type, $entity_repository, $language_manager, $theme_registry, $entity_display_repository);
     $this->linkSourceManager = $link_source_plugin_manager;
     $this->linkDisplayManager = $link_display_plugin_manager;
     $this->eventDispatcher = $event_dispatcher;
     $this->entityTypeManager = $entity_type_manager;
     $this->noResultsBehaviourPluginManager = $no_results_behaviour_manager;
+    $this->moreLinkPluginManager = $more_link_manager;
   }
 
   /**
@@ -111,7 +119,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
       $container->get('plugin.manager.oe_link_lists.link_display'),
       $container->get('event_dispatcher'),
       $container->get('entity_type.manager'),
-      $container->get('plugin.manager.oe_link_lists.no_results_behaviour')
+      $container->get('plugin.manager.oe_link_lists.no_results_behaviour'),
+      $container->get('plugin.manager.oe_link_lists.more_link')
     );
   }
 
@@ -197,8 +206,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
       $display_plugin_configuration['title'] = $link_list->getTitle();
     }
     $cacheable_metadata = new CacheableMetadata();
-    if (isset($configuration['more']) && isset($configuration['size']) && $configuration['size'] > 0) {
-      $display_plugin_configuration['more'] = $this->prepareMoreLink($configuration['more'], $cacheable_metadata);
+    if (isset($configuration['more_link']) && isset($configuration['size']) && $configuration['size'] > 0) {
+      $display_plugin_configuration['more'] = $this->prepareMoreLink($configuration['more_link'], $cacheable_metadata, $link_list);
     }
 
     foreach ($links as $key => $link) {
@@ -261,58 +270,29 @@ class LinkListViewBuilder extends EntityViewBuilder {
   /**
    * Prepares the "See all" link for the list.
    *
-   * @param array $more
-   *   The link configuration.
+   * @param array $configuration
+   *   The more_link configuration.
    * @param \Drupal\Core\Cache\CacheableMetadata $cacheable_metadata
    *   The cacheable metadata.
+   * @param \Drupal\oe_link_lists\Entity\LinkListInterface $link_list
+   *   The link list.
    *
    * @return \Drupal\Core\Link|null
    *   The Link object or NULL if one is not needed.
    *
    * @SuppressWarnings(PHPMD.CyclomaticComplexity)
    */
-  protected function prepareMoreLink(array $more, CacheableMetadata $cacheable_metadata): ?Link {
-    if ($more['button'] === 'no') {
+  protected function prepareMoreLink(array $configuration, CacheableMetadata $cacheable_metadata, LinkListInterface $link_list): ?Link {
+    if (!$configuration || !isset($configuration['plugin'])) {
+      // It means no plugin has been configured for more_link.
       return NULL;
     }
 
-    $overridden_title = FALSE;
-    $title = $this->t('See all');
-    if (isset($more['title_override']) && mb_strlen($more['title_override']) > 0) {
-      $overridden_title = TRUE;
-      $title = $more['title_override'];
-    }
+    $more_link_plugin = $configuration['plugin'] ?? NULL;
+    $more_link_plugin_configuration = $configuration['plugin_configuration'] ?? [];
+    $plugin = $this->moreLinkPluginManager->createInstance($more_link_plugin, $more_link_plugin_configuration);
+    return $plugin->getLink($link_list, $cacheable_metadata);
 
-    if ($more['button'] === 'custom' && $more['target']['type'] === 'custom') {
-      $has_scheme = parse_url($more['target']['url'], PHP_URL_SCHEME) !== NULL;
-      try {
-        $url = $has_scheme ? Url::fromUri($more['target']['url']) : Url::fromUserInput($more['target']['url']);
-      }
-      catch (\InvalidArgumentException $exception) {
-        if ($more['target']['url'] !== '<front>') {
-          return NULL;
-        }
-
-        $url = Url::fromRoute('<front>');
-      }
-
-      return Link::fromTextAndUrl($title, $url);
-    }
-
-    if ($more['button'] === 'custom' && $more['target']['type'] === 'entity') {
-      $url = Url::fromUri("entity:{$more['target']['entity_type']}/{$more['target']['entity_id']}");
-      if (!$overridden_title) {
-        $entity = $this->entityTypeManager->getStorage($more['target']['entity_type'])->load($more['target']['entity_id']);
-        if (!$entity instanceof ContentEntityInterface) {
-          return NULL;
-        }
-        $cacheable_metadata->addCacheableDependency($entity);
-        $title = $entity->label();
-      }
-      return Link::fromTextAndUrl($title, $url);
-    }
-
-    return NULL;
   }
 
   /**

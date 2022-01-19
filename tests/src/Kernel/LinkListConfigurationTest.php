@@ -83,12 +83,14 @@ class LinkListConfigurationTest extends KernelTestBase {
         ],
       ],
       'size' => 0,
-      'more' => [
-        'button' => 'no',
-        // Does not matter what is under "target" as it's translatable as a
-        // whole.
-        'target' => [
-          'test' => 'test',
+      'more_link' => [
+        'plugin' => 'custom_link',
+        'plugin_configuration' => [
+          'target' => [
+            'type' => 'custom',
+            'url' => 'http://example.com/more-link',
+          ],
+          'title_override' => 'test',
         ],
       ],
     ];
@@ -124,11 +126,14 @@ class LinkListConfigurationTest extends KernelTestBase {
         ],
       ],
       'size' => 0,
-      'more' => [
-        'button' => 'no',
-        // Only the target was marked as translatable so it should change.
-        'target' => [
-          'test' => 'test FR',
+      'more_link' => [
+        'plugin' => 'custom_link',
+        'plugin_configuration' => [
+          'target' => [
+            'type' => 'custom',
+            'url' => 'http://example.com/more-link FR',
+          ],
+          'title_override' => 'test FR',
         ],
       ],
     ];
@@ -143,9 +148,13 @@ class LinkListConfigurationTest extends KernelTestBase {
           'text' => 'the no results text FR',
         ],
       ],
-      'more' => [
-        'target' => [
-          'test' => 'test FR',
+      'more_link' => [
+        'plugin_configuration' => [
+          'target' => [
+            'type' => 'custom',
+            'url' => 'http://example.com/more-link FR',
+          ],
+          'title_override' => 'test FR',
         ],
       ],
     ];
@@ -184,9 +193,13 @@ class LinkListConfigurationTest extends KernelTestBase {
           'text' => 'the no results text FR',
         ],
       ],
-      'more' => [
-        'target' => [
-          'test' => 'test FR',
+      'more_link' => [
+        'plugin_configuration' => [
+          'target' => [
+            'type' => 'custom',
+            'url' => 'http://example.com/more-link FR',
+          ],
+          'title_override' => 'test FR',
         ],
       ],
     ];
@@ -278,6 +291,9 @@ class LinkListConfigurationTest extends KernelTestBase {
    *   The configuration values.
    */
   protected function translateConfiguration(array &$configuration): void {
+    $skip = [
+      'type',
+    ];
     foreach ($configuration as $key => &$value) {
       if (is_array($value)) {
         $this->translateConfiguration($value);
@@ -288,6 +304,10 @@ class LinkListConfigurationTest extends KernelTestBase {
         $value = !$value;
       }
       else {
+        if (in_array($key, $skip)) {
+          continue;
+        }
+
         $value .= ' FR';
       }
 

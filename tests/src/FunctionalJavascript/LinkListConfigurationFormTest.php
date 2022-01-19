@@ -157,6 +157,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Assert we can only see the source plugins that work with the Dynamic
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
+      'configurable_non_translatable_test_source',
       'rss',
       'test_cache_metadata',
       'test_complex_form',
@@ -219,6 +220,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Select and configure the no results behaviour plugin.
     $this->assertFieldSelectOptions('No results behaviour', [
       'hide_list',
+      'non_translatable_text_message',
       'text_message',
     ]);
     $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
@@ -268,9 +270,9 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
   }
 
   /**
-   * Tests that a list can have a limit and a "See all" button.
+   * Tests that a list can have a limit and a "More link".
    */
-  public function testLinkListGeneralConfiguration(): void {
+  public function testLinkListMoreLink(): void {
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
     $this->getSession()->getPage()->fillField('Title', 'The title');
@@ -300,44 +302,54 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->linkExists('Example');
     $this->assertSession()->linkExists('European Commission');
     $this->assertSession()->linkExists('DIGIT');
-
     // There should be no "See all".
     $this->assertSession()->linkNotExists('See all');
 
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEmpty($link_list->getConfiguration()['more_link']);
+
     // Show only 2 links with no "See all" button.
     $this->drupalGet('link_list/1/edit');
+    $this->assertFalse($this->assertSession()->selectExists('More link')->isVisible());
     $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
-    $this->assertSession()->pageTextContains('Display button to see all links');
-    $this->assertSession()->checkboxChecked('No, do not display "See all" button');
-    $this->assertSession()->pageTextNotContains('Target');
-    $this->assertFalse($this->assertSession()->fieldExists('Target')->isVisible());
-    $this->assertFalse($this->assertSession()->fieldExists('Override the button label. Defaults to "See all" or the referenced entity label.')->isVisible());
+    $this->assertTrue($this->assertSession()->selectExists('More link')->isVisible());
+    $this->assertFieldSelectOptions('More link', [
+      'configurable_non_translatable_link',
+      'custom_link',
+      'hardcoded_link',
+    ]);
+    // No more_link plugin is selected.
+    $this->assertEquals('selected', $this->assertSession()->selectExists('More link')->find('css', 'option[value=""]')->getAttribute('selected'));
+    $this->assertSession()->fieldNotExists('Target');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkExists('Example');
     $this->assertSession()->linkExists('European Commission');
     $this->assertSession()->linkNotExists('DIGIT');
     $this->assertSession()->linkNotExists('See all');
 
-    // Add a "See all" external button with the default label.
-    $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->findField('Yes, display a custom button')->click();
-    $this->assertTrue($this->assertSession()->fieldExists('Target')->isVisible());
-    $this->assertTrue($this->assertSession()->fieldExists('Override the button label. Defaults to "See all" or the referenced entity label.')->isVisible());
-    $this->assertSession()->checkboxNotChecked('Override the button label. Defaults to "See all" or the referenced entity label.');
-    $this->assertFalse($this->assertSession()->fieldExists('Button label')->isVisible());
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEmpty($link_list->getConfiguration()['more_link']);
 
-    // Verify that the target field is required when the "display custom button"
-    // option is selected.
+    // Add an external "More link" with the default label.
+    $this->drupalGet('link_list/1/edit');
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Custom link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    // The custom_link plugin is now selected so we can see its fields.
+    $this->assertSession()->fieldExists('Target');
+    $this->assertSession()->fieldExists('Override the link label. Defaults to "See all" or the referenced entity label.');
+    $this->assertSession()->checkboxNotChecked('Override the link label. Defaults to "See all" or the referenced entity label.');
+    $this->assertFalse($this->assertSession()->fieldExists('More link label')->isVisible());
+    // Verify that the target field is required.
     $this->disableNativeBrowserRequiredFieldValidation();
     $this->getSession()->getPage()->pressButton('Save');
-    $this->assertSession()->elementTextContains('css', '.messages--error', 'The target is required if you want to override the "See all" button.');
+    $this->assertSession()->elementTextContains('css', '.messages--error', 'The path is invalid.');
     $this->getSession()->getPage()->fillField('Target', 'httq://example.com/more-link');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->elementTextContains('css', '.messages--error', 'The path httq://example.com/more-link is invalid.');
     $this->getSession()->getPage()->fillField('Target', 'fake:url');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->elementTextContains('css', '.messages--error', 'The path fake:url is invalid.');
-
+    // Add a proper target value.
     $this->getSession()->getPage()->fillField('Target', 'http://example.com/more-link');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkExists('Example');
@@ -346,25 +358,50 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->linkExists('See all');
     $this->assertSession()->linkByHrefExists('http://example.com/more-link');
 
-    // Specify a custom label for the "See all button".
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEquals([
+      'plugin' => 'custom_link',
+      'plugin_configuration' => [
+        'target' => [
+          'type' => 'custom',
+          'url' => 'http://example.com/more-link',
+        ],
+        'title_override' => NULL,
+      ],
+    ], $link_list->getConfiguration()['more_link']);
+
+    // Specify a custom label for the "More link".
     $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->checkField('Override the button label. Defaults to "See all" or the referenced entity label.');
-    $this->assertTrue($this->assertSession()->fieldExists('Button label')->isVisible());
-    // Verify that the target field is required when the "override button label"
+    $this->getSession()->getPage()->checkField('Override the link label. Defaults to "See all" or the referenced entity label.');
+    $this->assertTrue($this->assertSession()->fieldExists('More link label')->isVisible());
+    // Verify that the target field is required when the "more link label"
     // checkbox is selected.
     $this->disableNativeBrowserRequiredFieldValidation();
     $this->getSession()->getPage()->pressButton('Save');
-    $this->assertSession()->elementTextContains('css', '.messages--error', 'The button label is required if you want to override the "See all" button title.');
+    $this->assertSession()->elementTextContains('css', '.messages--error', 'The "More link" label is required if you want to override the "More link" title.');
 
-    $this->getSession()->getPage()->fillField('Button label', 'Custom more button');
+    // Set a proper "More link" label override.
+    $this->getSession()->getPage()->fillField('More link label', 'Custom more button');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkNotExists('See all');
     $this->assertSession()->linkExists('Custom more button');
     $this->assertSession()->linkByHrefExists('http://example.com/more-link');
 
-    // Verify that strings that can be casted to false are rendered.
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEquals([
+      'plugin' => 'custom_link',
+      'plugin_configuration' => [
+        'target' => [
+          'type' => 'custom',
+          'url' => 'http://example.com/more-link',
+        ],
+        'title_override' => 'Custom more button',
+      ],
+    ], $link_list->getConfiguration()['more_link']);
+
+    // Verify that strings that can be cast to false are rendered.
     $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->fillField('Button label', '0');
+    $this->getSession()->getPage()->fillField('More link label', '0');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkNotExists('See all');
     $this->assertSession()->linkExists('0');
@@ -372,27 +409,40 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     // Create some nodes.
     $this->drupalCreateContentType(['type' => 'page']);
-    $node = $this->drupalCreateNode(['title' => 'Page 1']);
+    $node = $this->drupalCreateNode(['title' => 'Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in aliqu']);
     $this->drupalCreateNode(['title' => 'Page 2']);
 
-    // Change the "See all" button to a local Node, with the custom label.
+    // Change the "More link" to a local Node, with the custom label.
     $this->drupalGet('link_list/1/edit');
     $target_field = $this->assertSession()->waitForField('Target');
-    $target_field->setValue('Page');
+    $target_field->setValue('Dolor');
     // The autocomplete list is shown on key down event.
     $this->getSession()->getDriver()->keyDown($target_field->getXpath(), ' ');
     $this->assertSession()->waitOnAutocomplete();
-    // Pick the "Page 1" option from the list.
+    // Pick the node with the long title from the list.
     $this->getSession()->getPage()
       ->find('css', '.ui-autocomplete')
-      ->find('xpath', '//a[.="Page 1"]')
+      ->find('xpath', '//a[.="Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in aliqu"]')
       ->click();
     $this->assertSession()->fieldValueEquals('Target', "{$node->label()} ({$node->id()})");
-    $this->getSession()->getPage()->fillField('Button label', 'Custom more button');
+    $this->getSession()->getPage()->fillField('More link label', 'Custom more button');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkExists('Custom more button');
     $this->assertSession()->linkByHrefNotExists('http://example.com/more-link');
     $this->assertSession()->linkByHrefExists($node->toUrl()->toString());
+
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEquals([
+      'plugin' => 'custom_link',
+      'plugin_configuration' => [
+        'target' => [
+          'type' => 'entity',
+          'entity_type' => 'node',
+          'entity_id' => $node->id(),
+        ],
+        'title_override' => 'Custom more button',
+      ],
+    ], $link_list->getConfiguration()['more_link']);
 
     // Point to a non-existing node.
     $this->drupalGet('link_list/1/edit');
@@ -400,21 +450,48 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->elementTextContains('css', '.messages--error', 'The referenced entity (node: 300) does not exist.');
 
-    // Remove the title override for the "See all" button.
+    // Remove the title override for the "More link".
     $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->uncheckField('Override the button label. Defaults to "See all" or the referenced entity label.');
+    $this->getSession()->getPage()->uncheckField('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->linkNotExists('Custom more button');
-    // The default button label is shown.
+    // The default More link label is shown.
     $this->assertSession()->linkExists($node->label());
     $this->assertSession()->linkByHrefExists($node->toUrl()->toString());
 
-    // Remove node used in the "See all" button.
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEquals([
+      'plugin' => 'custom_link',
+      'plugin_configuration' => [
+        'target' => [
+          'type' => 'entity',
+          'entity_type' => 'node',
+          'entity_id' => $node->id(),
+        ],
+        'title_override' => NULL,
+      ],
+    ], $link_list->getConfiguration()['more_link']);
+
+    // Remove node used in the "More link".
     $node->delete();
     $this->getSession()->reload();
     $this->assertSession()->linkExists('Example');
     $this->assertSession()->linkExists('European Commission');
     $this->assertSession()->linkByHrefNotExists($node->toUrl()->toString());
+
+    // Change the "More link" plugin.
+    $this->drupalGet('link_list/1/edit');
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Hardcoded link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->linkExists('A harcoded link');
+    $this->assertSession()->linkByHrefExists('http://europa.eu');
+
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->assertEquals([
+      'plugin' => 'hardcoded_link',
+      'plugin_configuration' => [],
+    ], $link_list->getConfiguration()['more_link']);
   }
 
   /**
