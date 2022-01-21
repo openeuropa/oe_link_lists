@@ -500,7 +500,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#title' => $this->t('Number of items'),
       '#weight' => 10,
       '#options' => $options,
-      '#default_value' => $configuration['size'] ?? 0,
+      '#default_value' => $configuration['size'] ?? 20,
       '#access' => !empty($more_link_plugin_options),
     ];
     $name = $first_parent . '[' . implode('][', array_merge($parents, ['size'])) . ']';
