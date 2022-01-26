@@ -284,8 +284,11 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     // Check that the Size field exists.
     $select = $this->assertSession()->selectExists('Number of items');
-    $this->assertEquals(0, $select->getValue());
-    $this->assertSession()->pageTextNotContains('Display link to see all');
+    // 20 items are selected by default.
+    $this->assertEquals(20, $select->getValue());
+
+    // Show all links.
+    $this->getSession()->getPage()->selectFieldOption('Number of items', 0);
 
     // Select and configure the source plugin.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
