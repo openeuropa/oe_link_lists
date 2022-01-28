@@ -24,7 +24,7 @@ class LinkListConfigurationItemList extends FieldItemList {
     if (is_null($value)) {
       // Create an empty item if one is not there already.
       $this->list[0] = $this->createItem(0);
-      return isset($this->list[$index]) ? $this->list[$index] : NULL;
+      return $this->list[$index] ?? NULL;
     }
 
     return $value;
