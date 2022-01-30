@@ -230,10 +230,10 @@ class LinkCollectionTest extends UnitTestCase {
     $this->assertEquals(['test_tag_1'], $collection->getCacheTags());
 
     $collection->add($link_two);
-    $this->assertEquals(['test_tag_1', 'test_tag_2'], $collection->getCacheTags());
+    $this->assertEqualsCanonicalizing(['test_tag_1', 'test_tag_2'], $collection->getCacheTags());
 
     $collection->addCacheTags(['collection_tag_1', 'collection_tag_2']);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_tag_1',
       'collection_tag_2',
       'test_tag_1',
@@ -243,7 +243,7 @@ class LinkCollectionTest extends UnitTestCase {
     // Verify that the cache tags are calculated runtime by adding extra
     // cache metadata to a link present in the collection.
     $link_one->addCacheTags(['test_tag_3']);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_tag_1',
       'collection_tag_2',
       'test_tag_1',
@@ -252,7 +252,7 @@ class LinkCollectionTest extends UnitTestCase {
     ], $collection->getCacheTags());
 
     unset($collection[0]);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_tag_1',
       'collection_tag_2',
       'test_tag_1',
@@ -260,7 +260,7 @@ class LinkCollectionTest extends UnitTestCase {
     ], $collection->getCacheTags());
 
     unset($collection[1]);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_tag_1',
       'collection_tag_2',
     ], $collection->getCacheTags());
@@ -280,13 +280,13 @@ class LinkCollectionTest extends UnitTestCase {
     $this->assertEquals(['test_context_1'], $collection->getCacheContexts());
 
     $collection->add($link_two);
-    $this->assertEquals(['test_context_1', 'test_context_2'], $collection->getCacheContexts());
+    $this->assertEqualsCanonicalizing(['test_context_1', 'test_context_2'], $collection->getCacheContexts());
 
     $collection->addCacheContexts([
       'collection_context_1',
       'collection_context_2',
     ]);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_context_1',
       'collection_context_2',
       'test_context_1',
@@ -296,7 +296,7 @@ class LinkCollectionTest extends UnitTestCase {
     // Verify that the cache contexts are calculated runtime by adding extra
     // cache metadata to a link present in the collection.
     $link_one->addCacheContexts(['test_context_3']);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_context_1',
       'collection_context_2',
       'test_context_1',
@@ -305,7 +305,7 @@ class LinkCollectionTest extends UnitTestCase {
     ], $collection->getCacheContexts());
 
     unset($collection[0]);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_context_1',
       'collection_context_2',
       'test_context_1',
@@ -313,7 +313,7 @@ class LinkCollectionTest extends UnitTestCase {
     ], $collection->getCacheContexts());
 
     unset($collection[1]);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'collection_context_1',
       'collection_context_2',
     ], $collection->getCacheContexts());

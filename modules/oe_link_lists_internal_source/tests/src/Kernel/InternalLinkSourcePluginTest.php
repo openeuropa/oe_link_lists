@@ -306,7 +306,7 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
     $test_entity_one->save();
 
     $links = $plugin->getLinks();
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'enabled_plugin_test_tag',
       'entity_test:' . $test_entity_one->id(),
       'entity_test_list',
@@ -322,7 +322,7 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
     $test_entity_two->save();
 
     $links = $plugin->getLinks();
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'enabled_plugin_test_tag',
       'entity_test:' . $test_entity_one->id(),
       'entity_test:' . $test_entity_two->id(),
