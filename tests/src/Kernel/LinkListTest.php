@@ -156,7 +156,7 @@ class LinkListTest extends EntityKernelTestBase {
 
     // Verify that the proper cacheability metadata has been added to the
     // render array.
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'bar_test_tag:1',
       'bar_test_tag:2',
       'link_list:1',
@@ -179,7 +179,7 @@ class LinkListTest extends EntityKernelTestBase {
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
     $this->assertEquals("", $html);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'config:user.role.anonymous',
       'link_list:1',
       'link_list_view',
@@ -197,7 +197,7 @@ class LinkListTest extends EntityKernelTestBase {
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
     $this->assertEquals('the no results text', $html);
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'config:user.role.anonymous',
       'link_list:1',
       'link_list_view',

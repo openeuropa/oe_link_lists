@@ -197,7 +197,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
 
     $links = $plugin->getLinks();
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'link_list_link:1',
       'link_list_link:3',
       'node:1',
@@ -217,7 +217,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
 
     $links = $plugin->getLinks();
-    $this->assertEquals([
+    $this->assertEqualsCanonicalizing([
       'link_list_link:1',
       'link_list_link:2',
       'link_list_link:3',
