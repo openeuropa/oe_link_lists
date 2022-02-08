@@ -1,11 +1,24 @@
 # Changelog
 
+## [0.13.0](https://github.com/openeuropa/oe_link_lists/tree/0.13.0) (2022-02-08)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.12.0...0.13.0)
+
+**Merged pull requests:**
+
+- EWPP-1913: Update to PHP8 and Composer v2. [\#98](https://github.com/openeuropa/oe_link_lists/pull/98) ([22Alexandra](https://github.com/22Alexandra))
+- EWPP-1818: Defaulting to max 20 items in link lists. [\#97](https://github.com/openeuropa/oe_link_lists/pull/97) ([upchuk](https://github.com/upchuk))
+- EWPP-1552: Default related lists [\#95](https://github.com/openeuropa/oe_link_lists/pull/95) ([upchuk](https://github.com/upchuk))
+- EWPP-1586: Allow full-length node titles in the custom link entity autocomplete. [\#94](https://github.com/openeuropa/oe_link_lists/pull/94) ([upchuk](https://github.com/upchuk))
+- \[EWPP-1552\] EWPP-1553: Pluggable more links. [\#92](https://github.com/openeuropa/oe_link_lists/pull/92) ([upchuk](https://github.com/upchuk))
+
 ## [0.12.0](https://github.com/openeuropa/oe_link_lists/tree/0.12.0) (2021-10-25)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.11.0...0.12.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.12.0. [\#93](https://github.com/openeuropa/oe_link_lists/pull/93) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - \[EWPP-1552\] EWPP-806: No results behaviour. [\#91](https://github.com/openeuropa/oe_link_lists/pull/91) ([upchuk](https://github.com/upchuk))
 - EWPP-0000: Fix grumphp issues. [\#89](https://github.com/openeuropa/oe_link_lists/pull/89) ([22Alexandra](https://github.com/22Alexandra))
 - EWPP-661: Localized link lists \(IEF\) [\#88](https://github.com/openeuropa/oe_link_lists/pull/88) ([upchuk](https://github.com/upchuk))
@@ -138,6 +151,9 @@
 - OPENEUROPA-2512: Make sure the manual links source respects the limit parameter. [\#34](https://github.com/openeuropa/oe_link_lists/pull/34) ([imanoleguskiza](https://github.com/imanoleguskiza))
 
 ## [0.1.0](https://github.com/openeuropa/oe_link_lists/tree/0.1.0) (2019-12-02)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/da88046d74e26f5d94016ebb022a38e889edbad4...0.1.0)
+
 **Merged pull requests:**
 
 - Update CHANGELOG.md for release 0.1.0. [\#33](https://github.com/openeuropa/oe_link_lists/pull/33) ([ademarco](https://github.com/ademarco))
