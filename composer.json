@@ -18,7 +18,7 @@
         "drupal/ctools": "^3.7",
         "drupal/drupal-extension": "~4.0",
         "drupal/entity_reference_revisions": "^1.9",
-        "drupal/inline_entity_form": "^1.0-rc9",
+        "drupal/inline_entity_form": "^1.0-rc10",
         "drush/drush": "~10.3",
         "drupal/token": "^1.10",
         "egulias/email-validator": "^2.1.22 || ^3.0",
@@ -69,8 +69,7 @@
         },
         "patches": {
             "drupal/inline_entity_form": {
-                "https://www.drupal.org/project/inline_entity_form/issues/2875716": "https://www.drupal.org/files/issues/2021-04-15/ief_removed_references_2875716-103.patch",
-                "https://www.drupal.org/project/inline_entity_form/issues/3217493": "https://www.drupal.org/files/issues/2021-06-04/php8-incompatibility-3217493-4.patch"
+                "https://www.drupal.org/project/inline_entity_form/issues/2875716": "https://www.drupal.org/files/issues/2021-04-15/ief_removed_references_2875716-103.patch"
             },
             "drupal/entity_reference_revisions": {
                 "https://www.drupal.org/project/entity_reference_revisions/issues/3206499": "https://www.drupal.org/files/issues/2021-05-26/entity_reference_revisions-3206499-5.patch"
