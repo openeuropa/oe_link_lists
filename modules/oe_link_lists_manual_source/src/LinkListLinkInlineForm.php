@@ -102,7 +102,7 @@ class LinkListLinkInlineForm extends EntityInlineForm {
   /**
    * {@inheritdoc}
    */
-  protected function buildEntity(array $entity_form, ContentEntityInterface $entity, FormStateInterface $form_state) {
+  public function buildEntity(array $entity_form, ContentEntityInterface $entity, FormStateInterface $form_state) {
     parent::buildEntity($entity_form, $entity, $form_state);
 
     if (!isset($entity_form['override'])) {
