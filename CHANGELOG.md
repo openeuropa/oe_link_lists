@@ -1,11 +1,21 @@
 # Changelog
 
+## [0.14.0](https://github.com/openeuropa/oe_link_lists/tree/0.14.0) (2022-03-07)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.13.0...0.14.0)
+
+**Merged pull requests:**
+
+- EWPP-2035: Revert fixing xdebug-handler version. [\#102](https://github.com/openeuropa/oe_link_lists/pull/102) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- EWPP-0000: Use latest version of IEF and remove its PHP8 compatibility patch. [\#100](https://github.com/openeuropa/oe_link_lists/pull/100) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [0.13.0](https://github.com/openeuropa/oe_link_lists/tree/0.13.0) (2022-02-08)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.12.0...0.13.0)
 
 **Merged pull requests:**
 
+- EWPP-0000: Prepare 0.13.0 release. [\#99](https://github.com/openeuropa/oe_link_lists/pull/99) ([hernani](https://github.com/hernani))
 - EWPP-1913: Update to PHP8 and Composer v2. [\#98](https://github.com/openeuropa/oe_link_lists/pull/98) ([22Alexandra](https://github.com/22Alexandra))
 - EWPP-1818: Defaulting to max 20 items in link lists. [\#97](https://github.com/openeuropa/oe_link_lists/pull/97) ([upchuk](https://github.com/upchuk))
 - EWPP-1552: Default related lists [\#95](https://github.com/openeuropa/oe_link_lists/pull/95) ([upchuk](https://github.com/upchuk))
