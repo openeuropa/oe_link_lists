@@ -530,8 +530,11 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     ]);
 
     // If we don't have a selected plugin ID, take it from the configuration.
-    // However, only do so if we are not part of an Ajax rebuild.
-    if (!$plugin_id && !$form_state->getTriggeringElement()) {
+    // However, only do so if we are not part of an Ajax rebuild of the actual
+    // more_link plugin type.
+    $triggering_element = $form_state->getTriggeringElement();
+    $more_link_ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'more_link';
+    if (!$plugin_id && !$more_link_ajax_plugin_select) {
       $plugin_id = $this->getConfigurationPluginId($link_list, 'more_link');
     }
 
