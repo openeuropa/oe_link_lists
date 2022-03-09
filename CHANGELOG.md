@@ -1,7 +1,13 @@
-# Changelog
+# Change Log
+
+## [0.14.1](https://github.com/openeuropa/oe_link_lists/tree/0.14.1) (2022-03-09)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.0...0.14.1)
+
+**Merged pull requests:**
+
+- EWPP-2056: More link plugin config form fix to not disappear on other AJAX rebuilds. [\#103](https://github.com/openeuropa/oe_link_lists/pull/103) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.0](https://github.com/openeuropa/oe_link_lists/tree/0.14.0) (2022-03-07)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.13.0...0.14.0)
 
 **Merged pull requests:**
