@@ -163,6 +163,7 @@ function oe_link_lists_post_update_00003(&$sandbox) {
  *   An array with the config and whether a save is required.
  *
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function _oe_link_lists_update_configuration_with_default_more_link(array $configuration, bool $original_language): array {
   $update = [
@@ -192,7 +193,7 @@ function _oe_link_lists_update_configuration_with_default_more_link(array $confi
     return $update;
   }
 
-  if ($more['button'] === 'no') {
+  if (isset($more['button']) && $more['button'] === 'no') {
     // It means there is no "more" link configured. It also means we are on
     // the original because the "button" key never ends up in the translation
     // array. And we just default to the empty "more_link" array.
