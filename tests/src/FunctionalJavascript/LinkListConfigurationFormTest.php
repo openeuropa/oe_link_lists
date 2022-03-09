@@ -342,6 +342,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->fieldExists('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->assertSession()->checkboxNotChecked('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->assertFalse($this->assertSession()->fieldExists('More link label')->isVisible());
+
     // Verify that the target field is required.
     $this->disableNativeBrowserRequiredFieldValidation();
     $this->getSession()->getPage()->pressButton('Save');
@@ -373,8 +374,20 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       ],
     ], $link_list->getConfiguration()['more_link']);
 
-    // Specify a custom label for the "More link".
     $this->drupalGet('link_list/1/edit');
+    // Switch the link source plugin to check the more link form still shows
+    // correctly.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Empty collection');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->fieldExists('Target');
+    $this->assertSession()->fieldExists('Override the link label. Defaults to "See all" or the referenced entity label.');
+    $this->assertSession()->checkboxNotChecked('Override the link label. Defaults to "See all" or the referenced entity label.');
+
+    // Switch back the link source.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Specify a custom label for the "More link".
     $this->getSession()->getPage()->checkField('Override the link label. Defaults to "See all" or the referenced entity label.');
     $this->assertTrue($this->assertSession()->fieldExists('More link label')->isVisible());
     // Verify that the target field is required when the "more link label"
