@@ -257,6 +257,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The entire form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   *
+   * @SuppressWarnings(PHPMD.CyclomaticComplexity)
    */
   protected function buildLinkSourceElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
     $link_list = $this->getLinkListFromForm($form, $form_state);
@@ -281,15 +283,31 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#element_parents' => $parents,
     ];
 
+    // Keep track of where the plugin ID is coming from so that we know to
+    // remove the deprecated ones.
+    $remove_deprecated = FALSE;
     $plugin_id = NestedArray::getValue($form_state->getStorage(), [
       'plugin_select',
       'link_source',
     ]);
     if (!$plugin_id) {
+      $remove_deprecated = TRUE;
       $plugin_id = $this->getConfigurationPluginId($link_list, 'source');
     }
 
+    // Get the link source plugin options.
     $source_plugin_options = $this->linkSourcePluginManager->getPluginsAsOptions($link_list->bundle());
+
+    // Remove the deprecated options from the list unless we are editing a
+    // link list that uses a deprecated plugin.
+    $deprecated_options = $this->linkSourcePluginManager->getDeprecatedPlugins();
+    if ($link_list->isNew() || ($remove_deprecated && $plugin_id)) {
+      $source_plugin_options = array_filter($source_plugin_options, function ($label, $id) use ($deprecated_options, $plugin_id) {
+        // We filter out the plugins that are deprecated, except for the current
+        // plugin.
+        return !in_array($id, $deprecated_options) || $plugin_id === $id;
+      }, ARRAY_FILTER_USE_BOTH);
+    }
 
     // If we don't have a plugin ID and there is only one available option,
     // use that as the default.

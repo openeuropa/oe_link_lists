@@ -45,4 +45,20 @@ class LinkSourcePluginManager extends DefaultPluginManager implements LinkSource
     return $this->getPluginsAsOptionsByBundle($bundle);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeprecatedPlugins(): array {
+    $definitions = $this->getDefinitions();
+    $plugins = [];
+    foreach ($definitions as $name => $definition) {
+      if (isset($definition['deprecated']) && $definition['deprecated'] === TRUE) {
+        // For new link lists, do not include the deprecated options.
+        $plugins[] = $name;
+      }
+    }
+
+    return $plugins;
+  }
+
 }

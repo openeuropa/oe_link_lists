@@ -23,10 +23,9 @@ use Psr\Http\Message\RequestInterface;
  * Tests the RSS link source plugin.
  *
  * @group oe_link_lists
- * @coversDefaultClass \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource
- * @deprecated
+ * @coversDefaultClass \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource
  */
-class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
+class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
 
   /**
    * {@inheritdoc}
@@ -38,6 +37,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     'system',
     'language',
     'content_translation',
+    'multivalue_form_element',
     'oe_link_lists',
     'oe_link_lists_test',
     'oe_link_lists_rss_source',
@@ -57,7 +57,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
     /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
-    $plugin = $plugin_manager->createInstance('rss', $form_state->get('plugin_configuration') ?? []);
+    $plugin = $plugin_manager->createInstance('rss_links', $form_state->get('plugin_configuration') ?? []);
 
     $form['#tree'] = TRUE;
     $form['plugin'] = [];
@@ -158,38 +158,60 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   public function testPluginForm(): void {
     // Provide an existing plugin configuration.
     $form_state = new FormState();
-    $form_state->set('plugin_configuration', ['url' => 'http://www.example.com/test.xml']);
+    $form_state->set('plugin_configuration', [
+      'urls' => [
+        'http://www.example.com/test.xml',
+        'http://www.example.com/test2.xml',
+      ],
+    ]);
 
     /** @var \Drupal\Core\Form\FormBuilderInterface $form_builder */
     $form_builder = $this->container->get('form_builder');
     $form = $form_builder->buildForm($this, $form_state);
     $this->render($form);
-
     // Verify that the plugin subform is under a main "plugin" tree and that is
     // using the existing configuration value.
-    $this->assertFieldByName('plugin[url]', 'http://www.example.com/test.xml');
+    $this->assertFieldByName('plugin[urls][0][url]', 'http://www.example.com/test.xml');
+    $this->assertFieldByName('plugin[urls][1][url]', 'http://www.example.com/test2.xml');
 
     // The default value for new plugins is empty.
     $form = $form_builder->buildForm($this, $form_state);
     $this->render($form);
-    $this->assertFieldByName('plugin[url]', '');
+
+    $this->assertFieldByName('plugin[urls][0][url]', '');
 
     $form_state = new FormState();
     $form_builder->submitForm($this, $form_state);
-    // Assert that the URL form field is required.
-    $this->assertEquals(['plugin][url' => 'The resource URL field is required.'], $form_state->getErrors());
+
+    // Assert that the URL form field is required. Here we get two errors: one
+    // for the individual URL element, and one for the top level multivalue
+    // element.
+    $this->assertEquals([
+      'plugin][urls][0][url' => 'The resource URL field is required.',
+      'plugin][urls' => 'The RSS URLs field is required.',
+    ], $form_state->getErrors());
 
     $form_state = new FormState();
-    $form_state->setValue(['plugin', 'url'], 'invalid url');
+    $form_state->setValue(['plugin', 'urls', 0, 'url'], 'invalid url');
     $form_builder->submitForm($this, $form_state);
     // Assert that the URL form element expects valid URLs.
-    $this->assertEquals(['plugin][url' => 'The URL <em class="placeholder">invalid url</em> is not valid.'], $form_state->getErrors());
+    $this->assertEquals(['plugin][urls][0][url' => 'The URL <em class="placeholder">invalid url</em> is not valid.'], $form_state->getErrors());
 
     // The form submits correctly when a valid URL is provided.
     $form_state = new FormState();
-    $form_state->setValue(['plugin', 'url'], 'http://www.example.com/atom.xml');
+    $form_state->setValue(['plugin', 'urls'], [
+      ['url' => 'http://www.example.com/atom.xml'],
+      ['url' => 'http://www.example.com/atom2.xml'],
+    ]);
     $form_builder->submitForm($this, $form_state);
     $this->assertEmpty($form_state->getErrors());
+
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
+    $plugin = $form_state->get('plugin');
+    $this->assertEquals([
+      'http://www.example.com/atom.xml',
+      'http://www.example.com/atom2.xml',
+    ], $plugin->getConfiguration()['urls']);
   }
 
   /**
@@ -219,9 +241,11 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     // Configure the link list.
     $configuration = [
       'source' => [
-        'plugin' => 'rss',
+        'plugin' => 'rss_links',
         'plugin_configuration' => [
-          'url' => 'http://www.example.com/atom.xml',
+          'urls' => [
+            'http://www.example.com/atom.xml',
+          ],
         ],
       ],
       'display' => [
@@ -242,14 +266,14 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     // Test with adding translation.
     $link_list->addTranslation('fr', $link_list->toArray());
 
-    $configuration['source']['plugin_configuration']['url'] = 'http://ec.europa.eu/rss.xml';
+    $configuration['source']['plugin_configuration']['urls'] = ['http://ec.europa.eu/rss.xml'];
     $translation = $link_list->getTranslation('fr');
     $translation->setConfiguration($configuration);
 
     $expected_source = [
-      'plugin' => 'rss',
+      'plugin' => 'rss_links',
       'plugin_configuration' => [
-        'url' => 'http://ec.europa.eu/rss.xml',
+        'urls' => ['http://ec.europa.eu/rss.xml'],
       ],
     ];
     $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
@@ -269,12 +293,6 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $translation = $link_list->getTranslation('de');
     $translation->setConfiguration($configuration);
 
-    $expected_source = [
-      'plugin' => 'rss',
-      'plugin_configuration' => [
-        'url' => 'http://ec.europa.eu/rss.xml',
-      ],
-    ];
     $this->assertEquals($expected_source, $translation->getConfiguration()['source']);
 
     $translation->save();
@@ -311,26 +329,26 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
     /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
-    $plugin = $plugin_manager->createInstance('rss');
+    $plugin = $plugin_manager->createInstance('rss_links');
     // Test a plugin with empty configuration.
     $this->assertTrue($plugin->getLinks()->isEmpty());
 
     // Tests that the plugin doesn't break if it's referring a non-existing
     // feed, for example one that existed in the system and has been removed.
-    $plugin->setConfiguration(['url' => 'http://www.example.com/deleted.xml']);
+    $plugin->setConfiguration(['urls' => ['http://www.example.com/deleted.xml']]);
     $this->assertTrue($plugin->getLinks()->isEmpty());
 
     // Generate the expected links.
     $expected = $this->getExpectedLinks();
 
-    $plugin->setConfiguration(['url' => 'http://www.example.com/atom.xml']);
+    $plugin->setConfiguration(['urls' => ['http://www.example.com/atom.xml']]);
     $links = $plugin->getLinks();
     $this->assertEquals($expected['atom'], $links->toArray());
     $this->assertEquals(['aggregator_feed:' . $feeds['atom']], $links->getCacheTags());
     $this->assertEquals([], $links->getCacheContexts());
     $this->assertEquals(Cache::PERMANENT, $links->getCacheMaxAge());
 
-    $plugin->setConfiguration(['url' => 'http://www.example.com/rss.xml']);
+    $plugin->setConfiguration(['urls' => ['http://www.example.com/rss.xml']]);
     $links = $plugin->getLinks();
     $this->assertEquals($expected['rss'], $links->toArray());
     $this->assertEquals(['aggregator_feed:' . $feeds['rss']], $links->getCacheTags());
@@ -343,6 +361,23 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $links = $plugin->getLinks(5, 2)->toArray();
     $this->assertEquals(array_slice($expected['rss'], 2, 5), $links);
+
+    // Try with multiple URLs.
+    $plugin->setConfiguration([
+      'urls' => [
+        'http://www.example.com/atom.xml',
+        'http://www.example.com/rss.xml',
+      ],
+    ]);
+    $links = $plugin->getLinks();
+    $expected_links = array_merge($expected['rss'], $expected['atom']);
+    $this->assertEquals($expected_links, $links->toArray());
+    $this->assertEquals([
+      'aggregator_feed:' . $feeds['atom'],
+      'aggregator_feed:' . $feeds['rss'],
+    ], $links->getCacheTags());
+    $this->assertEquals([], $links->getCacheContexts());
+    $this->assertEquals(Cache::PERMANENT, $links->getCacheMaxAge());
   }
 
   /**
@@ -363,8 +398,8 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
     /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
-    $plugin = $plugin_manager->createInstance('rss');
-    $plugin->setConfiguration(['url' => $url]);
+    $plugin = $plugin_manager->createInstance('rss_links');
+    $plugin->setConfiguration(['urls' => [$url]]);
 
     $this->assertEquals([
       'Second example feed item title',

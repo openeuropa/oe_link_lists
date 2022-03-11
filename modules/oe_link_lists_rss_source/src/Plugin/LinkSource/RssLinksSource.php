@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_rss_source\Plugin\LinkSource;
 
-use Drupal\aggregator\FeedInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -15,24 +14,23 @@ use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
-use Drupal\oe_link_lists\Plugin\ExternalLinkSourcePluginBase;
+use Drupal\oe_link_lists\LinkSourcePluginBase;
 use Drupal\oe_link_lists\TranslatableLinkListPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Link source plugin that handles external RSS sources.
  *
- * @deprecated use RssLinksSource instead.
+ * It supports multiple RSS source URLs as input.
  *
  * @LinkSource(
- *   id = "rss",
- *   label = @Translation("RSS (deprecated)"),
+ *   id = "rss_links",
+ *   label = @Translation("RSS links"),
  *   description = @Translation("Source plugin that handles external RSS sources."),
- *   bundles = { "dynamic" },
- *   deprecated = TRUE
+ *   bundles = { "dynamic" }
  * )
  */
-class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFactoryPluginInterface, TranslatableLinkListPluginInterface {
+class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPluginInterface, TranslatableLinkListPluginInterface {
 
   use DependencySerializationTrait;
 
@@ -99,10 +97,39 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
+  public function defaultConfiguration() {
+    return [
+      'urls' => [],
+    ];
+  }
 
-    $form['url']['#description'] = $this->t('This plugin is deprecated, use RSS Links instead.');
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $this->configuration['urls'] = array_column($form_state->getValue('urls'), 'url');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $defaults = [];
+    foreach ($this->configuration['urls'] as $key => $url) {
+      $defaults[$key] = ['url' => $url];
+    }
+    $form['urls'] = [
+      '#type' => 'multivalue',
+      '#title' => $this->t('The RSS URLs'),
+      '#description' => $this->t('Add the URLs where the external resources can be found.'),
+      '#required' => TRUE,
+      'url' => [
+        '#type' => 'url',
+        '#title' => $this->t('The resource URL'),
+      ],
+      '#default_value' => $defaults,
+    ];
+
     return $form;
   }
 
@@ -113,43 +140,46 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
     parent::preSave($entity);
 
     // Never allow empty values as URL.
-    if (empty($this->configuration['url'])) {
+    if (empty($this->configuration['urls'])) {
       return;
     }
 
-    // Check if a feed entity already exists for the provided URL.
-    if (!empty($this->getFeed())) {
-      return;
-    }
-
-    // Create a new feed and run an initial import of its items.
+    // Create feed for each of the configured URLs and refresh their items.
     $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
-    /** @var \Drupal\aggregator\FeedInterface $feed */
-    $feed = $feed_storage->create([
-      'title' => $this->configuration['url'],
-      'url' => $this->configuration['url'],
-    ]);
-    $feed->save();
-    $feed->refreshItems();
+    foreach ($this->configuration['urls'] as $url) {
+      if (!$this->hasFeed($url)) {
+        /** @var \Drupal\aggregator\FeedInterface $feed */
+        $feed = $feed_storage->create([
+          'title' => $url,
+          'url' => $url,
+        ]);
+        $feed->save();
+        $feed->refreshItems();
+      }
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
-    $feed = $this->getFeed();
+    $feeds = $this->getFeeds();
     $link_collection = new LinkCollection();
 
-    if (empty($feed)) {
+    if (empty($feeds)) {
       return $link_collection;
     }
 
-    $link_collection->addCacheableDependency($feed);
+    $feed_ids = [];
+    foreach ($feeds as $feed) {
+      $link_collection->addCacheableDependency($feed);
+      $feed_ids[] = $feed->id();
+    }
 
     /** @var \Drupal\aggregator\ItemStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('aggregator_item');
     $query = $storage->getQuery()
-      ->condition('fid', $feed->id())
+      ->condition('fid', $feed_ids, 'IN')
       ->sort('timestamp', 'DESC')
       ->sort('iid', 'DESC');
     if ($limit) {
@@ -161,7 +191,7 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
       return $link_collection;
     }
 
-    return $this->prepareLinks($storage->loadMultiple($ids));
+    return $this->prepareLinks($storage->loadMultiple($ids))->addCacheableDependency($link_collection);
   }
 
   /**
@@ -169,30 +199,43 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
    */
   public function getTranslatableParents(): array {
     return [
-      // The URL of the RSS source needs to be translatable.
-      ['url'],
+      // The URL of the RSS source needs to be translatable. For this, we need
+      // to mark both the top level "urls" field as translatable so that it
+      // matches the form structure, as well as the inner "url" form element
+      // so that it matches the plugin configuration structure when saving
+      // translations.
+      ['urls'],
+      ['urls', 'url'],
     ];
   }
 
   /**
-   * Returns a feed entity that matches the current plugin configuration.
+   * Returns a list of feed entities that match the plugin configuration.
    *
-   * @return \Drupal\aggregator\FeedInterface|null
+   * @return \Drupal\aggregator\FeedInterface[]
    *   A feed entity if a matching one is found, NULL otherwise.
    */
-  protected function getFeed(): ?FeedInterface {
-    if (empty($this->configuration['url'])) {
-      return NULL;
+  protected function getFeeds(): array {
+    if (empty($this->configuration['urls'])) {
+      return [];
     }
 
     $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
-    $feeds = $feed_storage->loadByProperties(['url' => $this->configuration['url']]);
+    return $feed_storage->loadByProperties(['url' => $this->configuration['urls']]);
+  }
 
-    if (empty($feeds)) {
-      return NULL;
-    }
-
-    return reset($feeds);
+  /**
+   * Checks if we already have a feed for a given URL.
+   *
+   * @param string $url
+   *   The URL.
+   *
+   * @return bool
+   *   Whether a feed exists for the URL.
+   */
+  protected function hasFeed(string $url): bool {
+    $feed_storage = $this->entityTypeManager->getStorage('aggregator_feed');
+    return !empty($feed_storage->loadByProperties(['url' => $url]));
   }
 
   /**

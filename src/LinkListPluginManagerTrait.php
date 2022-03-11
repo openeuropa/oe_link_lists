@@ -14,7 +14,7 @@ trait LinkListPluginManagerTrait {
    *
    * It uses plugin id as key and plugin label as value.
    *
-   * @param string $bundle
+   * @param string|null $bundle
    *   The bundle to retrieve the plugins for.
    *
    * @return array

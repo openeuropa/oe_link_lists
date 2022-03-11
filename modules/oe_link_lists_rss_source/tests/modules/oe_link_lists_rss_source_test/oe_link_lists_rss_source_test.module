@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Test module for OpenEuropa RSS Link Lists module.
+ */
+
+declare(strict_types = 1);
+
+/**
+ * Implements hook_link_source_info_alter().
+ *
+ * Remove the deprecation from the old RSS link source plugin so we can maintain
+ * test coverage for it.
+ */
+function oe_link_lists_rss_source_link_source_info_alter(array &$definitions) {
+  $definitions['rss']['deprecated'] = FALSE;
+}
