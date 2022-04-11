@@ -1,18 +1,30 @@
-# Change Log
+# Changelog
+
+## [0.15.0](https://github.com/openeuropa/oe_link_lists/tree/0.15.0) (2022-04-11)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.1...0.15.0)
+
+**Merged pull requests:**
+
+- EWPP-1666: New RSS source plugin with multiple URLs. [\#96](https://github.com/openeuropa/oe_link_lists/pull/96) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.1](https://github.com/openeuropa/oe_link_lists/tree/0.14.1) (2022-03-09)
+
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.0...0.14.1)
 
 **Merged pull requests:**
 
+- EWPP-0000: Prepare changelog. [\#104](https://github.com/openeuropa/oe_link_lists/pull/104) ([22Alexandra](https://github.com/22Alexandra))
 - EWPP-2056: More link plugin config form fix to not disappear on other AJAX rebuilds. [\#103](https://github.com/openeuropa/oe_link_lists/pull/103) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.0](https://github.com/openeuropa/oe_link_lists/tree/0.14.0) (2022-03-07)
+
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.13.0...0.14.0)
 
 **Merged pull requests:**
 
 - EWPP-2035: Revert fixing xdebug-handler version. [\#102](https://github.com/openeuropa/oe_link_lists/pull/102) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- Prepare release 0.14.0. [\#101](https://github.com/openeuropa/oe_link_lists/pull/101) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-0000: Use latest version of IEF and remove its PHP8 compatibility patch. [\#100](https://github.com/openeuropa/oe_link_lists/pull/100) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.13.0](https://github.com/openeuropa/oe_link_lists/tree/0.13.0) (2022-02-08)
