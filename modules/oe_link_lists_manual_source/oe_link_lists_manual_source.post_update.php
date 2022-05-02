@@ -52,3 +52,12 @@ function oe_link_lists_manual_source_post_update_00002() {
   $link_list_type->set('default_link_source', 'manual_links');
   $link_list_type->save();
 }
+
+/**
+ * Enable "composite revisions" option for Links field.
+ */
+function oe_link_lists_manual_source_post_update_00003() {
+  $field_config = FieldConfig::load('link_list.manual.links');
+  $field_config->setThirdPartySetting('composite_reference', 'composite_revisions', TRUE);
+  $field_config->save();
+}

@@ -12,6 +12,7 @@ dependencies:
 third_party_settings:
   composite_reference:
     composite: true
+    composite_revisions: true
 id: link_list.manual.links
 field_name: links
 entity_type: link_list
