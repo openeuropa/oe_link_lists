@@ -1,11 +1,21 @@
 # Changelog
 
+## [1.15.1](https://github.com/openeuropa/oe_link_lists/tree/1.15.1) (2022-06-21)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.0...1.15.1)
+
+**Merged pull requests:**
+
+- EWPP-1777: Enable 'Include past revisions' option in composite fields. [\#107](https://github.com/openeuropa/oe_link_lists/pull/107) ([yenyasinn](https://github.com/yenyasinn))
+- EWPP-2196: Fix dependency from composer patches. [\#106](https://github.com/openeuropa/oe_link_lists/pull/106) ([yenyasinn](https://github.com/yenyasinn))
+
 ## [0.15.0](https://github.com/openeuropa/oe_link_lists/tree/0.15.0) (2022-04-11)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.1...0.15.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.15.0. [\#105](https://github.com/openeuropa/oe_link_lists/pull/105) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-1666: New RSS source plugin with multiple URLs. [\#96](https://github.com/openeuropa/oe_link_lists/pull/96) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.1](https://github.com/openeuropa/oe_link_lists/tree/0.14.1) (2022-03-09)
