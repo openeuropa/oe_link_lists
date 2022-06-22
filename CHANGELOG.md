@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.15.1](https://github.com/openeuropa/oe_link_lists/tree/1.15.1) (2022-06-21)
+## [0.15.1](https://github.com/openeuropa/oe_link_lists/tree/0.15.1) (2022-06-21)
 
-[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.0...1.15.1)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.0...0.15.1)
 
 **Merged pull requests:**
 
