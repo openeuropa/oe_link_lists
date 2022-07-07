@@ -195,4 +195,87 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     $this->assertSession()->linkExists('deuxieme page');
   }
 
+  /**
+   * Test that when we duplicate a link list, the manual link config is correct.
+   */
+  public function testDuplicateLinkList(): void {
+    $this->drupalGet('link_list/add/manual');
+    $this->getSession()->getPage()->fillField('Title', 'Test translation');
+    $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
+
+    // Select and configure the display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Markup');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Create an external link.
+    $this->createInlineExternalLink('http://example.com', 'Test title', 'Test teaser');
+    $this->getSession()->getPage()->pressButton('Save');
+
+    // Translate into FR.
+    $link_list = $this->getLinkListByTitle('Test translation');
+    $url = $link_list->toUrl('drupal:content-translation-add');
+    $url->setRouteParameter('source', 'en');
+    $url->setRouteParameter('target', 'fr');
+    $this->drupalGet($url);
+
+    $this->getSession()->getPage()->fillField('Title', 'Test de traduction');
+    $this->getSession()->getPage()->fillField('Administrative title', 'Test la traduction admin titre');
+
+    // Edit the external link.
+    $edit = $this->getSession()->getPage()->find('xpath', '(//input[@type="submit" and @value="Edit"])[1]');
+    $edit->press();
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $links_wrapper = $this->getSession()->getPage()->find('css', '.field--widget-inline-entity-form-complex');
+    $links_wrapper->fillField('URL', 'http://traduction.com/fr');
+    $links_wrapper->fillField('Title', 'Titre du test');
+    $links_wrapper->fillField('Teaser', 'Description du test');
+    $this->getSession()->getPage()->pressButton('Update Link');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $this->getSession()->getPage()->pressButton('Save');
+    $link_list = $this->getLinkListByTitle('Test translation', TRUE);
+    $this->assertTrue($link_list->hasTranslation('fr'));
+
+    // Assert that our configured link list link IDs are the same across both
+    // translations.
+    $link_list = $this->getLinkListByTitle('Test translation', TRUE);
+    $configured_ids = [];
+    foreach (['en', 'fr'] as $language) {
+      $translation = $link_list->getTranslation($language);
+      $configuration = $translation->getConfiguration();
+      $values = $configuration['source']['plugin_configuration']['links'];
+      $configured_ids[$language] = reset($values);
+    }
+
+    $this->assertEquals($configured_ids['en'], $configured_ids['fr']);
+
+    // Duplicate the link list and it's children (like entity clone does).
+    $new = $link_list->createDuplicate();
+    $new_links = [];
+    foreach ($link_list->get('links') as $value) {
+      $link = $value->get('entity')->getTarget()->getValue();
+      $new_link = $link->createDuplicate();
+      $new_link->save();
+      $new_links[] = $new_link;
+    }
+    $new->set('links', $new_links);
+    $new->save();
+
+    $this->assertNotNull($new->id());
+    $configured_ids = [];
+    foreach (['en', 'fr'] as $language) {
+      $translation = $new->getTranslation($language);
+      $configuration = $translation->getConfiguration();
+      $values = $configuration['source']['plugin_configuration']['links'];
+      $configured_ids[$language] = reset($values);
+    }
+
+    $this->assertEquals($configured_ids['en'], $configured_ids['fr']);
+  }
+
 }
