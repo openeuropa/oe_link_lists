@@ -6,8 +6,10 @@ namespace Drupal\Tests\oe_link_lists_manual_source\Kernel;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 
 /**
  * Tests the manual link source plugin.
@@ -18,6 +20,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
 
   use ContentTypeCreationTrait;
   use NodeCreationTrait;
+  use LinkListTestTrait;
 
   /**
    * {@inheritdoc}
@@ -36,6 +39,9 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     'system',
     'text',
     'user',
+    'content_translation',
+    'locale',
+    'language',
   ];
 
   /**
@@ -48,6 +54,7 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installEntitySchema('link_list_link');
     $this->installEntitySchema('link_list');
+    $this->installEntitySchema('configurable_language');
     $this->installSchema('node', 'node_access');
     $this->installConfig([
       'field',
@@ -58,6 +65,8 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
       'oe_link_lists_manual_source_test',
       'entity_reference_revisions',
       'composite_reference',
+      'language',
+      'content_translation',
     ]);
 
     $this->createContentType(['type' => 'page']);
@@ -226,6 +235,129 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     ], $links->getCacheTags());
     $this->assertEquals([], $links->getCacheContexts());
     $this->assertEquals(Cache::PERMANENT, $links->getCacheMaxAge());
+  }
+
+  /**
+   * Tests manual translations of link lists.
+   */
+  public function testManualLinkTranslations(): void {
+    // Create FR language.
+    $language = ConfigurableLanguage::createFromLangcode('fr');
+    $language->save();
+
+    // Configure the language negotiation.
+    $config = $this->config('language.negotiation');
+    $config->set('url.prefixes', [
+      'en' => 'en',
+      'fr' => 'fr',
+    ])->save();
+
+    $this->container->get('content_translation.manager')->setEnabled('link_list', 'manual', TRUE);
+    $this->container->get('content_translation.manager')->setEnabled('link_list_link', 'external', TRUE);
+    $this->container->get('kernel')->rebuildContainer();
+    $this->container->get('router.builder')->rebuild();
+
+    $language_manager = $this->container->get('language_manager');
+
+    // Create an external link.
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $link_storage = $entity_type_manager->getStorage('link_list_link');
+
+    /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $external_link */
+    $external_link = $link_storage->create([
+      'bundle' => 'external',
+      'url' => 'http://example.com',
+      'title' => 'Example title',
+      'teaser' => 'Example teaser',
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $external_link->addTranslation('fr', $external_link->toArray());
+    $translation->set('url', 'http://example.com/fr');
+    $translation->set('title', 'Example title FR');
+    $external_link->save();
+
+    // Create a list that references the link..
+    $list_storage = $entity_type_manager->getStorage('link_list');
+    $list = $list_storage->create([
+      'title' => 'My list',
+      'bundle' => 'manual',
+      'links' => [
+        $external_link,
+      ],
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $list->addTranslation('fr', $list->toArray());
+    $translation->set('title', 'My list FR');
+    $list->save();
+
+    $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
+    /** @var \Drupal\oe_link_lists_manual_source\Plugin\LinkSource\ManualLinkSource $plugin */
+    $plugin_configuration = $list->getConfiguration()['source']['plugin_configuration'];
+    $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
+
+    $links = $plugin->getLinks();
+    $this->assertCount(1, $links);
+
+    /** @var \Drupal\oe_link_lists\LinkInterface $link */
+    $link = $links->offsetGet(0);
+    $this->assertEquals('Example title', $link->getTitle());
+    $this->assertEquals('http://example.com', $link->getUrl()->toString());
+
+    // Set the current "site" language to FR and assert we get the correct
+    // links.
+    $this->container->get('language.default')->set($language);
+    $language_manager->reset();
+
+    $links = $plugin->getLinks();
+    $this->assertCount(1, $links);
+
+    /** @var \Drupal\oe_link_lists\LinkInterface $link */
+    $link = $links->offsetGet(0);
+    $this->assertEquals('Example title FR', $link->getTitle());
+    $this->assertEquals('http://example.com/fr', $link->getUrl()->toString());
+
+    // Set back the "site" language.
+    $this->container->get('language.default')->set($language_manager->getLanguage('en'));
+    $language_manager->reset();
+
+    // Assert that our configured link list link IDs are the same across both
+    // translations (copied from the links reference field to the serialized
+    // config).
+    $link_list = $this->getLinkListByTitle('My list', TRUE);
+    $configured_ids = [];
+    foreach (['en', 'fr'] as $langcode) {
+      $translation = $link_list->getTranslation($langcode);
+      $values = $translation->get('configuration')->source['plugin_configuration']['links'];
+      $configured_ids[$langcode] = reset($values);
+    }
+
+    $this->assertEquals($configured_ids['en'], $configured_ids['fr']);
+
+    // Duplicate the link list and its children (like entity clone does) and
+    // assert the same for the duplicate.
+    $new = $link_list->createDuplicate();
+    $new_links = [];
+    foreach ($link_list->get('links') as $value) {
+      $link = $value->get('entity')->getTarget()->getValue();
+      $new_link = $link->createDuplicate();
+      $new_link->save();
+      $new_links[] = $new_link;
+    }
+    $new->set('links', $new_links);
+    $new->save();
+
+    $this->assertNotNull($new->id());
+    $configured_ids = [];
+    foreach (['en', 'fr'] as $language) {
+      $translation = $new->getTranslation($language);
+      $configuration = $translation->getConfiguration();
+      $values = $configuration['source']['plugin_configuration']['links'];
+      $configured_ids[$language] = reset($values);
+    }
+
+    $this->assertEquals($configured_ids['en'], $configured_ids['fr']);
   }
 
 }
