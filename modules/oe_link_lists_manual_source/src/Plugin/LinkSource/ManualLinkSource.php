@@ -8,6 +8,7 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
 use Drupal\oe_link_lists\LinkSourcePluginBase;
@@ -129,30 +130,31 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       return;
     }
 
-    // Set the referenced link list links onto the plugin configuration and
-    // update each link with their parent (link list) entity.
-    $ids = [];
-    foreach ($entity->get('links')->getValue() as $value) {
-      $link_entity_reference = $value['entity'] ?? NULL;
-      $id = $link_entity_reference ? $link_entity_reference->id() : $value['target_id'];
-      $revision_id = $link_entity_reference ? $link_entity_reference->getRevisionId() : $value['target_revision_id'];
-      $ids[$revision_id] = [
-        'entity_id' => $id,
-        'entity_revision_id' => $revision_id,
-      ];
-
+    // Update each referenced link list link with the parent (link list).
+    $ids = $this->getLinkIds($entity);
+    foreach ($ids as $id_info) {
       // @todo move this to IEF directly where the entity is being built.
       /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface $link */
-      $link = $this->entityTypeManager->getStorage('link_list_link')->load($id);
-      $link->setParentEntity($entity, 'links');
-      $link->setNewRevision(FALSE);
-      $link->save();
+      $link = $this->entityTypeManager->getStorage('link_list_link')->load($id_info['entity_id']);
+      if ($link->get('parent_id')->isEmpty()) {
+        // Only set the parent entity if it's not already set.
+        $link->setParentEntity($entity, 'links');
+        $link->setNewRevision(FALSE);
+        $link->save();
+      }
     }
 
-    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
-    $configuration = $entity->getConfiguration();
-    $configuration['source']['plugin_configuration']['links'] = $ids;
-    $entity->setConfiguration($configuration);
+    // Set the referenced link list links onto the plugin configuration. We
+    // need to do this for all languages in case the link list is getting saved
+    // together with multiple languages (as opposed to a translation-specific
+    // save).
+    foreach ($entity->getTranslationLanguages(TRUE) as $language) {
+      $translation = $entity->getTranslation($language->getId());
+      $ids = $this->getLinkIds($translation);
+      $configuration = $translation->getConfiguration();
+      $configuration['source']['plugin_configuration']['links'] = $ids;
+      $translation->setConfiguration($configuration);
+    }
   }
 
   /**
@@ -202,6 +204,30 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
         'links',
       ],
     ];
+  }
+
+  /**
+   * Returns the link list link IDs referenced on a link list (translation).
+   *
+   * @param \Drupal\oe_link_lists\Entity\LinkListInterface $link_list
+   *   The link list.
+   *
+   * @return array
+   *   The array of IDs and revision IDs, keyed by the revision ID.
+   */
+  protected function getLinkIds(LinkListInterface $link_list): array {
+    $ids = [];
+    foreach ($link_list->get('links')->getValue() as $value) {
+      $link_entity_reference = $value['entity'] ?? NULL;
+      $id = $link_entity_reference ? $link_entity_reference->id() : $value['target_id'];
+      $revision_id = $link_entity_reference ? $link_entity_reference->getRevisionId() : $value['target_revision_id'];
+      $ids[$revision_id] = [
+        'entity_id' => $id,
+        'entity_revision_id' => $revision_id,
+      ];
+    }
+
+    return $ids;
   }
 
   /**
