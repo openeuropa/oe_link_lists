@@ -11,6 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   id = "link_list_type",
  *   label = @Translation("Link List type"),
  *   handlers = {
+ *     "access" = "Drupal\oe_link_lists\LinkListTypeAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\oe_link_lists\Form\LinkListTypeForm",
  *       "edit" = "Drupal\oe_link_lists\Form\LinkListTypeForm",
