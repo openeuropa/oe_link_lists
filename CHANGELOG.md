@@ -1,11 +1,23 @@
 # Changelog
 
-## [0.15.1](https://github.com/openeuropa/oe_link_lists/tree/0.15.1) (2022-06-21)
+## [0.16.0](https://github.com/openeuropa/oe_link_lists/tree/0.16.0) (2022-07-29)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.1...0.16.0)
+
+**Merged pull requests:**
+
+- EWPP-2464: Re-roll IEF patch. [\#113](https://github.com/openeuropa/oe_link_lists/pull/113) ([nagyad](https://github.com/nagyad))
+- EWPP-2392: Ensure manual link lists can be duplicated. [\#111](https://github.com/openeuropa/oe_link_lists/pull/111) ([upchuk](https://github.com/upchuk))
+- EWPP-2358: Drupal 9.4 support. [\#108](https://github.com/openeuropa/oe_link_lists/pull/108) ([yenyasinn](https://github.com/yenyasinn))
+
+## [0.15.1](https://github.com/openeuropa/oe_link_lists/tree/0.15.1) (2022-06-22)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.0...0.15.1)
 
 **Merged pull requests:**
 
+- Prepare release 0.15.1. [\#110](https://github.com/openeuropa/oe_link_lists/pull/110) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- Prepare release 1.15.1. [\#109](https://github.com/openeuropa/oe_link_lists/pull/109) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-1777: Enable 'Include past revisions' option in composite fields. [\#107](https://github.com/openeuropa/oe_link_lists/pull/107) ([yenyasinn](https://github.com/yenyasinn))
 - EWPP-2196: Fix dependency from composer patches. [\#106](https://github.com/openeuropa/oe_link_lists/pull/106) ([yenyasinn](https://github.com/yenyasinn))
 
