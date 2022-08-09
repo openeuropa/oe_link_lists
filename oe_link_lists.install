@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the OE Link Lists module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Update Link List Type entity type access handler.
+ */
+function oe_link_lists_update_9001() {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $definition_update_manager->getEntityType('link_list_type');
+  $handlers = $entity_type->get('handlers');
+  $handlers['access'] = 'Drupal\oe_link_lists\LinkListTypeAccessControlHandler';
+  $entity_type->set('handlers', $handlers);
+  $definition_update_manager->updateEntityType($entity_type);
+}
