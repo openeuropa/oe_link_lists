@@ -1,11 +1,21 @@
 # Changelog
 
-## [0.16.0](https://github.com/openeuropa/oe_link_lists/tree/0.16.0) (2022-07-29)
+## [0.17.0](https://github.com/openeuropa/oe_link_lists/tree/0.17.0) (2022-09-16)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.16.0...0.17.0)
+
+**Merged pull requests:**
+
+- EWPP-0000: Fix test modulo hook name. [\#116](https://github.com/openeuropa/oe_link_lists/pull/116) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- EWPP-2346: Add link list type entity type access control handler. [\#112](https://github.com/openeuropa/oe_link_lists/pull/112) ([22Alexandra](https://github.com/22Alexandra))
+
+## [0.16.0](https://github.com/openeuropa/oe_link_lists/tree/0.16.0) (2022-08-02)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.1...0.16.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.16.0. [\#114](https://github.com/openeuropa/oe_link_lists/pull/114) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-2464: Re-roll IEF patch. [\#113](https://github.com/openeuropa/oe_link_lists/pull/113) ([nagyad](https://github.com/nagyad))
 - EWPP-2392: Ensure manual link lists can be duplicated. [\#111](https://github.com/openeuropa/oe_link_lists/pull/111) ([upchuk](https://github.com/upchuk))
 - EWPP-2358: Drupal 9.4 support. [\#108](https://github.com/openeuropa/oe_link_lists/pull/108) ([yenyasinn](https://github.com/yenyasinn))
