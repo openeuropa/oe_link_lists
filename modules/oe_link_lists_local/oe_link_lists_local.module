@@ -17,6 +17,8 @@ use Drupal\Core\Render\Element;
 use Drupal\field\FieldConfigInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists_local\Form\LinkListInlineForm;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_entity_base_field_info().
@@ -86,6 +88,21 @@ function oe_link_lists_local_query_entity_query_link_list_alter(SelectInterface 
   $condition->isNull('local');
   $condition->condition('local', 0);
   $query->condition($condition);
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function oe_link_lists_local_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  $base_entity_type = $view->getBaseEntityType();
+  if ($base_entity_type->id() !== 'link_list') {
+    return;
+  }
+
+  $condition = $query->query()->getConnection()->condition('OR');
+  $condition->isNull('local');
+  $condition->condition('local', 0);
+  $query->addWhere(0, $condition);
 }
 
 /**
