@@ -4,12 +4,14 @@ namespace Drupal\Tests\oe_link_lists_local\Functional;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\oe_link_lists\Entity\LinkList;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\views\Views;
 
 /**
- * Tests the field config UI form that marks the field as local.
+ * Tests the local link lists.
  */
-class FieldConfigUiTest extends BrowserTestBase {
+class LocalLinkListsTest extends BrowserTestBase {
 
   use StringTranslationTrait;
 
@@ -25,6 +27,10 @@ class FieldConfigUiTest extends BrowserTestBase {
     'node',
     'field_ui',
     'oe_link_lists_local',
+    'oe_link_lists_local_test',
+    'oe_link_lists_internal_source',
+    'views',
+    'entity_reference_revisions',
   ];
 
   /**
@@ -101,6 +107,69 @@ class FieldConfigUiTest extends BrowserTestBase {
     $this->getSession()->getPage()->pressButton('Save field settings');
     $this->assertSession()->pageTextContains('Updated field String field field settings.');
     $this->assertSession()->fieldNotExists('Local field');
+  }
+
+  /**
+   * Tests that views don't show the local link lists either.
+   */
+  public function testViewsQueryAlter(): void {
+    // Create 3 link lists: two normal ones (one with 0 value in the local
+    // field, and the other with NULL) and a local one.
+    $configuration = [
+      'source' => [
+        'plugin' => 'internal',
+        'plugin_configuration' => [
+          'entity_type' => 'node',
+          'bundle' => 'page',
+        ],
+      ],
+      'display' => [
+        'plugin' => 'title',
+      ],
+    ];
+
+    $link_list = LinkList::create([
+      'bundle' => 'dynamic',
+      'title' => 'The first visible link list',
+      'administrative_title' => 'The first visible link list',
+    ]);
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+
+    $link_list = LinkList::create([
+      'bundle' => 'dynamic',
+      'title' => 'The second visible link list',
+      'administrative_title' => 'The second visible link list',
+    ]);
+    $link_list->setConfiguration($configuration);
+    $link_list->set('local', NULL);
+    $link_list->save();
+
+    $link_list = LinkList::create([
+      'bundle' => 'dynamic',
+      'title' => 'The local link list',
+      'administrative_title' => 'The local link list',
+    ]);
+    $link_list->setConfiguration($configuration);
+    $link_list->set('local', TRUE);
+    $link_list->save();
+
+    $view = Views::getView('link_lists');
+    $view->setDisplay();
+    $view->preExecute();
+    $view->execute();
+    $results = $view->result;
+    $this->assertCount(2, $results);
+    $titles = [];
+    foreach ($results as $row) {
+      $entity = $row->_entity;
+      $titles[] = $entity->label();
+    }
+
+    $this->assertEquals([
+      'The first visible link list',
+      'The second visible link list',
+    ], $titles);
   }
 
 }

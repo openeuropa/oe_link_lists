@@ -28,6 +28,7 @@ class LocalLinkListsTest extends WebDriverTestBase {
     'oe_link_lists_local_test',
     'entity_reference_revisions',
     'inline_entity_form',
+    'views',
   ];
 
   /**
