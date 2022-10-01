@@ -138,32 +138,7 @@ class CustomLink extends MoreLinkPluginBase implements ContainerFactoryPluginInt
       '#maxlength' => 255,
     ];
 
-    $form['override'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Override the link label. Defaults to "See all" or the referenced entity label.'),
-      '#default_value' => isset($configuration['title_override']) && !is_null($configuration['title_override']),
-    ];
-
-    $parents = $form['#parents'];
-    $first_parent = array_shift($parents);
-    $title_override_name = $first_parent . '[' . implode('][', array_merge($parents, [
-      'override',
-    ])) . ']';
-
-    $form['title_override'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('More link label'),
-      '#default_value' => $configuration['title_override'] ?? '',
-      '#element_validate' => [[get_class($this), 'validateMoreLinkOverride']],
-      '#states' => [
-        'visible' => [
-          'input[name="' . $title_override_name . '"]' => ['checked' => TRUE],
-        ],
-        'required' => [
-          'input[name="' . $title_override_name . '"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
+    $this->buildTitleOverrideForm($form, $configuration);
 
     return $form;
   }
@@ -256,31 +231,6 @@ class CustomLink extends MoreLinkPluginBase implements ContainerFactoryPluginInt
     }
     if ($url === FALSE || ($url->isExternal() && !in_array(parse_url($url->getUri(), PHP_URL_SCHEME), UrlHelper::getAllowedProtocols()))) {
       $form_state->setError($element, t('The path %uri is invalid.', ['%uri' => $uri]));
-    }
-  }
-
-  /**
-   * Validates the more link override is there if the checkbox is checked.
-   *
-   * @param array $element
-   *   The element.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   */
-  public static function validateMoreLinkOverride(array $element, FormStateInterface $form_state): void {
-    $title = trim($element['#value']);
-    if ($title !== '') {
-      // If we have an override, nothing to validate.
-      return;
-    }
-
-    $override_parents = array_merge(
-      array_slice($element['#parents'], 0, -1),
-      ['override']
-    );
-    $more_title_override = $form_state->getValue($override_parents);
-    if ((bool) $more_title_override) {
-      $form_state->setError($element, t('The "More link" label is required if you want to override the "More link" title.'));
     }
   }
 
