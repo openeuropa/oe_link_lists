@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.1](https://github.com/openeuropa/oe_link_lists/tree/1.17.1) (2022-10-03)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.0...1.17.1)
+
+**Merged pull requests:**
+
+- EWPP-2662: Local link lists should not show up in Views. [\#117](https://github.com/openeuropa/oe_link_lists/pull/117) ([upchuk](https://github.com/upchuk))
+
 ## [0.17.0](https://github.com/openeuropa/oe_link_lists/tree/0.17.0) (2022-09-16)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.16.0...0.17.0)
@@ -7,6 +15,7 @@
 **Merged pull requests:**
 
 - EWPP-0000: Fix test modulo hook name. [\#116](https://github.com/openeuropa/oe_link_lists/pull/116) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- Prepare release 0.17.0. [\#115](https://github.com/openeuropa/oe_link_lists/pull/115) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-2346: Add link list type entity type access control handler. [\#112](https://github.com/openeuropa/oe_link_lists/pull/112) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.16.0](https://github.com/openeuropa/oe_link_lists/tree/0.16.0) (2022-08-02)
