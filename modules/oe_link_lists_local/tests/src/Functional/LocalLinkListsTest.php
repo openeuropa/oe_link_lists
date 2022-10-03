@@ -7,9 +7,9 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Tests the field config UI form that marks the field as local.
+ * Tests the local link lists.
  */
-class FieldConfigUiTest extends BrowserTestBase {
+class LocalLinkListsTest extends BrowserTestBase {
 
   use StringTranslationTrait;
 
