@@ -1,11 +1,20 @@
 # Changelog
 
+## [0.17.2](https://github.com/openeuropa/oe_link_lists/tree/0.17.2) (2022-10-05)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.1...0.17.2)
+
+**Merged pull requests:**
+
+- EWPP-2662: Return early if view is not showing entities. [\#121](https://github.com/openeuropa/oe_link_lists/pull/121) ([upchuk](https://github.com/upchuk))
+
 ## [0.17.1](https://github.com/openeuropa/oe_link_lists/tree/0.17.1) (2022-10-03)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.0...0.17.1)
 
 **Merged pull requests:**
 
+- Prepare release 0.17.1. [\#120](https://github.com/openeuropa/oe_link_lists/pull/120) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-2662: Local link lists should not show up in Views. [\#117](https://github.com/openeuropa/oe_link_lists/pull/117) ([upchuk](https://github.com/upchuk))
 
 ## [0.17.0](https://github.com/openeuropa/oe_link_lists/tree/0.17.0) (2022-09-16)
