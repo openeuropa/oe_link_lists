@@ -95,6 +95,9 @@ function oe_link_lists_local_query_entity_query_link_list_alter(SelectInterface 
  */
 function oe_link_lists_local_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   $base_entity_type = $view->getBaseEntityType();
+  if (!$base_entity_type) {
+    return;
+  }
   if ($base_entity_type->id() !== 'link_list') {
     return;
   }
