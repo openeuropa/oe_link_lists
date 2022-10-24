@@ -259,6 +259,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The form state.
    *
    * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   protected function buildLinkSourceElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
     $link_list = $this->getLinkListFromForm($form, $form_state);
@@ -348,8 +349,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // user selection), create the form element for its configuration. For this
     // we pass potentially existing configuration to the plugin so that it can
     // use it in its form elements' default values.
+    $triggering_element = $form_state->getTriggeringElement();
+    $ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'link_source';
     if ($plugin_id) {
-      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'source');
+      $existing_config = !$ajax_plugin_select ? $this->getConfigurationPluginConfiguration($link_list, 'source') : [];
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $this->linkSourcePluginManager->createInstance($plugin_id, $existing_config);
 
@@ -381,6 +384,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The entire form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   *
+   * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   protected function buildLinkDisplayElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
     $parents = array_merge($element['#field_parents'], [
@@ -460,8 +466,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       ];
     }
 
+    $triggering_element = $form_state->getTriggeringElement();
+    $ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'link_display';
     if ($plugin_id) {
-      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'display');
+      $existing_config = !$ajax_plugin_select ? $this->getConfigurationPluginConfiguration($link_list, 'display') : [];
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $this->linkDisplayPluginManager->createInstance($plugin_id, $existing_config);
 
@@ -551,8 +559,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // However, only do so if we are not part of an Ajax rebuild of the actual
     // more_link plugin type.
     $triggering_element = $form_state->getTriggeringElement();
-    $more_link_ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'more_link';
-    if (!$plugin_id && !$more_link_ajax_plugin_select) {
+    $ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'more_link';
+    if (!$plugin_id && !$ajax_plugin_select) {
       $plugin_id = $this->getConfigurationPluginId($link_list, 'more_link');
     }
 
@@ -594,7 +602,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     }
 
     if ($plugin_id) {
-      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'more_link');
+      $existing_config = !$ajax_plugin_select ? $this->getConfigurationPluginConfiguration($link_list, 'more_link') : [];
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $this->moreLinkPluginManager->createInstance($plugin_id, $existing_config);
 
@@ -626,6 +634,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The entire form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   *
+   * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+   * @SuppressWarnings(PHPMD.NPathComplexity)
    */
   protected function buildNoResultsBehaviourElements(FieldItemListInterface $items, int $delta, array &$element, array &$form, FormStateInterface $form_state): void {
     $parents = array_merge($element['#field_parents'], [
@@ -695,8 +706,10 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       ];
     }
 
+    $triggering_element = $form_state->getTriggeringElement();
+    $ajax_plugin_select = $triggering_element && isset($triggering_element['#plugin_select']) && $triggering_element['#plugin_select'] === 'no_results_behaviour';
     if ($plugin_id) {
-      $existing_config = $this->getConfigurationPluginConfiguration($link_list, 'no_results_behaviour');
+      $existing_config = !$ajax_plugin_select ? $this->getConfigurationPluginConfiguration($link_list, 'no_results_behaviour') : [];
       /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
       $plugin = $this->noResultsBehaviourPluginManager->createInstance($plugin_id, $existing_config);
 
