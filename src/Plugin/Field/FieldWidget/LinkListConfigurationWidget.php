@@ -508,7 +508,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $this->getLinkListFromForm($form, $form_state);
     $configuration = $link_list->getConfiguration();
-    $more_link_plugin_options = $this->moreLinkPluginManager->getPluginsAsOptions();
+    $more_link_plugin_options = $this->moreLinkPluginManager->getPluginsAsOptions($link_list->bundle());
 
     $parents = array_merge($element['#field_parents'], [
       $items->getName(),
