@@ -159,6 +159,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertFieldSelectOptions('Link source', [
       'configurable_non_translatable_test_source',
       'rss_links',
+      'same_configuration_source_one',
+      'same_configuration_source_two',
       'test_cache_metadata',
       'test_complex_form',
       'test_empty_collection',
@@ -171,6 +173,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Assert we can only see the display plugins that work with the Dynamic
     // bundle.
     $this->assertFieldSelectOptions('Link display', [
+      'same_configuration_display_one',
+      'same_configuration_display_two',
       'test_configurable_title',
       'test_link_tag',
       'test_markup',
@@ -183,6 +187,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Empty collection');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertFieldSelectOptions('Link display', [
+      'same_configuration_display_one',
+      'same_configuration_display_two',
       'test_configurable_title',
       'test_empty_source_only_display',
       'test_link_tag',
@@ -202,6 +208,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertEmpty($this->getSession()->getPage()->findField('Link display')->find('css', "option[selected=selected]"));
     $this->assertFieldSelectOptions('Link display', [
+      'same_configuration_display_one',
+      'same_configuration_display_two',
       'test_configurable_title',
       'test_link_tag',
       'test_markup',
@@ -222,6 +230,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'hide_list',
       'non_translatable_text_message',
       'text_message',
+      'same_configuration_no_results_one',
+      'same_configuration_no_results_two',
     ]);
     $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
@@ -320,6 +330,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'configurable_non_translatable_link',
       'custom_link',
       'hardcoded_link',
+      'same_configuration_more_link_one',
+      'same_configuration_more_link_two',
     ]);
     // No more_link plugin is selected.
     $this->assertEquals('selected', $this->assertSession()->selectExists('More link')->find('css', 'option[value=""]')->getAttribute('selected'));
@@ -519,6 +531,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertFieldSelectOptions('Link source', [
       'configurable_non_translatable_test_source',
       'rss_links',
+      'same_configuration_source_one',
+      'same_configuration_source_two',
       'test_cache_metadata',
       'test_complex_form',
       'test_empty_collection',
@@ -563,6 +577,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertFieldSelectOptions('Link source', [
       'configurable_non_translatable_test_source',
       'rss_links',
+      'same_configuration_source_one',
+      'same_configuration_source_two',
       'test_cache_metadata',
       'test_complex_form',
       'test_deprecated_source',
@@ -595,6 +611,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertFieldSelectOptions('Link source', [
       'configurable_non_translatable_test_source',
       'rss_links',
+      'same_configuration_source_one',
+      'same_configuration_source_two',
       'test_cache_metadata',
       'test_complex_form',
       'test_empty_collection',
@@ -603,6 +621,62 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_translatable',
       'test_no_bundle_restriction_source',
     ]);
+  }
+
+  /**
+   * Tests the AJAX selected plugins get fresh configuration.
+   *
+   * This ensures that when a user changes the plugin in the UI, the newsly
+   * instantiated one doesn't get configuration from the previous one.
+   */
+  public function testNewSelectedPluginConfiguration(): void {
+    $this->drupalGet('link_list/add/dynamic');
+    $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
+    $this->getSession()->getPage()->fillField('Title', 'The title');
+
+    // Select and configure the source plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Same configuration source one');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('configuration[0][link_source][plugin_configuration_wrapper][same_configuration_source_one][value]', 'A simple value');
+
+    // Select and configure the display plugin.
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Same configuration display one');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('configuration[0][link_display][plugin_configuration_wrapper][same_configuration_display_one][value]', 'A simple value');
+
+    // Select and configure the more link plugin.
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Same configuration more_link one');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('configuration[0][link_display][more_link][plugin_configuration_wrapper][same_configuration_more_link_one][value]', 'A simple value');
+
+    // Select and configure the no results behaviour plugin.
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Same configuration no_results one');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('configuration[0][no_results_behaviour][plugin_configuration_wrapper][same_configuration_no_results_one][value]', 'A simple value');
+
+    // Save the link list.
+    $this->getSession()->getPage()->pressButton('Save');
+
+    // Edit the link list and change the plugins with the ones that have the
+    // same configuration keys.
+    $link_list = $this->getLinkListByTitle('The title', TRUE);
+    $this->drupalGet($link_list->toUrl('edit-form'));
+
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Same configuration source two');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEquals('', $this->getSession()->getPage()->findField('configuration[0][link_source][plugin_configuration_wrapper][same_configuration_source_two][value]')->getValue());
+
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Same configuration display two');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEquals('', $this->getSession()->getPage()->findField('configuration[0][link_display][plugin_configuration_wrapper][same_configuration_display_two][value]')->getValue());
+
+    $this->getSession()->getPage()->selectFieldOption('More link', 'Same configuration more_link two');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEquals('', $this->getSession()->getPage()->findField('configuration[0][link_display][more_link][plugin_configuration_wrapper][same_configuration_more_link_two][value]')->getValue());
+
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Same configuration no_results two');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertEquals('', $this->getSession()->getPage()->findField('configuration[0][no_results_behaviour][plugin_configuration_wrapper][same_configuration_no_results_two][value]')->getValue());
   }
 
   /**
