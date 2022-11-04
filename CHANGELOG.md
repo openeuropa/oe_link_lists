@@ -1,11 +1,20 @@
 # Changelog
 
+## [0.18.0](https://github.com/openeuropa/oe_link_lists/tree/0.18.0) (2022-11-04)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.2...0.18.0)
+
+**Merged pull requests:**
+
+- EWPP-2572: Fix link list widget form + minor refactor on the more link plugins. [\#118](https://github.com/openeuropa/oe_link_lists/pull/118) ([yenyasinn](https://github.com/yenyasinn))
+
 ## [0.17.2](https://github.com/openeuropa/oe_link_lists/tree/0.17.2) (2022-10-05)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.1...0.17.2)
 
 **Merged pull requests:**
 
+- Prepare release 0.17.2. [\#122](https://github.com/openeuropa/oe_link_lists/pull/122) ([sergepavle](https://github.com/sergepavle))
 - EWPP-2662: Return early if view is not showing entities. [\#121](https://github.com/openeuropa/oe_link_lists/pull/121) ([upchuk](https://github.com/upchuk))
 
 ## [0.17.1](https://github.com/openeuropa/oe_link_lists/tree/0.17.1) (2022-10-03)
