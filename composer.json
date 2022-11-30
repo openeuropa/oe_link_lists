@@ -6,7 +6,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "cweagans/composer-patches": "~1.4",
         "drupal/core": "^9.3"
     },
@@ -23,7 +23,7 @@
         "drupal/multivalue_form_element": "^1.0@beta",
         "drush/drush": "~10.3",
         "drupal/token": "^1.10",
-        "openeuropa/code-review": "^2.0",
+        "openeuropa/code-review": "dev-EWPP-2858",
         "openeuropa/oe_multilingual": "^1.10",
         "openeuropa/task-runner-drupal-project-symlink": "^1.0-beta5",
         "phpspec/prophecy-phpunit": "^1 || ^2",
