@@ -67,21 +67,21 @@ class LinkCollection implements LinkCollectionInterface {
   /**
    * {@inheritdoc}
    */
-  public function offsetExists($offset) {
+  public function offsetExists($offset): bool {
     return isset($this->links[$offset]) || array_key_exists($offset, $this->links);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function offsetGet($offset) {
+  public function offsetGet($offset): mixed {
     return $this->links[$offset] ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function offsetSet($offset, $value) {
+  public function offsetSet($offset, $value): void {
     if (!$value instanceof LinkInterface) {
       throw new \InvalidArgumentException(sprintf(
         'Invalid argument type: expected %s, got %s.',
@@ -102,14 +102,14 @@ class LinkCollection implements LinkCollectionInterface {
   /**
    * {@inheritdoc}
    */
-  public function offsetUnset($offset) {
+  public function offsetUnset($offset): void {
     unset($this->links[$offset]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getIterator() {
+  public function getIterator(): \Iterator {
     return new \ArrayIterator($this->links);
   }
 
