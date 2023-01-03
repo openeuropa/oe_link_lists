@@ -1,11 +1,20 @@
 # Changelog
 
+## [0.19.0](https://github.com/openeuropa/oe_link_lists/tree/0.19.0) (2023-01-03)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.18.0...0.19.0)
+
+**Merged pull requests:**
+
+- EWPP-2859: Update to PHP 8.1. [\#124](https://github.com/openeuropa/oe_link_lists/pull/124) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [0.18.0](https://github.com/openeuropa/oe_link_lists/tree/0.18.0) (2022-11-04)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.2...0.18.0)
 
 **Merged pull requests:**
 
+- Prepare release 0.18.0 [\#123](https://github.com/openeuropa/oe_link_lists/pull/123) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-2572: Fix link list widget form + minor refactor on the more link plugins. [\#118](https://github.com/openeuropa/oe_link_lists/pull/118) ([yenyasinn](https://github.com/yenyasinn))
 
 ## [0.17.2](https://github.com/openeuropa/oe_link_lists/tree/0.17.2) (2022-10-05)
