@@ -34,7 +34,7 @@ class DefaultEntityValueResolverSubscriber implements EventSubscriberInterface {
     $teaser = [
       '#markup' => '',
     ];
-    if ($entity->hasField('body')) {
+    if ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
       $teaser = [
         '#type' => 'processed_text',
         '#text' => text_summary($entity->get('body')->value, $entity->get('body')->format),
