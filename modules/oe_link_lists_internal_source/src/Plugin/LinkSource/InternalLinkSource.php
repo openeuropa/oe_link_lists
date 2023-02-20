@@ -352,7 +352,7 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     $event = new InternalSourceQueryEvent($query);
     $this->eventDispatcher->dispatch($event, InternalSourceQueryEvent::NAME);
 
-    $entities = $storage->loadMultiple($query->execute());
+    $entities = $storage->loadMultiple($query->accessCheck(TRUE)->execute());
     foreach ($entities as $entity) {
       /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
       $entity = $this->entityRepository->getTranslationFromContext($entity);
