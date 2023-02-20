@@ -3,7 +3,7 @@ description: 'Provides a source plugin that collect links from existing entities
 package: OpenEuropa
 
 type: module
-core_version_requirement: ^9.4
+core_version_requirement: ^9.4 || ^10
 
 dependencies:
   - oe_link_lists:oe_link_lists
