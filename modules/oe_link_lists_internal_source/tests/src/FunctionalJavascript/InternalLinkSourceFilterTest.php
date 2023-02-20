@@ -22,11 +22,6 @@ class InternalLinkSourceFilterTest extends InternalLinkSourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
-
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp(): void {
     parent::setUp();
 
