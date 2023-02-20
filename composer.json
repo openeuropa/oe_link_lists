@@ -12,6 +12,7 @@
     },
     "require-dev": {
         "composer/installers": "~1.5",
+        "drupal/aggregator": "^1.0",
         "drupal/composite_reference": "^2.2",
         "drupal/core-composer-scaffold": "^9.4 || ^10",
         "drupal/core-dev": "^9.4 || ^10",
