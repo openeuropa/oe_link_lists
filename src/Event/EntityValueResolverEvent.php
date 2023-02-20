@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists\Event;
 
+use Symfony\Contracts\EventDispatcher\Event;
 use Drupal\oe_link_lists\LinkInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Event used to resolve the values used by the Link from an entity.

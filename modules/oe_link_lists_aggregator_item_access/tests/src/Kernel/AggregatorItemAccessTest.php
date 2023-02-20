@@ -18,7 +18,7 @@ class AggregatorItemAccessTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'aggregator',
     'options',
     'oe_link_lists_aggregator_item_access',
