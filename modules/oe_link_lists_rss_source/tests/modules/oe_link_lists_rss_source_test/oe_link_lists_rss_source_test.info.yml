@@ -2,7 +2,7 @@ name: 'OE Link Lists RSS Test'
 type: module
 description: 'Support module for testing the RSS-based link lists.'
 package: Testing
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9.4 || ^10
 dependencies:
   - drupal:node
   - oe_link_lists:oe_link_lists_rss_source
