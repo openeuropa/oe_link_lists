@@ -186,7 +186,7 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
       $query->range($offset, $limit);
     }
 
-    $ids = $query->accessCheck(TRUE)->execute();
+    $ids = $query->accessCheck()->execute();
     if (!$ids) {
       return $link_collection;
     }

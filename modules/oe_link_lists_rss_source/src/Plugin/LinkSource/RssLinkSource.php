@@ -149,7 +149,7 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
     /** @var \Drupal\aggregator\ItemStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('aggregator_item');
     $query = $storage->getQuery()
-      ->accessCheck(TRUE)
+      ->accessCheck()
       ->condition('fid', $feed->id())
       ->sort('timestamp', 'DESC')
       ->sort('iid', 'DESC');
