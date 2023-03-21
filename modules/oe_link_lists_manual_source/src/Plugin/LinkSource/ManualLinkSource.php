@@ -181,7 +181,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
     $links = new LinkCollection();
     foreach ($link_entities as $link_entity) {
       $event = new ManualLinkResolverEvent($link_entity);
-      $this->eventDispatcher->dispatch(ManualLinkResolverEvent::NAME, $event);
+      $this->eventDispatcher->dispatch($event, ManualLinkResolverEvent::NAME);
       if ($event->hasLink()) {
         $link = $event->getLink();
         $link->addCacheableDependency($link_entity);
@@ -245,7 +245,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
    */
   protected function legacyResolveLinks(array $link_entities) {
     $event = new ManualLinksResolverEvent($link_entities);
-    $this->eventDispatcher->dispatch(ManualLinksResolverEvent::NAME, $event);
+    $this->eventDispatcher->dispatch($event, ManualLinksResolverEvent::NAME);
     return $event->getLinks();
   }
 

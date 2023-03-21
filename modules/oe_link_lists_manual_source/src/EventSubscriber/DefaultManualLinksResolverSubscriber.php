@@ -98,7 +98,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
 
     $referenced_entity = $this->entityRepository->getTranslationFromContext($referenced_entity);
     $resolver_event = new EntityValueResolverEvent($referenced_entity);
-    $this->eventDispatcher->dispatch(EntityValueResolverEvent::NAME, $resolver_event);
+    $this->eventDispatcher->dispatch($resolver_event, EntityValueResolverEvent::NAME);
     $link = $resolver_event->getLink();
     $link->addCacheableDependency($referenced_entity);
 
@@ -112,7 +112,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
 
     // Dispatch an event to allow others to perform their overrides.
     $override_event = new EntityValueOverrideResolverEvent($referenced_entity, $link_entity, $link);
-    $this->eventDispatcher->dispatch(EntityValueOverrideResolverEvent::NAME, $override_event);
+    $this->eventDispatcher->dispatch($override_event, EntityValueOverrideResolverEvent::NAME);
 
     return $override_event->getLink();
   }
@@ -140,7 +140,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
 
     $link = new DefaultLink($url, $link_entity->getTitle(), ['#markup' => $link_entity->getTeaser()]);
     $override_event = new ManualLinkOverrideResolverEvent($link, $link_entity);
-    $this->eventDispatcher->dispatch(ManualLinkOverrideResolverEvent::NAME, $override_event);
+    $this->eventDispatcher->dispatch($override_event, ManualLinkOverrideResolverEvent::NAME);
 
     return $override_event->getLink();
   }

@@ -18,7 +18,7 @@ class LinkListLinkAccessControlHandlerTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'oe_link_lists',
     'oe_link_lists_manual_source',
     'system',

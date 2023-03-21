@@ -350,15 +350,15 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     // Allow others to alter the query to apply things like sorting, etc.
     $query->addMetaData('oe_link_lists_internal_source', $this->configuration);
     $event = new InternalSourceQueryEvent($query);
-    $this->eventDispatcher->dispatch(InternalSourceQueryEvent::NAME, $event);
+    $this->eventDispatcher->dispatch($event, InternalSourceQueryEvent::NAME);
 
-    $entities = $storage->loadMultiple($query->execute());
+    $entities = $storage->loadMultiple($query->accessCheck(TRUE)->execute());
     foreach ($entities as $entity) {
       /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
       $entity = $this->entityRepository->getTranslationFromContext($entity);
       /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
       $event = new EntityValueResolverEvent($entity);
-      $this->eventDispatcher->dispatch(EntityValueResolverEvent::NAME, $event);
+      $this->eventDispatcher->dispatch($event, EntityValueResolverEvent::NAME);
       $links[] = $event->getLink();
     }
 
@@ -392,7 +392,7 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     }
 
     $event = new InternalSourceEntityTypesEvent(array_keys($entity_types));
-    $this->eventDispatcher->dispatch(InternalSourceEntityTypesEvent::NAME, $event);
+    $this->eventDispatcher->dispatch($event, InternalSourceEntityTypesEvent::NAME);
     $entity_types = array_intersect_key($entity_types, array_flip($event->getEntityTypes()));
 
     return $entity_types;
@@ -415,7 +415,7 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     }
 
     $event = new InternalSourceBundlesEvent($entity_type_id, array_keys($bundles));
-    $this->eventDispatcher->dispatch(InternalSourceBundlesEvent::NAME, $event);
+    $this->eventDispatcher->dispatch($event, InternalSourceBundlesEvent::NAME);
     $bundles = array_intersect_key($bundles, array_flip($event->getBundles()));
 
     return $bundles;

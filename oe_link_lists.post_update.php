@@ -35,6 +35,7 @@ function oe_link_lists_post_update_00002(&$sandbox) {
     $ids = \Drupal::entityTypeManager()
       ->getStorage('link_list')
       ->getQuery()
+      ->accessCheck(FALSE)
       ->execute();
 
     if (!$ids) {
@@ -85,6 +86,7 @@ function oe_link_lists_post_update_00003(&$sandbox) {
     $ids = \Drupal::entityTypeManager()
       ->getStorage('link_list')
       ->getQuery()
+      ->accessCheck(FALSE)
       ->execute();
 
     if (!$ids) {

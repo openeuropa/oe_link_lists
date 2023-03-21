@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_internal_source\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event to alter the referenceable bundles in the internal source plugin.

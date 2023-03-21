@@ -41,7 +41,7 @@ class RssLinksTranslationTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
@@ -59,7 +59,7 @@ class RssLinksTranslationTest extends WebDriverTestBase {
 
     // Mock the http client and factory to allow requests to certain RSS feeds.
     $http_client_mock = $this->getMockBuilder(Client::class)->getMock();
-    $test_module_path = drupal_get_path('module', 'aggregator_test');
+    $test_module_path = \Drupal::service('extension.list.module')->getPath('aggregator_test');
     $http_client_mock
       ->method('send')
       ->willReturnCallback(function (RequestInterface $request, array $options = []) use ($test_module_path) {

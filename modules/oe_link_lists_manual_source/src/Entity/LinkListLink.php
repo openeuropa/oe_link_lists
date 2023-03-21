@@ -95,7 +95,7 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
 
     $event_dispatcher = \Drupal::service('event_dispatcher');
     $event = new ManualLinkResolverEvent($this);
-    $event_dispatcher->dispatch(ManualLinkResolverEvent::NAME, $event);
+    $event_dispatcher->dispatch($event, ManualLinkResolverEvent::NAME);
     $link = $event->hasLink() ? $event->getLink() : NULL;
     $bundle = \Drupal::entityTypeManager()->getStorage('link_list_link_type')->load($this->bundle())->label();
     $title = $link instanceof LinkInterface ? $link->getTitle() : $this->t('Unresolved');

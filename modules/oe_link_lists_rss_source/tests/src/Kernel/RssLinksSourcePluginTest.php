@@ -115,7 +115,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
 
     // Mock the http client and factory to allow requests to certain RSS feeds.
     $http_client_mock = $this->getMockBuilder(Client::class)->getMock();
-    $test_module_path = drupal_get_path('module', 'aggregator_test');
+    $test_module_path = \Drupal::service('extension.list.module')->getPath('aggregator_test');
     $http_client_mock
       ->method('send')
       ->willReturnCallback(function (RequestInterface $request, array $options = []) use ($test_module_path) {
@@ -129,7 +129,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
             break;
 
           case 'http://ec.europa.eu/rss.xml':
-            $filename = drupal_get_path('module', 'oe_link_lists_rss_source') . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'rss_links_source_test_rss.xml';
+            $filename = \Drupal::service('extension.list.module')->getPath('oe_link_lists_rss_source') . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'rss_links_source_test_rss.xml';
             break;
 
           default:
