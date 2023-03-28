@@ -1,15 +1,21 @@
-# Changelog
+# Change Log
+
+## [0.22.0](https://github.com/openeuropa/oe_link_lists/tree/0.22.0) (2023-03-28)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.21.0...0.22.0)
+
+**Merged pull requests:**
+
+- EWPP-2998: Drupal 10 compatibility. [\#127](https://github.com/openeuropa/oe_link_lists/pull/127) ([brummbar](https://github.com/brummbar))
 
 ## [0.21.0](https://github.com/openeuropa/oe_link_lists/tree/0.21.0) (2023-03-07)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.20.0...0.21.0)
 
 **Merged pull requests:**
 
+- Release-0.21.0: Update changelog. [\#130](https://github.com/openeuropa/oe_link_lists/pull/130) ([nagyad](https://github.com/nagyad))
 - Remove IEF patch. [\#129](https://github.com/openeuropa/oe_link_lists/pull/129) ([nagyad](https://github.com/nagyad))
 
 ## [0.20.0](https://github.com/openeuropa/oe_link_lists/tree/0.20.0) (2023-03-03)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.19.0...0.20.0)
 
 **Merged pull requests:**
