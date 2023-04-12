@@ -105,6 +105,18 @@ class LinkListTest extends EntityKernelTestBase {
       $this->assertTrue(isset($build['#link_list']));
     }
 
+    // An invalid plugin with an empty administrative title should not exist.
+    $link_list = $link_list_storage->create([
+      'bundle' => 'dynamic',
+      'title' => 'Empty administrative title',
+      'administrative_title' => '',
+    ]);
+    $link_list->save();
+
+    $uuid = $link_list->uuid();
+    $definition = $block_manager->hasDefinition("oe_link_list_block:$uuid");
+    $this->assertFalse($definition);
+
     // Make sure the block checks the link list permissions.
     // User with view access.
     $user = $this->drupalCreateUser(['view link list']);

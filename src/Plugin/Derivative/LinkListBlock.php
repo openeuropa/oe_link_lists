@@ -47,9 +47,11 @@ class LinkListBlock extends DeriverBase implements ContainerDeriverInterface {
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface[] $link_lists */
     $link_lists = $this->entityTypeManager->getStorage('link_list')->loadMultiple();
     foreach ($link_lists as $link_list) {
-      $this->derivatives[$link_list->uuid()] = $base_plugin_definition;
-      $this->derivatives[$link_list->uuid()]['admin_label'] = $link_list->getAdministrativeTitle();
-      $this->derivatives[$link_list->uuid()]['config_dependencies']['config'] = [$link_list->getConfigDependencyName()];
+      if ($link_list->getAdministrativeTitle()) {
+        $this->derivatives[$link_list->uuid()] = $base_plugin_definition;
+        $this->derivatives[$link_list->uuid()]['admin_label'] = $link_list->getAdministrativeTitle();
+        $this->derivatives[$link_list->uuid()]['config_dependencies']['config'] = [$link_list->getConfigDependencyName()];
+      }
     }
 
     return $this->derivatives;
