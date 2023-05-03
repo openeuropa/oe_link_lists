@@ -305,6 +305,43 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
       'test_no_bundle_restriction_display',
       'title',
     ]);
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = \Drupal::entityTypeManager()->getStorage('link_list')->create([
+      'bundle' => 'dynamic',
+      'administrative_title' => $this->randomMachineName(),
+    ]);
+    $configuration = [
+      'source' => [
+        'plugin' => 'test_empty_collection',
+        'plugin_configuration' => ['url' => 'http://example.com'],
+      ],
+      'display' => [
+        'plugin' => 'title',
+        'plugin_configuration' => [],
+      ],
+      'no_results_behaviour' => [
+        'plugin' => 'hide_list',
+        'plugin_configuration' => [],
+      ],
+    ];
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+    // Test that link display filtering is executed on first load of a link list
+    // edit form.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    // Again the "test_empty_source_only_display" should be available.
+    $this->assertFieldSelectOptions('Link display', [
+      'same_configuration_display_one',
+      'same_configuration_display_two',
+      'test_configurable_title',
+      'test_empty_source_only_display',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
+      'test_no_bundle_restriction_display',
+      'title',
+    ]);
   }
 
   /**
