@@ -314,6 +314,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // use that as the default.
     if (!$plugin_id && count($source_plugin_options) === 1) {
       $plugin_id = key($source_plugin_options);
+      self::setSelectedPlugin('link_source', $plugin_id, $form_state);
     }
 
     $element['link_source']['plugin'] = [
@@ -738,11 +739,25 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public static function selectPlugin(array $form, FormStateInterface $form_state): void {
     $triggering_element = $form_state->getTriggeringElement();
+    self::setSelectedPlugin($triggering_element['#plugin_select'], $triggering_element['#value'], $form_state);
+    $form_state->setRebuild(TRUE);
+  }
+
+  /**
+   * Stores the selected plugin ID for a plugin type.
+   *
+   * @param string $type
+   *   The plugin type.
+   * @param string $value
+   *   The plugin ID.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public static function setSelectedPlugin(string $type, string $value, FormStateInterface $form_state): void {
     NestedArray::setValue($form_state->getStorage(), [
       'plugin_select',
-      $triggering_element['#plugin_select'],
-    ], $triggering_element['#value']);
-    $form_state->setRebuild(TRUE);
+      $type,
+    ], $value);
   }
 
   /**
