@@ -410,7 +410,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // the current link list configuration.
     $link_source_plugin_id = self::getSelectedPlugin('link_source', $form_state);
     if (!$link_source_plugin_id) {
-      $link_source_plugin_id = $this->getConfigurationPluginId($link_list, 'link_source');
+      $link_source_plugin_id = $this->getConfigurationPluginId($link_list, 'source');
     }
 
     $display_plugin_options = $this->linkDisplayPluginManager->getPluginsAsOptions($link_list->bundle(), $link_source_plugin_id);
