@@ -280,6 +280,34 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
   }
 
   /**
+   * Tests more scenarios for display plugins depending on source plugins.
+   */
+  public function testDisplaySourceDependencies(): void {
+    // Limit sources to only one, so that it will be automatically selected in
+    // the form.
+    \Drupal::state()->set('oe_link_lists_test_allowed_sources', ['test_empty_collection']);
+
+    $this->drupalGet('link_list/add/dynamic');
+    $this->assertFieldSelectOptions('Link source', [
+      'test_empty_collection',
+    ]);
+
+    // The "test_empty_source_only_display" should be available, as it can
+    // be used with the source selected above.
+    $this->assertFieldSelectOptions('Link display', [
+      'same_configuration_display_one',
+      'same_configuration_display_two',
+      'test_configurable_title',
+      'test_empty_source_only_display',
+      'test_link_tag',
+      'test_markup',
+      'test_translatable_form',
+      'test_no_bundle_restriction_display',
+      'title',
+    ]);
+  }
+
+  /**
    * Tests that a list can have a limit and a "More link".
    */
   public function testLinkListMoreLink(): void {
