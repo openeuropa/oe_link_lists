@@ -8,6 +8,8 @@ use Drupal\Core\Entity\EditorialContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\entity_reference_revisions\EntityNeedsSaveInterface;
+use Drupal\entity_reference_revisions\EntityNeedsSaveTrait;
 use Drupal\oe_link_lists\LinkListConfigurationManager;
 
 /**
@@ -70,7 +72,9 @@ use Drupal\oe_link_lists\LinkListConfigurationManager;
  *   field_ui_base_route = "entity.link_list_type.edit_form"
  * )
  */
-class LinkList extends EditorialContentEntityBase implements LinkListInterface {
+class LinkList extends EditorialContentEntityBase implements LinkListInterface, EntityNeedsSaveInterface {
+
+  use EntityNeedsSaveTrait;
 
   /**
    * {@inheritdoc}
