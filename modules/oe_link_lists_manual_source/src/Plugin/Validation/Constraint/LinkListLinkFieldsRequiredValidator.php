@@ -6,8 +6,8 @@ namespace Drupal\oe_link_lists_manual_source\Plugin\Validation\Constraint;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface;
-use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidator;
 
 /**
  * Validates a Link list link entity's requirements.

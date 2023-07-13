@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists_manual_source\Plugin\LinkSource;
 
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -17,7 +18,6 @@ use Drupal\oe_link_lists_manual_source\Event\ManualLinkResolverEvent;
 use Drupal\oe_link_lists_manual_source\Event\ManualLinksResolverEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Link source plugin that allows to enter links manually.

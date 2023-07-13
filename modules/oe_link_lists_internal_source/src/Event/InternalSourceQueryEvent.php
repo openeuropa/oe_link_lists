@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_internal_source\Event;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event used for altering the InternalSource plugin query.
