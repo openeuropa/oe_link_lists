@@ -315,12 +315,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     if (!$plugin_id && count($source_plugin_options) === 1) {
       $plugin_id = key($source_plugin_options);
     }
-
     $element['link_source']['plugin'] = [
       '#type' => 'select',
       '#title' => t('Link source'),
-      '#empty_option' => $this->t('None'),
-      '#empty_value' => '',
       '#options' => $source_plugin_options,
       '#required' => TRUE,
       '#ajax' => [
@@ -433,8 +430,6 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $element['link_display']['plugin'] = [
         '#type' => 'select',
         '#title' => $this->t('Link display'),
-        '#empty_option' => $this->t('None'),
-        '#empty_value' => '',
         '#required' => TRUE,
         '#options' => $display_plugin_options,
         '#ajax' => [
@@ -517,15 +512,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     ]);
     $first_parent = array_shift($parents);
 
-    $options = [0 => $this->t('All')];
-    $range = range(1, 20);
-    $options += array_combine($range, $range);
-
     $element['link_display']['size'] = [
-      '#type' => 'select',
+      '#type' => 'number',
       '#title' => $this->t('Number of items'),
+      '#description' => $this->t('Set "0" as "All"'),
+      '#min' => 0,
       '#weight' => 10,
-      '#options' => $options,
       '#default_value' => $configuration['size'] ?? 20,
       '#access' => !empty($more_link_plugin_options),
     ];
@@ -545,7 +537,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       '#open' => TRUE,
       '#states' => [
         'invisible' => [
-          'select[name="' . $name . '"]' => ['value' => 0],
+          'input[name="' . $name . '"]' => ['value' => 0],
         ],
       ],
     ];

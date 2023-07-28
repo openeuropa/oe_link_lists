@@ -70,7 +70,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
 
     // Configure the "More link" plugin..
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
+    $this->getSession()->getPage()->fillField('Number of items', 2);
     $this->getSession()->getPage()->selectFieldOption('More link', 'Configurable non translatable more link');
     $this->assertSession()->assertWaitOnAjaxRequest();
 
@@ -120,7 +120,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('The message you want shown', 'The no results text');
 
     // Configure the "More link" which also has translatable elements.
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
+    $this->getSession()->getPage()->fillField('Number of items', 2);
     $this->getSession()->getPage()->selectFieldOption('More link', 'Custom link');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('Target', 'http://example.com/more-link');

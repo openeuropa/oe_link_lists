@@ -245,22 +245,6 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertEquals('test_link_tag', $configuration['display']['plugin']);
     $this->assertEquals(['title' => NULL, 'more' => []], $configuration['display']['plugin_configuration']);
 
-    // Change the Source plugin to none.
-    $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->selectFieldOption('Link source', 'None');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->disableNativeBrowserRequiredFieldValidation();
-    $this->getSession()->getPage()->pressButton('Save');
-    $this->assertSession()->elementTextContains('css', '.messages--error', 'Link source field is required.');
-
-    // Change the display plugin to none.
-    $this->drupalGet('link_list/1/edit');
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'None');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->disableNativeBrowserRequiredFieldValidation();
-    $this->getSession()->getPage()->pressButton('Save');
-    $this->assertSession()->elementTextContains('css', '.messages--error', 'Link display field is required.');
-
     // Change the display plugin to make it configurable.
     $this->drupalGet('link_list/1/edit');
     $this->getSession()->getPage()->selectFieldOption('Link display', 'Titles with optional link');
@@ -293,12 +277,15 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
 
     // Check that the Size field exists.
-    $select = $this->assertSession()->selectExists('Number of items');
+    $select = $this->assertSession()->fieldExists('Number of items');
     // 20 items are selected by default.
     $this->assertEquals(20, $select->getValue());
 
+    // Minimum to 0;
+    $this->assertEquals(0, $this->assertSession()->fieldExists('Number of items')->getAttribute('min'));
+
     // Show all links.
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 0);
+    $this->getSession()->getPage()->fillField('Number of items', 0);
 
     // Select and configure the source plugin.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
@@ -324,7 +311,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Show only 2 links with no "See all" button.
     $this->drupalGet('link_list/1/edit');
     $this->assertFalse($this->assertSession()->selectExists('More link')->isVisible());
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
+    $this->getSession()->getPage()->fillField('Number of items', 2);
     $this->assertTrue($this->assertSession()->selectExists('More link')->isVisible());
     $this->assertFieldSelectOptions('More link', [
       'configurable_non_translatable_link',
