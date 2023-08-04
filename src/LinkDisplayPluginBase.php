@@ -8,6 +8,7 @@ use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -88,6 +89,21 @@ abstract class LinkDisplayPluginBase extends PluginBase implements LinkDisplayIn
    */
   public function preSave(ContentEntityInterface $entity): void {
     // Empty in many cases.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function build(LinkCollectionInterface $links): array {
+    $build = [];
+    // The more link.
+    $more_link = $this->configuration['more'];
+    if ($more_link instanceof Link) {
+      $build['more'] = $more_link->toRenderable();
+      $build['more']['#access'] = $more_link->getUrl()->access();
+      $build['more']['#weight'] = 99;
+    }
+    return $build;
   }
 
 }
