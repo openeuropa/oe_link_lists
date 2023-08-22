@@ -222,11 +222,11 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       $id = $link_entity_reference ? $link_entity_reference->id() : $value['target_id'];
       $revision_id = $link_entity_reference ? $link_entity_reference->getRevisionId() : $value['target_revision_id'];
       if (empty($revision_id)) {
-        // As this method triggered by preSave() method of LinkList entity, we
-        // not always may have revision id as reference to LinkListLink is not
-        // updated yet by entity_reference_revision module.
-        // In this case we should again load LinkListLink entity with latest
-        // revision id.
+        // As this method is called by the preSave() method of the LinkList
+        // entity, the revision id will not always be available because
+        // the entity_reference_revision module will not have updated
+        // the LinkListLink yet. When this happens, we need to reload
+        // the LinkListEntity to get the latest revision id.
         $link_list_link = $this->entityTypeManager->getStorage('link_list_link')->load($id);
         if ($link_list_link) {
           $revision_id = $link_list_link->getRevisionId();
