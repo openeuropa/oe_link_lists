@@ -103,6 +103,21 @@ class RssLinksTranslationTest extends WebDriverTestBase {
     $feed->save();
     $feed->refreshItems();
 
+    // For a scenario when we may have a few aggregator feeds with the same URL.
+    $feed = $feed_storage->create([
+      'title' => $this->randomString(),
+      'url' => 'http://www.example.com/atom.xml',
+    ]);
+    $feed->save();
+    $feed->refreshItems();
+
+    $feed = $feed_storage->create([
+      'title' => $this->randomString(),
+      'url' => 'http://www.example.com/rss.xml',
+    ]);
+    $feed->save();
+    $feed->refreshItems();
+
     $web_user = $this->drupalCreateUser([
       'bypass node access',
       'create dynamic link list',
@@ -161,18 +176,18 @@ class RssLinksTranslationTest extends WebDriverTestBase {
 
     // Assert some items in EN.
     $this->drupalGet($link_list->toUrl());
-    $this->assertSession()->pageTextContains('Atom-Powered Robots Run Amok');
-    $this->assertSession()->pageTextContains('http://example.org/2003/12/13/atom03');
-    $this->assertSession()->pageTextContains('Some text.');
+    $this->assertSession()->pageTextContainsOnce('Atom-Powered Robots Run Amok');
+    $this->assertSession()->pageTextContainsOnce('http://example.org/2003/12/13/atom03');
+    $this->assertSession()->pageTextContainsOnce('Some text.');
     $this->assertSession()->pageTextNotContains('First example feed item title');
     $this->assertSession()->pageTextNotContains('http://example.com/example-turns-one');
     $this->assertSession()->pageTextNotContains('First example feed item description.');
 
     // Assert some items in FR where we use a completely different feed URL.
     $this->drupalGet($link_list->toUrl('canonical', ['language' => \Drupal::languageManager()->getLanguage('fr')]));
-    $this->assertSession()->pageTextContains('First example feed item title');
-    $this->assertSession()->pageTextContains('http://example.com/example-turns-one');
-    $this->assertSession()->pageTextContains('First example feed item description.');
+    $this->assertSession()->pageTextContainsOnce('First example feed item title');
+    $this->assertSession()->pageTextContainsOnce('http://example.com/example-turns-one');
+    $this->assertSession()->pageTextContainsOnce('First example feed item description.');
     $this->assertSession()->pageTextNotContains('Atom-Powered Robots Run Amok');
     $this->assertSession()->pageTextNotContains('http://example.org/2003/12/13/atom03');
     $this->assertSession()->pageTextNotContains('Some text.');

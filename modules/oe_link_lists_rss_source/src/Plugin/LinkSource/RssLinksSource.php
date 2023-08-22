@@ -173,7 +173,8 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
     $feed_ids = [];
     foreach ($feeds as $feed) {
       $link_collection->addCacheableDependency($feed);
-      $feed_ids[] = $feed->id();
+      // Make sure that we always use single aggregator feed per URL.
+      $feed_ids[$feed->getUrl()] = $feed->id();
     }
 
     /** @var \Drupal\aggregator\ItemStorageInterface $storage */
