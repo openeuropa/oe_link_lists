@@ -7,8 +7,10 @@
 
 declare(strict_types = 1);
 
+use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
+use Drupal\oe_link_lists_manual_source\Entity\Bundle\LinkList;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
 
 /**
@@ -44,4 +46,13 @@ function oe_link_lists_manual_source_entity_delete(EntityInterface $entity) {
   }
 
   $link_list_link_storage->delete($link_entities);
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function oe_link_lists_manual_source_entity_type_alter(array &$entity_types) {
+  if ($entity_types['link_list'] instanceof ContentEntityType) {
+    $entity_types['link_list']->setClass(LinkList::class);
+  }
 }
