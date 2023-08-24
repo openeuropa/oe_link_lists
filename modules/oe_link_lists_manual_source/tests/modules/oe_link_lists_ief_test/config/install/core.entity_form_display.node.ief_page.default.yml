@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.ief_page.field_link_list
+    - field.field.entity_test_mulrev_changed.entity_test_mulrev_changed.field_link_list
     - node.type.ief_page
   module:
     - inline_entity_form
@@ -18,24 +18,42 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_link_list:
-    weight: 122
+#  field_link_list:
+#    weight: 122
+#    settings:
+#      form_mode: default
+#      revision: true
+#      label_singular: ''
+#      label_plural: ''
+#      allow_new: true
+#      match_operator: CONTAINS
+#      removed_reference: keep
+#      override_labels: false
+#      collapsible: false
+#      collapsed: false
+#      allow_existing: false
+#      allow_duplicate: false
+#    third_party_settings: {  }
+#    type: inline_entity_form_complex
+#    region: content
+  field_test_entity_reference:
+    type: inline_entity_form_complex
+    weight: 123
+    region: content
     settings:
       form_mode: default
-      revision: true
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
+      allow_existing: false
       match_operator: CONTAINS
-      removed_reference: keep
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_existing: false
-      allow_duplicate: false
-    third_party_settings: {  }
-    type: inline_entity_form_complex
-    region: content
+      revision: true
+      removed_reference: optional
+    third_party_settings: { }
   promote:
     type: boolean_checkbox
     settings:

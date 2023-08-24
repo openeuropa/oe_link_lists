@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_link_list
+    - field.storage.entity_test_mulrev_changed.field_link_list
     - node.type.ief_page
     - oe_link_lists.link_list_type.manual
   module:
@@ -12,10 +12,10 @@ third_party_settings:
   composite_reference:
     composite: false
     composite_revisions: false
-id: node.ief_page.field_link_list
+id: entity_test_mulrev_changed.entity_test_mulrev_changed.field_link_list
 field_name: field_link_list
-entity_type: node
-bundle: ief_page
+entity_type: entity_test_mulrev_changed
+bundle: entity_test_mulrev_changed
 label: 'Link List'
 description: ''
 required: false
