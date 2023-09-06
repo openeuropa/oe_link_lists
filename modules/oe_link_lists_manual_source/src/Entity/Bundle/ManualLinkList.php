@@ -6,12 +6,12 @@ namespace Drupal\oe_link_lists_manual_source\Entity\Bundle;
 
 use Drupal\entity_reference_revisions\EntityNeedsSaveInterface;
 use Drupal\entity_reference_revisions\EntityNeedsSaveTrait;
-use Drupal\oe_link_lists\Entity\LinkList as OriginalLinkList;
+use Drupal\oe_link_lists\Entity\LinkList;
 
 /**
- * Defines the LinkList entity.
+ * Defines the LinkList entity for Manual bundle.
  */
-class LinkList extends OriginalLinkList implements EntityNeedsSaveInterface {
+class ManualLinkList extends LinkList implements EntityNeedsSaveInterface {
 
   use EntityNeedsSaveTrait;
 

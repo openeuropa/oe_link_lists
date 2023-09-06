@@ -7,10 +7,9 @@
 
 declare(strict_types = 1);
 
-use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
-use Drupal\oe_link_lists_manual_source\Entity\Bundle\LinkList;
+use Drupal\oe_link_lists_manual_source\Entity\Bundle\ManualLinkList;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
 
 /**
@@ -49,10 +48,10 @@ function oe_link_lists_manual_source_entity_delete(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_entity_type_alter().
+ * Implements hook_entity_bundle_info_alter().
  */
-function oe_link_lists_manual_source_entity_type_alter(array &$entity_types) {
-  if ($entity_types['link_list'] instanceof ContentEntityType) {
-    $entity_types['link_list']->setClass(LinkList::class);
+function oe_link_lists_manual_source_entity_bundle_info_alter(&$bundles) {
+  if (isset($bundles['link_list']['manual'])) {
+    $bundles['link_list']['manual']['class'] = ManualLinkList::class;
   }
 }
