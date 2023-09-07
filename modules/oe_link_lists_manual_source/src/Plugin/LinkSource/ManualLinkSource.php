@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists_manual_source\Plugin\LinkSource;
 
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -17,7 +18,6 @@ use Drupal\oe_link_lists_manual_source\Event\ManualLinkResolverEvent;
 use Drupal\oe_link_lists_manual_source\Event\ManualLinksResolverEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Link source plugin that allows to enter links manually.
@@ -221,6 +221,17 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       $link_entity_reference = $value['entity'] ?? NULL;
       $id = $link_entity_reference ? $link_entity_reference->id() : $value['target_id'];
       $revision_id = $link_entity_reference ? $link_entity_reference->getRevisionId() : $value['target_revision_id'];
+      if (empty($revision_id)) {
+        // As this method is called by the preSave() method of the LinkList
+        // entity, the revision id will not always be available because
+        // the entity_reference_revision module will not have updated
+        // the LinkListLink yet. When this happens, we need to reload
+        // the LinkListEntity to get the latest revision id.
+        $link_list_link = $this->entityTypeManager->getStorage('link_list_link')->load($id);
+        if ($link_list_link) {
+          $revision_id = $link_list_link->getRevisionId();
+        }
+      }
       $ids[$revision_id] = [
         'entity_id' => $id,
         'entity_revision_id' => $revision_id,

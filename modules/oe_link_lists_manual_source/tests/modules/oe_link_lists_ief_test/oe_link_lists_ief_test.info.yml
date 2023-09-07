@@ -10,3 +10,4 @@ dependencies:
   - drupal:field
   - drupal:node
   - oe_link_lists:oe_link_lists_manual_source
+  - drupal:entity_test

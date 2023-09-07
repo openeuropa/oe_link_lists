@@ -6,8 +6,8 @@ namespace Drupal\oe_link_lists;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Interface for link_source plugins.

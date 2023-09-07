@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions of the oe_link_lists_ief_test module.
+ */
+
+declare(strict_types = 1);
+
+/**
+ * Implements hook_install().
+ */
+function oe_link_lists_ief_test_install() {
+  \Drupal::service('entity_display.repository')
+    ->getFormDisplay('entity_test_mulrev_changed', 'entity_test_mulrev_changed')
+    ->setComponent('field_link_list', [
+      'type' => 'inline_entity_form_complex',
+      'weight' => 10,
+      'settings' => [
+        'revision' => TRUE,
+        'allow_new' => TRUE,
+        'removed_reference' => 'keep',
+        'allow_existing' => FALSE,
+        'allow_duplicate' => FALSE,
+        'override_labels' => TRUE,
+        'label_singular' => 'link list',
+      ],
+    ])
+    ->save();
+}

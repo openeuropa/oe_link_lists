@@ -1,0 +1,21 @@
+uuid: 9fa54788-887f-400b-9613-3d4df3b56cfc
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_reference_revisions
+    - entity_test
+    - node
+id: node.field_test_entity_reference
+field_name: field_test_entity_reference
+entity_type: node
+type: entity_reference_revisions
+settings:
+  target_type: entity_test_mulrev_changed
+module: entity_reference_revisions
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

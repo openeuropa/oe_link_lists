@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * @file
+ * The OpenEuropa Link Lists IEF Test module file.
+ */
+
+declare(strict_types = 1);
+
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function oe_link_lists_ief_test_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
+  $ief_id = $entity_form['#ief_id'];
+  $field = $form_state->get(['inline_entity_form', $ief_id, 'instance']);
+  if ($field->getTargetEntityTypeId() !== 'entity_test_mulrev_changed') {
+    return;
+  }
+
+  if (!empty($entity_form['#entity']) && $entity_form['#entity'] instanceof ContentEntityInterface) {
+    // Sets needs_save to allow properly handling custom 'related links' entity
+    // type referenced by entity reference revision.
+    $entity_form['#entity']->setNeedsSave(TRUE);
+  }
+}

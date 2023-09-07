@@ -5,9 +5,9 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists_manual_source\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\Entity\RevisionLogInterface;
 
 /**
  * Provides an interface for Link list link entities.

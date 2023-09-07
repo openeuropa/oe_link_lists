@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_manual_source\Event;
 
-use Symfony\Contracts\EventDispatcher\Event;
 use Drupal\oe_link_lists\LinkCollectionInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Event class used for resolving a manually created links into link objects.

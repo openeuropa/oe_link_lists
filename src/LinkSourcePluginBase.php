@@ -5,9 +5,9 @@ declare(strict_types = 1);
 namespace Drupal\oe_link_lists;
 
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Base class for link_source plugins.

@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists_manual_source\Event;
 
-use Drupal\oe_link_lists\Event\EntityValueResolverEvent;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\oe_link_lists\Event\EntityValueResolverEvent;
 use Drupal\oe_link_lists\LinkInterface;
 use Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface;
 
