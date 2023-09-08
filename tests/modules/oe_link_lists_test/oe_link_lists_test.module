@@ -30,3 +30,16 @@ function oe_link_lists_test_node_access(EntityInterface $entity, $operation, Acc
 
   return $result;
 }
+
+/**
+ * Implements hook_link_source_info_alter().
+ *
+ * Allow tests to disable the available link source plugins.
+ */
+function oe_link_lists_test_link_source_info_alter(array &$definitions): void {
+  $allowed = \Drupal::state()->get('oe_link_lists_test_allowed_sources');
+
+  if (is_array($allowed)) {
+    $definitions = array_intersect_key($definitions, array_flip($allowed));
+  }
+}
