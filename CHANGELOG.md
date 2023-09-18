@@ -1,13 +1,26 @@
-# Change Log
+# Changelog
+
+## [1.0.0](https://github.com/openeuropa/oe_link_lists/tree/1.0.0) (2023-09-18)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.22.0...1.0.0)
+
+**Merged pull requests:**
+
+- EWPP-3529: Prevent duplication of aggregator feed items even if we have several feeds for same URL. [\#137](https://github.com/openeuropa/oe_link_lists/pull/137) ([sergepavle](https://github.com/sergepavle))
+- EWPP-3345: Add needs\_save support for LinkList entity type. [\#134](https://github.com/openeuropa/oe_link_lists/pull/134) ([sergepavle](https://github.com/sergepavle))
+- OEL-2324: Source plugin is not passed to display manager in some scenarios [\#133](https://github.com/openeuropa/oe_link_lists/pull/133) ([brummbar](https://github.com/brummbar))
 
 ## [0.22.0](https://github.com/openeuropa/oe_link_lists/tree/0.22.0) (2023-03-28)
+
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.21.0...0.22.0)
 
 **Merged pull requests:**
 
+- Prepare changelog for release 0.22.0. [\#131](https://github.com/openeuropa/oe_link_lists/pull/131) ([brummbar](https://github.com/brummbar))
 - EWPP-2998: Drupal 10 compatibility. [\#127](https://github.com/openeuropa/oe_link_lists/pull/127) ([brummbar](https://github.com/brummbar))
 
 ## [0.21.0](https://github.com/openeuropa/oe_link_lists/tree/0.21.0) (2023-03-07)
+
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.20.0...0.21.0)
 
 **Merged pull requests:**
@@ -16,6 +29,7 @@
 - Remove IEF patch. [\#129](https://github.com/openeuropa/oe_link_lists/pull/129) ([nagyad](https://github.com/nagyad))
 
 ## [0.20.0](https://github.com/openeuropa/oe_link_lists/tree/0.20.0) (2023-03-03)
+
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.19.0...0.20.0)
 
 **Merged pull requests:**
