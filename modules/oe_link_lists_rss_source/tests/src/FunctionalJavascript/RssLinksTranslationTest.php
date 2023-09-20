@@ -4,120 +4,17 @@ declare(strict_types = 1);
 
 namespace Drupal\Tests\oe_link_lists_rss_source\FunctionalJavascript;
 
-use Drupal\aggregator\FeedStorageInterface;
-use Drupal\Core\Http\ClientFactory;
-use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\RequestInterface;
-
 /**
  * Tests the translatability of the link lists that use the RSS source.
  *
  * @group oe_link_lists
  */
-class RssLinksTranslationTest extends WebDriverTestBase {
-
-  use LinkListTestTrait;
+class RssLinksTranslationTest extends RssLinksTestBase {
 
   /**
-   * The link storage.
-   *
-   * @var \Drupal\Core\Entity\ContentEntityStorageInterface
+   * Tests that a link link list can be translated to use different RSS sources.
    */
-  protected $linkStorage;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = [
-    'oe_link_lists',
-    'oe_link_lists_rss_source',
-    'oe_link_lists_test',
-    'oe_multilingual',
-  ];
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'starterkit_theme';
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-
-    \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
-    \Drupal::service('router.builder')->rebuild();
-
-    // Do not delete old aggregator items during these tests, since our sample
-    // feeds have hardcoded dates in them (which may be expired when this test
-    // is run).
-    \Drupal::configFactory()->getEditable('aggregator.settings')->set('items.expire', FeedStorageInterface::CLEAR_NEVER)->save();
-
-    // Mock the http client and factory to allow requests to certain RSS feeds.
-    $http_client_mock = $this->getMockBuilder(Client::class)->getMock();
-    $test_module_path = \Drupal::service('extension.list.module')->getPath('aggregator_test');
-    $http_client_mock
-      ->method('send')
-      ->willReturnCallback(function (RequestInterface $request, array $options = []) use ($test_module_path) {
-        switch ($request->getUri()) {
-          case 'http://www.example.com/atom.xml':
-            $filename = 'aggregator_test_atom.xml';
-            break;
-
-          case 'http://www.example.com/rss.xml':
-            $filename = 'aggregator_test_rss091.xml';
-            break;
-
-          default:
-            return new Response(404);
-        }
-
-        $filename = $test_module_path . DIRECTORY_SEPARATOR . $filename;
-        return new Response(200, [], file_get_contents($filename));
-      });
-
-    $http_client_factory_mock = $this->getMockBuilder(ClientFactory::class)
-      ->disableOriginalConstructor()
-      ->getMock();
-    $http_client_factory_mock->method('fromOptions')
-      ->willReturn($http_client_mock);
-
-    $this->container->set('http_client_factory', $http_client_factory_mock);
-
-    $feed_storage = $this->container->get('entity_type.manager')->getStorage('aggregator_feed');
-    $feed = $feed_storage->create([
-      'title' => $this->randomString(),
-      'url' => 'http://www.example.com/atom.xml',
-    ]);
-    $feed->save();
-    $feed->refreshItems();
-
-    $feed = $feed_storage->create([
-      'title' => $this->randomString(),
-      'url' => 'http://www.example.com/rss.xml',
-    ]);
-    $feed->save();
-    $feed->refreshItems();
-
-    // For a scenario when we may have a few aggregator feeds with the same URL.
-    $feed = $feed_storage->create([
-      'title' => $this->randomString(),
-      'url' => 'http://www.example.com/atom.xml',
-    ]);
-    $feed->save();
-    $feed->refreshItems();
-
-    $feed = $feed_storage->create([
-      'title' => $this->randomString(),
-      'url' => 'http://www.example.com/rss.xml',
-    ]);
-    $feed->save();
-    $feed->refreshItems();
-
+  public function testRssLinksTranslatability(): void {
     $web_user = $this->drupalCreateUser([
       'bypass node access',
       'create dynamic link list',
@@ -129,12 +26,7 @@ class RssLinksTranslationTest extends WebDriverTestBase {
     ]);
 
     $this->drupalLogin($web_user);
-  }
 
-  /**
-   * Tests that a link link list can be translated to use different RSS sources.
-   */
-  public function testRssLinksTranslatability(): void {
     $this->drupalGet('link_list/add/dynamic');
     $this->getSession()->getPage()->fillField('Title', 'Test translation');
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
