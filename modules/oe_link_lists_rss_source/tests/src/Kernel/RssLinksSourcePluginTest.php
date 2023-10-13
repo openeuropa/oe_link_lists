@@ -12,6 +12,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Url;
+use Drupal\filter\Entity\FilterFormat;
+use Drupal\filter\FilterFormatInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\oe_link_lists\DefaultEntityLink;
@@ -33,6 +35,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
   protected static $modules = [
     'user',
     'aggregator',
+    'filter',
     'options',
     'system',
     'language',
@@ -103,6 +106,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
       'system',
       'language',
       'content_translation',
+      'filter',
     ]);
     $this->installConfig('aggregator');
     $this->installEntitySchema('aggregator_feed');
@@ -412,22 +416,14 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
     ], $this->renderLinksTeaser($plugin->getLinks()->toArray()));
 
     // Configure the aggregator to strip link tags but still allow paragraphs.
-    $this->container->get('config.factory')
-      ->getEditable('aggregator.settings')
-      ->set('items.allowed_html', '<p>')
-      ->save();
-
+    $this->setAggregatorAllowedHtml('<p>');
     $this->assertEquals([
       '<p>Second example feed item description with link.</p>',
       '<p>First example feed item.</p>',
     ], $this->renderLinksTeaser($plugin->getLinks()->toArray()));
 
     // Strip all tags now.
-    $this->container->get('config.factory')
-      ->getEditable('aggregator.settings')
-      ->set('items.allowed_html', '')
-      ->save();
-
+    $this->setAggregatorAllowedHtml('');
     $this->assertEquals([
       'Second example feed item description with link.',
       'First example feed item.',
@@ -444,7 +440,16 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
     $feed_storage = $this->container->get('entity_type.manager')->getStorage('aggregator_feed');
     $item_storage = $this->container->get('entity_type.manager')->getStorage('aggregator_item');
     // Mimic the RssLinkSource::getAllowedTeaserTags() method.
-    $allowed_tags = preg_split('/\s+|<|>/', $this->config('aggregator.settings')->get('items.allowed_html'), -1, PREG_SPLIT_NO_EMPTY);
+    $aggregator_format = FilterFormat::load('aggregator_html');
+    if ($aggregator_format instanceof FilterFormatInterface) {
+      $config = $aggregator_format->filters('filter_html')->getConfiguration();
+      $allowed_tags = preg_split('/\s+|<|>/', $config['settings']['allowed_html'], -1, PREG_SPLIT_NO_EMPTY);
+    }
+    else {
+      // If there is no such filter format, we can assume that the module
+      // version is 1.x, so we get the allowed html from settings.
+      $allowed_tags = preg_split('/\s+|<|>/', $this->configFactory->get('aggregator.settings')->get('items.allowed_html'), -1, PREG_SPLIT_NO_EMPTY);
+    }
 
     $links = [];
     $rss_urls = [
@@ -467,6 +472,32 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
     }
 
     return $links;
+  }
+
+  /**
+   * Helper to set the allowed html tags for aggregator.
+   *
+   * @param string $html_tags
+   *   The string of html tags to allow.
+   *
+   * @see getAllowedTeaserTags()
+   */
+  protected function setAggregatorAllowedHtml(string $html_tags): void {
+    $aggregator_format = FilterFormat::load('aggregator_html');
+    if (!$aggregator_format instanceof FilterFormatInterface) {
+      // If there is no such filter format, we can assume that the module
+      // aggregator version is 1.x, so we get the allowed html from settings.
+      $this->container->get('config.factory')
+        ->getEditable('aggregator.settings')
+        ->set('items.allowed_html', $html_tags)
+        ->save();
+    }
+    else {
+      $config = $aggregator_format->filters('filter_html')->getConfiguration();
+      $config['settings']['allowed_html'] = $html_tags;
+      $aggregator_format->filters('filter_html')->setConfiguration($config);
+      $aggregator_format->save();
+    }
   }
 
   /**
