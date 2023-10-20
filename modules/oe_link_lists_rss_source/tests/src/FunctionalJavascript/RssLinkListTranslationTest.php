@@ -33,6 +33,8 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'aggregator',
+    'filter',
     'oe_link_lists',
     'oe_link_lists_rss_source',
     'oe_link_lists_test',
