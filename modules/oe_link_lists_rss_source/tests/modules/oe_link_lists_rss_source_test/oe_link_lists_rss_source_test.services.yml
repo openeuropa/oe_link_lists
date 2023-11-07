@@ -1,0 +1,6 @@
+services:
+  oe_link_lists_rss_source_test.rss_middleware:
+    class: Drupal\oe_link_lists_rss_source_test\RssMiddleware
+    arguments: ['@extension.path.resolver']
+    tags:
+      - { name: http_client_middleware }
