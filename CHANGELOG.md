@@ -1,11 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/openeuropa/oe_link_lists/tree/1.1.0) (2023-11-21)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.0.0...1.1.0)
+
+**Merged pull requests:**
+
+- EWPP-3667: Aggregator items uses filtered text. [\#140](https://github.com/openeuropa/oe_link_lists/pull/140) ([nagyad](https://github.com/nagyad))
+- EWPP-3612: RSS links refresh form. [\#139](https://github.com/openeuropa/oe_link_lists/pull/139) ([upchuk](https://github.com/upchuk))
+
 ## [1.0.0](https://github.com/openeuropa/oe_link_lists/tree/1.0.0) (2023-09-18)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.22.0...1.0.0)
 
 **Merged pull requests:**
 
+- Prepare release 1.0.0. [\#138](https://github.com/openeuropa/oe_link_lists/pull/138) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-3529: Prevent duplication of aggregator feed items even if we have several feeds for same URL. [\#137](https://github.com/openeuropa/oe_link_lists/pull/137) ([sergepavle](https://github.com/sergepavle))
 - EWPP-3345: Add needs\_save support for LinkList entity type. [\#134](https://github.com/openeuropa/oe_link_lists/pull/134) ([sergepavle](https://github.com/sergepavle))
 - OEL-2324: Source plugin is not passed to display manager in some scenarios [\#133](https://github.com/openeuropa/oe_link_lists/pull/133) ([brummbar](https://github.com/brummbar))
