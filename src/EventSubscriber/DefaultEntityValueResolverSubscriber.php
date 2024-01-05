@@ -52,6 +52,7 @@ class DefaultEntityValueResolverSubscriber implements EventSubscriberInterface {
       $url = Url::fromRoute('<front>');
     }
     $link = new DefaultEntityLink($url, $title, $teaser);
+    $link->addCacheableDependency($event);
     $link->setEntity($entity);
     $event->setLink($link);
   }

@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists\Event;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\oe_link_lists\LinkInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -13,7 +15,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  *
  * This is meant to handle the basic data values: URL, title and teaser.
  */
-class EntityValueResolverEvent extends Event {
+class EntityValueResolverEvent extends Event implements CacheableDependencyInterface {
+
+  use RefinableCacheableDependencyTrait;
 
   /**
    * The name of the event.
@@ -52,6 +56,16 @@ class EntityValueResolverEvent extends Event {
    */
   public function getEntity(): ContentEntityInterface {
     return $this->entity;
+  }
+
+  /**
+   * Sets the entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity.
+   */
+  public function setEntity(ContentEntityInterface $entity): void {
+    $this->entity = $entity;
   }
 
   /**
