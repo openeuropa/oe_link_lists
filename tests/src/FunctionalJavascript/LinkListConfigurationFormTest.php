@@ -363,7 +363,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertEquals(20, $select->getValue());
 
     // Show all links.
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 0);
+    $this->getSession()->getPage()->selectFieldOption('Number of items', '0');
 
     // Select and configure the source plugin.
     $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
@@ -389,7 +389,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // Show only 2 links with no "See all" button.
     $this->drupalGet('link_list/1/edit');
     $this->assertFalse($this->assertSession()->selectExists('More link')->isVisible());
-    $this->getSession()->getPage()->selectFieldOption('Number of items', 2);
+    $this->getSession()->getPage()->selectFieldOption('Number of items', '2');
     $this->assertTrue($this->assertSession()->selectExists('More link')->isVisible());
     $this->assertFieldSelectOptions('More link', [
       'configurable_non_translatable_link',
