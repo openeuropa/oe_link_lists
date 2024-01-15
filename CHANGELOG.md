@@ -1,11 +1,21 @@
 # Changelog
 
+## [1.1.1](https://github.com/openeuropa/oe_link_lists/tree/1.1.1) (2024-01-15)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.0...1.1.1)
+
+**Merged pull requests:**
+
+- EWPP-3658: Catching any exception in DefaultEntityValueResolverSubscr… [\#141](https://github.com/openeuropa/oe_link_lists/pull/141) ([upchuk](https://github.com/upchuk))
+- EWPP-3393: Cacheable metadata on the EntityValueResolverEvent. [\#135](https://github.com/openeuropa/oe_link_lists/pull/135) ([upchuk](https://github.com/upchuk))
+
 ## [1.1.0](https://github.com/openeuropa/oe_link_lists/tree/1.1.0) (2023-11-21)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.0.0...1.1.0)
 
 **Merged pull requests:**
 
+- Prepare release 1.1.0 [\#143](https://github.com/openeuropa/oe_link_lists/pull/143) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-3667: Aggregator items uses filtered text. [\#140](https://github.com/openeuropa/oe_link_lists/pull/140) ([nagyad](https://github.com/nagyad))
 - EWPP-3612: RSS links refresh form. [\#139](https://github.com/openeuropa/oe_link_lists/pull/139) ([upchuk](https://github.com/upchuk))
 
