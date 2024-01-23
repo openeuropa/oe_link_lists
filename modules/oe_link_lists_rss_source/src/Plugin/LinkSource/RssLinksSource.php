@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\filter\Entity\FilterFormat;
+use Drupal\filter\FilterFormatInterface;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use Drupal\oe_link_lists\LinkCollection;
 use Drupal\oe_link_lists\LinkCollectionInterface;
@@ -173,7 +175,8 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
     $feed_ids = [];
     foreach ($feeds as $feed) {
       $link_collection->addCacheableDependency($feed);
-      $feed_ids[] = $feed->id();
+      // Make sure that we always use single aggregator feed per URL.
+      $feed_ids[$feed->getUrl()] = $feed->id();
     }
 
     /** @var \Drupal\aggregator\ItemStorageInterface $storage */
@@ -273,6 +276,7 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
    *
    * These tags are configured as part of the Aggregator module and the method
    * is heavily inspired from there.
+   * The method supports both 1.x and 2.x aggregator versions.
    *
    * @see _aggregator_allowed_tags()
    *
@@ -280,7 +284,17 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
    *   The list of allowed tags.
    */
   protected function getAllowedTeaserTags(): array {
-    return preg_split('/\s+|<|>/', $this->configFactory->get('aggregator.settings')->get('items.allowed_html'), -1, PREG_SPLIT_NO_EMPTY);
+    $aggregator_format = FilterFormat::load('aggregator_html');
+    if (!$aggregator_format instanceof FilterFormatInterface) {
+      // If there is no such filter format, we can assume that the module
+      // aggregator version is 1.x, so we get the allowed html from settings.
+      $allowed_html = $this->configFactory->get('aggregator.settings')->get('items.allowed_html');
+    }
+    else {
+      $config = $aggregator_format->filters('filter_html')->getConfiguration();
+      $allowed_html = $config['settings']['allowed_html'];
+    }
+    return preg_split('/\s+|<|>/', $allowed_html, -1, PREG_SPLIT_NO_EMPTY);
   }
 
 }

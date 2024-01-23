@@ -287,10 +287,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // Keep track of where the plugin ID is coming from so that we know to
     // remove the deprecated ones.
     $remove_deprecated = FALSE;
-    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
-      'plugin_select',
-      'link_source',
-    ]);
+    $plugin_id = self::getSelectedPlugin('link_source', $form_state);
     if (!$plugin_id) {
       $remove_deprecated = TRUE;
       $plugin_id = $this->getConfigurationPluginId($link_list, 'source');
@@ -314,6 +311,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // use that as the default.
     if (!$plugin_id && count($source_plugin_options) === 1) {
       $plugin_id = key($source_plugin_options);
+      self::setSelectedPlugin('link_source', $plugin_id, $form_state);
     }
     $element['link_source']['plugin'] = [
       '#type' => 'select',
@@ -399,10 +397,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     ];
 
     $link_list = $this->getLinkListFromForm($form, $form_state);
-    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
-      'plugin_select',
-      'link_display',
-    ]);
+    $plugin_id = self::getSelectedPlugin('link_display', $form_state);
     if (!$plugin_id) {
       $plugin_id = $this->getConfigurationPluginId($link_list, 'display');
     }
@@ -410,12 +405,9 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     // Now we need to determine what is the selected link source plugin. This
     // can be found in two ways: either from the form submission or to check
     // the current link list configuration.
-    $link_source_plugin_id = $form_state->get([
-      'plugin_select',
-      'link_source',
-    ]);
+    $link_source_plugin_id = self::getSelectedPlugin('link_source', $form_state);
     if (!$link_source_plugin_id) {
-      $link_source_plugin_id = $this->getConfigurationPluginId($link_list, 'link_source');
+      $link_source_plugin_id = $this->getConfigurationPluginId($link_list, 'source');
     }
 
     $display_plugin_options = $this->linkDisplayPluginManager->getPluginsAsOptions($link_list->bundle(), $link_source_plugin_id);
@@ -542,10 +534,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       ],
     ];
 
-    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
-      'plugin_select',
-      'more_link',
-    ]);
+    $plugin_id = self::getSelectedPlugin('more_link', $form_state);
 
     // If we don't have a selected plugin ID, take it from the configuration.
     // However, only do so if we are not part of an Ajax rebuild of the actual
@@ -644,10 +633,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     ];
 
     $link_list = $this->getLinkListFromForm($form, $form_state);
-    $plugin_id = NestedArray::getValue($form_state->getStorage(), [
-      'plugin_select',
-      'no_results_behaviour',
-    ]);
+    $plugin_id = self::getSelectedPlugin('no_results_behaviour', $form_state);
     if (!$plugin_id) {
       $plugin_id = $this->getConfigurationPluginId($link_list, 'no_results_behaviour');
     }
@@ -730,11 +716,43 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    */
   public static function selectPlugin(array $form, FormStateInterface $form_state): void {
     $triggering_element = $form_state->getTriggeringElement();
+    self::setSelectedPlugin($triggering_element['#plugin_select'], $triggering_element['#value'], $form_state);
+    $form_state->setRebuild(TRUE);
+  }
+
+  /**
+   * Stores the selected plugin ID for a plugin type.
+   *
+   * @param string $type
+   *   The plugin type.
+   * @param string $value
+   *   The plugin ID.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public static function setSelectedPlugin(string $type, string $value, FormStateInterface $form_state): void {
     NestedArray::setValue($form_state->getStorage(), [
       'plugin_select',
-      $triggering_element['#plugin_select'],
-    ], $triggering_element['#value']);
-    $form_state->setRebuild(TRUE);
+      $type,
+    ], $value);
+  }
+
+  /**
+   * Retrieves the selected plugin for a plugin type.
+   *
+   * @param string $type
+   *   The plugin type.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return string|null
+   *   The plugin ID if found, NULL otherwise.
+   */
+  public static function getSelectedPlugin(string $type, FormStateInterface $form_state): ?string {
+    return NestedArray::getValue($form_state->getStorage(), [
+      'plugin_select',
+      $type,
+    ]);
   }
 
   /**

@@ -1,0 +1,4 @@
+entity.link_list.feed_refresh:
+  route_name: oe_link_lists_rss_source.feed_refresh
+  base_route: entity.link_list.canonical
+  title: 'Refresh feeds'

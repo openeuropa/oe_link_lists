@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Drupal\oe_link_lists\EventSubscriber;
 
-use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
 use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use Drupal\oe_link_lists\Event\EntityValueResolverEvent;
@@ -45,13 +44,14 @@ class DefaultEntityValueResolverSubscriber implements EventSubscriberInterface {
     try {
       $url = $entity->toUrl();
     }
-    catch (UndefinedLinkTemplateException $exception) {
+    catch (\Exception $exception) {
       // This should not happen normally as referenceable entity types have a
       // canonical URL. But in case an entity doesn't, we should not crash
       // the entire thing.
       $url = Url::fromRoute('<front>');
     }
     $link = new DefaultEntityLink($url, $title, $teaser);
+    $link->addCacheableDependency($event);
     $link->setEntity($entity);
     $event->setLink($link);
   }

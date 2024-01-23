@@ -1,0 +1,9 @@
+oe_link_lists_rss_source.feed_refresh:
+  path: '/link-list/{link_list}/feed-refresh'
+  defaults:
+    _title: 'Refresh feeds'
+    _form: 'Drupal\oe_link_lists_rss_source\Form\FeedRefreshForm'
+  requirements:
+    _custom_access: 'Drupal\oe_link_lists_rss_source\Form\FeedRefreshForm::access'
+  options:
+    _admin_route: TRUE
