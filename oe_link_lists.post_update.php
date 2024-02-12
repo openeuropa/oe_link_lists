@@ -5,7 +5,7 @@
  * Post update functions for OE Link Lists.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use Drupal\oe_link_lists\Entity\LinkList;
 use Drupal\oe_link_lists\Entity\LinkListType;
