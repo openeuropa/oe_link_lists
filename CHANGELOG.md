@@ -1,11 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/openeuropa/oe_link_lists/tree/1.2.0) (2024-02-16)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.1...1.2.0)
+
+**Merged pull requests:**
+
+- EWPP-3952: Add Drupal 10.2.x and PHP 8.2 to matrix. [\#145](https://github.com/openeuropa/oe_link_lists/pull/145) ([brummbar](https://github.com/brummbar))
+
 ## [1.1.1](https://github.com/openeuropa/oe_link_lists/tree/1.1.1) (2024-01-15)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.0...1.1.1)
 
 **Merged pull requests:**
 
+- Prepare release 1.1.1. [\#144](https://github.com/openeuropa/oe_link_lists/pull/144) ([imanoleguskiza](https://github.com/imanoleguskiza))
 - EWPP-3658: Catching any exception in DefaultEntityValueResolverSubscr… [\#141](https://github.com/openeuropa/oe_link_lists/pull/141) ([upchuk](https://github.com/upchuk))
 - EWPP-3393: Cacheable metadata on the EntityValueResolverEvent. [\#135](https://github.com/openeuropa/oe_link_lists/pull/135) ([upchuk](https://github.com/upchuk))
 
