@@ -5,7 +5,7 @@
  * Post update functions for OpenEuropa RSS Link Lists module.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /**
  * Enable the multivalue_form_element module.

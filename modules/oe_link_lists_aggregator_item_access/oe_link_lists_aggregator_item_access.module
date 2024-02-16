@@ -5,7 +5,7 @@
  * The OpenEuropa Link Lists Aggregator Item Access module file.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;

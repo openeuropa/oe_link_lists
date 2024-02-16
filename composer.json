@@ -6,20 +6,20 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0",
-        "cweagans/composer-patches": "~1.4",
-        "drupal/core": "^9.4 || ^10"
+        "php": ">=8.1",
+        "cweagans/composer-patches": "~1.4 || ^2",
+        "drupal/core": "^10"
     },
     "require-dev": {
         "composer/installers": "~1.5",
         "drupal/aggregator": "^1.0",
         "drupal/composite_reference": "^2.2",
-        "drupal/core-composer-scaffold": "^9.4 || ^10",
-        "drupal/core-dev": "^9.4 || ^10",
+        "drupal/core-composer-scaffold": "^10",
+        "drupal/core-dev": "^10",
         "drupal/entity_reference_revisions": "^1.9",
         "drupal/inline_entity_form": "^1.0-rc15",
         "drupal/multivalue_form_element": "^1.0-beta6",
-        "drush/drush": "^11.1",
+        "drush/drush": "^12",
         "openeuropa/code-review": "^2.0.0-alpha6",
         "openeuropa/oe_multilingual": "^1.13",
         "openeuropa/task-runner-drupal-project-symlink": "^1.0-beta6",
@@ -77,7 +77,8 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "phpro/grumphp": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "php-http/discovery": false
         }
     }
 }

@@ -2,7 +2,7 @@ name: 'OE Link Lists Local Test'
 type: module
 description: 'Support module for testing the local link lists.'
 package: Testing
-core_version_requirement: ^9.4 || ^10
+core_version_requirement: ^10
 dependencies:
   - drupal:node
   - oe_link_lists:oe_link_lists_local

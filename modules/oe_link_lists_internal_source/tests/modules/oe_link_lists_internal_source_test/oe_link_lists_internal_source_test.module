@@ -5,7 +5,7 @@
  * Contains module hooks for oe_link_lists_internal_source_test module.
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /**
  * Implements hook_internal_link_source_filter_info_alter().

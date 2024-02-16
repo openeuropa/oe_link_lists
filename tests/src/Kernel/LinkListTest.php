@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists\Kernel;
 
@@ -175,17 +175,27 @@ class LinkListTest extends EntityKernelTestBase {
     $link_list->setConfiguration($configuration);
     $link_list->save();
 
+    $expected_cache_tags = [
+      'link_list:1',
+      'link_list_view',
+      'test_cache_metadata_tag',
+    ];
+    // These cache tags were added before 10.2.x to the render array.
+    // In https://www.drupal.org/node/2551419 this was changed so that it's not
+    // needed anymore.
+    // @todo Remove when support for 10.1.x is dropped.
+    if (version_compare(\Drupal::VERSION, '10.2', '<')) {
+      $expected_cache_tags = array_merge($expected_cache_tags, [
+        'config:user.role.anonymous',
+        'user:0',
+      ]);
+    }
+
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
     $this->assertEquals("", $html);
-    $this->assertEqualsCanonicalizing([
-      'config:user.role.anonymous',
-      'link_list:1',
-      'link_list_view',
-      'test_cache_metadata_tag',
-      'user:0',
-    ], $build['#cache']['tags']);
+    $this->assertEqualsCanonicalizing($expected_cache_tags, $build['#cache']['tags']);
 
     $configuration['no_results_behaviour']['plugin'] = 'text_message';
     $configuration['no_results_behaviour']['plugin_configuration'] = [
@@ -197,13 +207,7 @@ class LinkListTest extends EntityKernelTestBase {
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
     $this->assertEquals('the no results text', $html);
-    $this->assertEqualsCanonicalizing([
-      'config:user.role.anonymous',
-      'link_list:1',
-      'link_list_view',
-      'test_cache_metadata_tag',
-      'user:0',
-    ], $build['#cache']['tags']);
+    $this->assertEqualsCanonicalizing($expected_cache_tags, $build['#cache']['tags']);
   }
 
   /**
