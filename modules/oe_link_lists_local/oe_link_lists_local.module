@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -14,6 +15,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\FieldConfigInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists_local\Form\LinkListInlineForm;
@@ -58,12 +60,26 @@ function oe_link_lists_local_query_entity_query_link_list_alter(SelectInterface 
   // this, as seen below.
   $definition = \Drupal::entityTypeManager()->getDefinition('link_list');
   $data_table = $definition->getDataTable();
+  $conditions = $query->conditions();
 
   if ($query->hasTag('entity_reference')) {
     // If the query is given by the entity reference it can be there for
     // validating a reference, made even with IEF. So in this case we should
     // not kill the query. And we know this by checking for a condition by IDs.
-    $conditions = $query->conditions();
+    foreach (Element::children($conditions) as $child) {
+      $condition = $conditions[$child];
+      if ($condition['field'] === "$data_table.id") {
+        return;
+      }
+    }
+  }
+
+  if ($query->getMetaData('all_revisions')) {
+    // If the query is made to load revisions and we have a filter by the
+    // actual link list ID, we also want to allow. This can be used,
+    // for example, by the content moderation system. And unfortunately, did
+    // not manage to find a good way to override the moderation handler to
+    // prevent local link lists from being moderated.
     foreach (Element::children($conditions) as $child) {
       $condition = $conditions[$child];
       if ($condition['field'] === "$data_table.id") {
@@ -102,6 +118,11 @@ function oe_link_lists_local_views_query_alter(ViewExecutable $view, QueryPlugin
     return;
   }
 
+  if (!$query->getTableInfo('link_list_field_data')) {
+    // The local column is only on the default link list table. So it doesn't
+    // exist on the revisions table so we need to check for this.
+    return;
+  }
   $condition = $query->query()->getConnection()->condition('OR');
   $condition->isNull('local');
   $condition->condition('local', 0);
@@ -263,4 +284,66 @@ function oe_link_lists_local_base_field_override_presave(EntityInterface $entity
   foreach ($settings as $setting => $value) {
     $entity->setThirdPartySetting('oe_link_lists_local', $setting, $value);
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * When we save a local link list, check to see if it has the moderation state
+ * field and automatically set it to the published state as well as mark the
+ * entity as published.
+ */
+function oe_link_lists_local_link_list_presave(LinkListInterface $link_list) {
+  if (!$link_list->hasField('moderation_state') || !(bool) $link_list->get('local')->value) {
+    return;
+  }
+
+  if ($link_list->isPublished()) {
+    // If the link list is already published, we don't need to do anything
+    // anymore.
+    return;
+  }
+
+  $link_list->setPublished();
+
+  $workflow = \Drupal::service('content_moderation.moderation_information')->getWorkflowForEntity($link_list);
+  foreach ($workflow->get('type_settings')['states'] as $state => $state_info) {
+    if ($state_info['published'] === TRUE) {
+      $link_list->set('moderation_state', $state);
+      break;
+    }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function oe_link_lists_local_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'entity_access' && isset($implementations['content_moderation'])) {
+    // If the site is using content_moderation, remove the implementation and
+    // rely on the one from this submodule.
+    // @see oe_link_lists_local_entity_access().
+    unset($implementations['content_moderation']);
+  }
+}
+
+/**
+ * Implements hook_entity_access().
+ *
+ * Does almost nothing except prevents content_moderation_entity_access() from
+ * running (if it exists) in case the entity is a local link list. This is
+ * because we don't want local link list access to be tied to the workflow.
+ * I tried to override the moderation handler but could not do it due to it
+ * (and other handlers) being overridden by other modules as well.
+ */
+function oe_link_lists_local_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($entity instanceof LinkListInterface && (bool) $entity->get('local')->value) {
+    return AccessResult::neutral();
+  }
+
+  if (function_exists('content_moderation_entity_access')) {
+    return content_moderation_entity_access($entity, $operation, $account);
+  }
+
+  return AccessResult::neutral();
 }

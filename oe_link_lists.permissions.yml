@@ -17,6 +17,9 @@ view link list:
 view unpublished link list:
   title: 'View unpublished link list'
   description: 'View any unpublished link list'
+view all link list revisions:
+  title: 'View all link list revisions'
+  description: 'To view a revision, you also need permission to view the link list.'
 
 permission_callbacks:
   - \Drupal\oe_link_lists\LinkListPermissions::linkListTypePermissions

@@ -50,6 +50,15 @@ class LinkListPermissions {
       "delete $type_id link list" => [
         'title' => $this->t('Delete any %type_name link list', $type_params),
       ],
+      "view any $type_id link list revisions" => [
+        'title' => $this->t('%type_name: View any link list revision pages', $type_params),
+      ],
+      "revert any $type_id link list revisions" => [
+        'title' => $this->t('Revert %type_name: Revert link list revisions', $type_params),
+      ],
+      "delete any $type_id link list revisions" => [
+        'title' => $this->t('Delete %type_name: Delete link list revisions', $type_params),
+      ],
     ];
   }
 

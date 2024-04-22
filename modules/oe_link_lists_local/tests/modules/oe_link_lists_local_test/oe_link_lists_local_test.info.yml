@@ -6,3 +6,4 @@ core_version_requirement: ^10
 dependencies:
   - drupal:node
   - oe_link_lists:oe_link_lists_local
+  - drupal:content_moderation
