@@ -73,6 +73,11 @@ class LinkListAccessControlHandlerTest extends EntityKernelTestBase {
     foreach ($scenarios as $scenario => $test_data) {
       // Update the published status based on the scenario.
       $link_list->set('status', $test_data['published']);
+      $link_list->isDefaultRevision($test_data['published']);
+      if (in_array($test_data['operation'], ['revert', 'delete revision'])) {
+        // We cannot revert or delete the default revision.
+        $link_list->isDefaultRevision(FALSE);
+      }
       $link_list->save();
 
       $user = $this->drupalCreateUser($test_data['permissions']);
@@ -233,6 +238,78 @@ class LinkListAccessControlHandlerTest extends EntityKernelTestBase {
           'edit test link list',
         ],
         'operation' => 'delete',
+        'expected_result' => AccessResult::neutral()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with view revisions access / published link list' => [
+        'permissions' => [
+          'view any test link list revisions',
+        ],
+        'operation' => 'view all revisions',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with view revisions access / unpublished link list' => [
+        'permissions' => [
+          'view any test link list revisions',
+        ],
+        'operation' => 'view all revisions',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => FALSE,
+      ],
+      'user with view revisions access on different bundle' => [
+        'permissions' => [
+          'view any dynamic link list revisions',
+        ],
+        'operation' => 'view all revisions',
+        'expected_result' => AccessResult::neutral()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with revert revisions access / published link list' => [
+        'permissions' => [
+          'revert any test link list revisions',
+        ],
+        'operation' => 'revert',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with revert revisions access / unpublished link list' => [
+        'permissions' => [
+          'revert any test link list revisions',
+        ],
+        'operation' => 'revert',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => FALSE,
+      ],
+      'user with revert revisions access on different bundle' => [
+        'permissions' => [
+          'revert any dynamic link list revisions',
+        ],
+        'operation' => 'revert',
+        'expected_result' => AccessResult::neutral()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with delete revisions access / published link list' => [
+        'permissions' => [
+          'delete any test link list revisions',
+        ],
+        'operation' => 'delete revision',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => TRUE,
+      ],
+      'user with delete revisions access / unpublished link list' => [
+        'permissions' => [
+          'delete any test link list revisions',
+        ],
+        'operation' => 'delete revision',
+        'expected_result' => AccessResult::allowed()->addCacheContexts(['user.permissions']),
+        'published' => FALSE,
+      ],
+      'user with delete revisions access on different bundle' => [
+        'permissions' => [
+          'delete any dynamic link list revisions',
+        ],
+        'operation' => 'delete revision',
         'expected_result' => AccessResult::neutral()->addCacheContexts(['user.permissions']),
         'published' => TRUE,
       ],

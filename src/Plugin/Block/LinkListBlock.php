@@ -62,6 +62,15 @@ class LinkListBlock extends BlockBase implements ContainerFactoryPluginInterface
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    return [
+      'view_mode' => 'full',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function blockAccess(AccountInterface $account) {
     $link_list = $this->getLinkList();
     return $link_list->access('view', $account, TRUE);
@@ -78,7 +87,7 @@ class LinkListBlock extends BlockBase implements ContainerFactoryPluginInterface
     $builder = $this->entityTypeManager->getViewBuilder('link_list');
     // @todo once we determine how we render the link lists, adapt this and/or
     // make it configurable.
-    return $builder->view($link_list);
+    return $builder->view($link_list, $this->configuration['view_mode']);
   }
 
   /**
