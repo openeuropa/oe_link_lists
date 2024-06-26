@@ -51,13 +51,13 @@ class LocalLinkListsTest extends BrowserTestBase {
     $type_path = 'admin/structure/types/manage/page/fields/add-field';
     $this->drupalGet($type_path);
 
+    $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
+
     // @todo Remove when support for 10.2.x is dropped.
     if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
       $this->getSession()->getPage()->pressButton('Continue');
     }
     else {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
       $this->getSession()->getPage()->pressButton('Change field group');
     }
 
@@ -97,13 +97,13 @@ class LocalLinkListsTest extends BrowserTestBase {
     // Assert we don't have the checkbox available on other field types.
     $this->drupalGet($type_path);
 
+    $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
+
     // @todo Remove when support for 10.2.x is dropped.
     if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
       $this->getSession()->getPage()->pressButton('Continue');
     }
     else {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
       $this->getSession()->getPage()->pressButton('Change field group');
     }
 
