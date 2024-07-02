@@ -32,6 +32,11 @@ class LinkListInlineForm extends OriginalLinkListInlineForm {
     // copy over the value from the link list title or generate one.
     $entity_form['administrative_title']['#access'] = FALSE;
 
+    if (isset($entity_form['moderation_state'])) {
+      // Hide the moderation state field if present.
+      $entity_form['moderation_state']['#access'] = FALSE;
+    }
+
     return $entity_form;
   }
 
@@ -66,6 +71,10 @@ class LinkListInlineForm extends OriginalLinkListInlineForm {
     parent::buildEntity($entity_form, $entity, $form_state);
     $local = $this->isLocal($entity_form, $form_state);
     $entity->set('local', $local);
+    // Set a flag to not update the entity version of local link lists. This
+    // is in case the site is using entity_version, configured to automatically
+    // update the version of entities.
+    $entity->entity_version_no_update = TRUE;
 
     // Set an administrative title automatically if one was not already set.
     $admin_title = $entity->label();

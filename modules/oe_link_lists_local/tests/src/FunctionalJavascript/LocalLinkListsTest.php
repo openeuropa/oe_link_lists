@@ -8,7 +8,9 @@ use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\oe_link_lists\Entity\LinkList;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use Drupal\workflows\Entity\Workflow;
 
 /**
  * Tests link lists can be created inside a IEF.
@@ -28,6 +30,7 @@ class LocalLinkListsTest extends WebDriverTestBase {
     'oe_link_lists_local_test',
     'entity_reference_revisions',
     'inline_entity_form',
+    'content_moderation',
   ];
 
   /**
@@ -44,6 +47,8 @@ class LocalLinkListsTest extends WebDriverTestBase {
     'bypass node access',
     'create dynamic link list',
     'edit dynamic link list',
+    'use editorial transition create_new_draft',
+    'use editorial transition publish',
   ];
 
   /**
@@ -97,6 +102,11 @@ class LocalLinkListsTest extends WebDriverTestBase {
       ],
     ]);
     $entity_form_display->save();
+
+    // Configure the link lists to use the editorial workflow.
+    $workflow = Workflow::load('editorial');
+    $workflow->getTypePlugin()->addEntityTypeAndBundle('link_list', 'dynamic');
+    $workflow->save();
   }
 
   /**
@@ -133,6 +143,10 @@ class LocalLinkListsTest extends WebDriverTestBase {
       // The link list title.
       $this->getSession()->getPage()->fillField($info['title form element'], $info['link list title']);
 
+      // Assert we cannot see the moderation state field since it's hidden for
+      // local link lists even if link lists are moderated.
+      $this->assertSession()->fieldNotExists('Save as');
+
       // Select and configure the plugins.
       $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
       $this->assertSession()->assertWaitOnAjaxRequest();
@@ -164,7 +178,16 @@ class LocalLinkListsTest extends WebDriverTestBase {
         ->accessCheck(FALSE);
       $this->assertEmpty($query->execute());
       $query->addTag('allow_local_link_lists');
-      $this->assertCount(1, $query->execute());
+      $ids = $query->execute();
+      $this->assertCount(1, $ids);
+      $id = reset($ids);
+      // We can load directly by ID.
+      $link_list = LinkList::load($id);
+      // Local link lists, even if there is moderation on the node, get
+      // automatically saved as published and with the moderation state that
+      // indicates a published status.
+      $this->assertTrue($link_list->isPublished());
+      $this->assertEquals('published', $link_list->get('moderation_state')->value);
 
       // Edit the node and remove the link list.
       $this->drupalGet($node->toUrl('edit-form'));
@@ -175,6 +198,24 @@ class LocalLinkListsTest extends WebDriverTestBase {
       $this->assertSession()->assertWaitOnAjaxRequest();
       $this->getSession()->getPage()->pressButton('Save');
     }
+
+    // Create a non-local link list and assert that moderation is not impacted.
+    $this->drupalGet('link_list/add/dynamic');
+    $this->getSession()->getPage()->fillField('Title', 'Regular');
+    $this->getSession()->getPage()->fillField('Administrative title', 'Regular');
+    $this->assertSession()->fieldExists('Save as');
+    $this->getSession()->getPage()->selectFieldOption('Link source', 'Example source');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains('Saved the Regular Link list.');
+    $link_list = $this->getLinkListByTitle('Regular', TRUE);
+    $this->assertFalse($link_list->isPublished());
+    $this->assertEquals('draft', $link_list->get('moderation_state')->value);
+
   }
 
 }

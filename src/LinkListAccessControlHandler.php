@@ -35,6 +35,15 @@ class LinkListAccessControlHandler extends EntityAccessControlHandler {
       case 'delete':
         return AccessResult::allowedIfHasPermission($account, 'delete ' . $type . ' link list');
 
+      case 'view all revisions':
+        return AccessResult::allowedIfHasPermission($account, 'view any ' . $type . ' link list revisions');
+
+      case 'revert':
+        return AccessResult::allowedIfHasPermission($account, 'revert any ' . $type . ' link list revisions');
+
+      case 'delete revision':
+        return AccessResult::allowedIfHasPermission($account, 'delete any ' . $type . ' link list revisions');
+
       default:
         return AccessResult::neutral();
     }
