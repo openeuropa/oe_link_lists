@@ -234,6 +234,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
       return $build;
     }
 
+    // Pass the original link list id, so it can be used by the display plugin.
+    $display_plugin_configuration['_link_list_id'] = $link_list->id();
     /** @var \Drupal\oe_link_lists\LinkDisplayInterface $plugin */
     $plugin = $this->linkDisplayManager->createInstance($display_plugin, $display_plugin_configuration);
     $build = $plugin->build($links);
