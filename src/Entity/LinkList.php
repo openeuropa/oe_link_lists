@@ -30,9 +30,12 @@ use Drupal\oe_link_lists\LinkListConfigurationManager;
  *       "add" = "Drupal\oe_link_lists\Form\LinkListForm",
  *       "edit" = "Drupal\oe_link_lists\Form\LinkListForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *       "revision-delete" = "Drupal\Core\Entity\Form\RevisionDeleteForm",
+ *       "revision-revert" = "Drupal\Core\Entity\Form\RevisionRevertForm",
  *     },
  *     "route_provider" = {
  *       "html" = "Drupal\oe_link_lists\Routing\LinkListRouteProvider",
+ *       "revision" = "Drupal\Core\Entity\Routing\RevisionHtmlRouteProvider"
  *     },
  *   },
  *   base_table = "link_list",
@@ -65,6 +68,10 @@ use Drupal\oe_link_lists\LinkListConfigurationManager;
  *     "edit-form" = "/link_list/{link_list}/edit",
  *     "delete-form" = "/link_list/{link_list}/delete",
  *     "delete-multiple-form" = "/admin/content/link_list/delete",
+ *     "revision" = "/link_list/{link_list}/revision/{link_list_revision}/view",
+ *     "revision-delete-form" = "/link_list/{link_list}/revision/{link_list_revision}/delete",
+ *     "revision-revert-form" = "/link_list/{link_list}/revision/{link_list_revision}/revert",
+ *     "version-history" = "/link_list/{link_list}/revisions",
  *   },
  *   bundle_entity_type = "link_list_type",
  *   field_ui_base_route = "entity.link_list_type.edit_form"
