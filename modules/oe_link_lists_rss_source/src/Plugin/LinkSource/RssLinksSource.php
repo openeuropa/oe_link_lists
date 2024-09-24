@@ -127,6 +127,7 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
       '#required' => TRUE,
       'url' => [
         '#type' => 'url',
+        '#maxlength' => 2048,
         '#title' => $this->t('The resource URL'),
       ],
       '#default_value' => $defaults,

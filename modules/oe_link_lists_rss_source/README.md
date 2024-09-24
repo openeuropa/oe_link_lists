@@ -25,3 +25,76 @@ Before enabling this module, make sure the following dependencies are present in
     "drupal/multivalue_form_element": "^1",
 }
 ```
+
+The feed's URL field of RSS Link Source is limited to 2048 characters. For real usage, very long feed URLs are possible only with an update of the base field definition. You may do that by implementing this hook:
+```php
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function HOOK_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if ($entity_type->id() !== 'aggregator_feed') {
+    return;
+  }
+
+  $settings = $fields['title']->getItemDefinition()->getSettings();
+  $settings['max_length'] = 2048;
+  $fields['title']->getItemDefinition()->setSettings($settings);
+}
+```
+and implement hook_install() in your custom module to update existing field definition like the following:
+```php
+/**
+ * Update max length title field for aggregator feed entity type.
+ */
+function hook_install(): void {
+  $database = \Drupal::database();
+  $transaction = $database->startTransaction();
+
+  $bundle_of = 'aggregator_feed';
+  $id_key = 'fid';
+  $table_name = 'aggregator_feed';
+  $definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Store the existing values.
+  $status_values = $database->select($table_name)
+    ->fields($table_name, [$id_key, 'title'])
+    ->execute()
+    ->fetchAllKeyed();
+
+  // Clear out the values.
+  $database->update($table_name)
+    ->fields(['title' => NULL])
+    ->execute();
+
+  // Uninstall the field.
+  $field_storage_definition = $definition_manager->getFieldStorageDefinition('title', $bundle_of);
+  $definition_manager->uninstallFieldStorageDefinition($field_storage_definition);
+
+  // Create a new field definition.
+  $new_title_field = BaseFieldDefinition::create('string')
+    ->setLabel(t('Title'))
+    ->setDescription(t('The name of the feed (or the name of the website providing the feed).'))
+    ->setRequired(TRUE)
+    ->setSetting('max_length', 2048)
+    ->setDisplayOptions('form', [
+      'type' => 'string_textfield',
+      'weight' => -5,
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->addConstraint('FeedTitle');
+
+  // Install the new definition.
+  $definition_manager->installFieldStorageDefinition('title', $bundle_of, $bundle_of, $new_title_field);
+
+  foreach ($status_values as $id => $value) {
+    $database->update($table_name)
+      ->fields(['title' => $value])
+      ->condition($id_key, $id)
+      ->execute();
+  }
+
+  // Commit transaction.
+  unset($transaction);
+}
+```
