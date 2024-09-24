@@ -165,7 +165,7 @@ class RssLinksSource extends LinkSourcePluginBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $feeds = $this->getFeeds();
     $link_collection = new LinkCollection();
 

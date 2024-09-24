@@ -41,7 +41,7 @@ class LinkSourcePluginManager extends DefaultPluginManager implements LinkSource
   /**
    * {@inheritdoc}
    */
-  public function getPluginsAsOptions(string $bundle = NULL): array {
+  public function getPluginsAsOptions(?string $bundle = NULL): array {
     return $this->getPluginsAsOptionsByBundle($bundle);
   }
 

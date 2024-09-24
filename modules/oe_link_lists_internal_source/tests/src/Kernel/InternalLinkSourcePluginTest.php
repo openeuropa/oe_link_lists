@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists_internal_source\Kernel;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\KernelTests\KernelTestBase;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestNoBundle;
-use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Tests the internal link source plugin.

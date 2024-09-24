@@ -41,7 +41,7 @@ class LinkDisplayPluginManager extends DefaultPluginManager implements LinkDispl
   /**
    * {@inheritdoc}
    */
-  public function getPluginsAsOptions(string $bundle = NULL, string $link_source = NULL): array {
+  public function getPluginsAsOptions(?string $bundle = NULL, ?string $link_source = NULL): array {
     $options = $this->getPluginsAsOptionsByBundle($bundle);
 
     $definitions = $this->getDefinitions();

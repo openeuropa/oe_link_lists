@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists_local\Functional;
 
-use Drupal\field\Entity\FieldConfig;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\field\Entity\FieldConfig;
 
 /**
  * Tests the local link lists.

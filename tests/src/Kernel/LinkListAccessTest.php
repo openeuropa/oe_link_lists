@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
  * Tests that proper access checks are run on link list rendering.

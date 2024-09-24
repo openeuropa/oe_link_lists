@@ -7,10 +7,10 @@ namespace Drupal\Tests\oe_link_lists\Unit;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Tests\UnitTestCase;
 use Drupal\oe_link_lists\DefaultEntityLink;
 use Drupal\oe_link_lists\DefaultLink;
 use Drupal\oe_link_lists\LinkCollection;
-use Drupal\Tests\UnitTestCase;
 
 /**
  * Tests the link collection class.

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists_rss_source\FunctionalJavascript;
 
-use Drupal\aggregator\Entity\Feed;
 use Drupal\Core\Url;
+use Drupal\aggregator\Entity\Feed;
 
 /**
  * Tests the feeds refresh capability.

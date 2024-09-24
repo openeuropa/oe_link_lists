@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists\FunctionalJavascript;
 
 use Behat\Mink\Element\NodeElement;
-use Drupal\aggregator\FeedStorageInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\Tests\oe_link_lists\Traits\NativeBrowserValidationTrait;
+use Drupal\aggregator\FeedStorageInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;

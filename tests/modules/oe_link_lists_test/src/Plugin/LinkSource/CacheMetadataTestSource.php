@@ -25,7 +25,7 @@ class CacheMetadataTestSource extends ExternalLinkSourcePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $collection = new LinkCollection([
       (new DefaultLink(Url::fromUri('http://example.com'), 'Example', ['#markup' => 'Example teaser']))->addCacheTags(['bar_test_tag:1']),
       (new DefaultLink(Url::fromUri('http://ec.europa.eu'), 'European Commission', ['#markup' => 'European teaser']))->addCacheTags(['bar_test_tag:2']),

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists\Unit;
 
-use Drupal\oe_link_lists\LinkInterface;
 use Drupal\Tests\UnitTestCase;
+use Drupal\oe_link_lists\LinkInterface;
 
 /**
  * Abstract base class for tests about link classes.

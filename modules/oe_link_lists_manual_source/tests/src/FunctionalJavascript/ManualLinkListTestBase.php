@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists_manual_source\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use Drupal\oe_link_lists\Entity\LinkListInterface;
 
 /**
  * Base class for manual link list web tests.
@@ -66,7 +66,7 @@ abstract class ManualLinkListTestBase extends WebDriverTestBase {
    * @param string|null $teaser
    *   The teaser.
    */
-  protected function createInlineInternalLink(string $page, string $title = NULL, string $teaser = NULL): void {
+  protected function createInlineInternalLink(string $page, ?string $title = NULL, ?string $teaser = NULL): void {
     $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal');
     $this->getSession()->getPage()->pressButton('Add new Link');
     $this->assertSession()->assertWaitOnAjaxRequest();

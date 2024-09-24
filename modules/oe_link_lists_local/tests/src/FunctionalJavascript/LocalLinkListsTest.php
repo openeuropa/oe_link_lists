@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists_local\FunctionalJavascript;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\oe_link_lists\Entity\LinkList;
-use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\workflows\Entity\Workflow;
 
 /**

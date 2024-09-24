@@ -6,8 +6,8 @@ namespace Drupal\Tests\oe_link_lists\Kernel;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
-use Drupal\oe_link_lists\Entity\LinkListType;
 use Drupal\Tests\oe_link_lists\Traits\AssertAccessTrait;
+use Drupal\oe_link_lists\Entity\LinkListType;
 
 /**
  * Test the link list type access control handler.

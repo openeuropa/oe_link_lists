@@ -160,7 +160,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $ids = $this->configuration['links'];
     if (!$ids) {
       return new LinkCollection();

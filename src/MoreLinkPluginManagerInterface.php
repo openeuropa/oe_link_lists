@@ -22,6 +22,6 @@ interface MoreLinkPluginManagerInterface extends PluginManagerInterface {
    * @return array
    *   The options.
    */
-  public function getPluginsAsOptions(string $bundle = NULL): array;
+  public function getPluginsAsOptions(?string $bundle = NULL): array;
 
 }

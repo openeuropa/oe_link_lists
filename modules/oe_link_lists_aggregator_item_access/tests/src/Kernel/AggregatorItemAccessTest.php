@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists_aggregator_item_access\Kernel;
 
+use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\aggregator\Entity\Feed;
 use Drupal\aggregator\Entity\Item;
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
  * Tests access on the aggregator items.

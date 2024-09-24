@@ -6,10 +6,10 @@ namespace Drupal\Tests\oe_link_lists_manual_source\Kernel;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
  * Tests the manual link source plugin.
