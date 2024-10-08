@@ -31,19 +31,13 @@ class Title extends LinkDisplayPluginBase {
       $items[] = Link::fromTextAndUrl($link->getTitle(), $link->getUrl());
     }
 
-    $build = [];
+    $build = parent::build($links);
 
     $build['list'] = [
       '#theme' => 'item_list__title_link_display_plugin',
       '#items' => $items,
       '#title' => $this->configuration['title'],
     ];
-
-    $more_link = $this->configuration['more'];
-    if ($more_link instanceof Link) {
-      $build['more'] = $more_link->toRenderable();
-      $build['more']['#access'] = $more_link->getUrl()->access();
-    }
 
     return $build;
   }
