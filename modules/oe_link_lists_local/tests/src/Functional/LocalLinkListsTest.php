@@ -51,29 +51,23 @@ class LocalLinkListsTest extends BrowserTestBase {
     $type_path = 'admin/structure/types/manage/page/fields/add-field';
     $this->drupalGet($type_path);
 
-    // @todo Remove when support for 10.1.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.2', '>')) {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
-      $this->getSession()->getPage()->pressButton('Change field group');
-      $this->getSession()->getPage()->selectFieldOption('Other', 'entity_reference');
-      $this->getSession()->getPage()->fillField('Label', 'Link list');
-      $this->getSession()->getPage()->fillField('Machine-readable name', 'link_list');
+    $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
+
+    // @todo Remove when support for 10.2.x is dropped.
+    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
       $this->getSession()->getPage()->pressButton('Continue');
-      $this->getSession()->getPage()->selectFieldOption('Type of item to reference', 'link_list');
-      $this->getSession()->getPage()->pressButton('Update settings');
-      $this->getSession()->getPage()->pressButton('Save settings');
     }
     else {
-      $initial_edit = [
-        'new_storage_type' => 'entity_reference',
-        'label' => 'Link list',
-        'field_name' => 'link_list',
-      ];
-
-      $this->submitForm($initial_edit, 'Save and continue');
-      $this->getSession()->getPage()->selectFieldOption('Type of item to reference', 'link_list');
-      $this->getSession()->getPage()->pressButton('Save field settings');
+      $this->getSession()->getPage()->pressButton('Change field group');
     }
+
+    $this->getSession()->getPage()->selectFieldOption('Other', 'entity_reference');
+    $this->getSession()->getPage()->fillField('Label', 'Link list');
+    $this->getSession()->getPage()->fillField('Machine-readable name', 'link_list');
+    $this->getSession()->getPage()->pressButton('Continue');
+    $this->getSession()->getPage()->selectFieldOption('Type of item to reference', 'link_list');
+    $this->getSession()->getPage()->pressButton('Update settings');
+    $this->getSession()->getPage()->pressButton('Save settings');
 
     $this->assertSession()->fieldExists('Local field');
     $this->assertSession()->checkboxNotChecked('Local field');
@@ -103,29 +97,22 @@ class LocalLinkListsTest extends BrowserTestBase {
     // Assert we don't have the checkbox available on other field types.
     $this->drupalGet($type_path);
 
-    // @todo Remove when support for 10.1.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.2', '>')) {
-      $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
-      $this->getSession()->getPage()->pressButton('Change field group');
-      $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
-      $this->getSession()->getPage()->fillField('Label', 'String field');
-      $this->getSession()->getPage()->fillField('Machine-readable name', 'field_text');
+    $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
+
+    // @todo Remove when support for 10.2.x is dropped.
+    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
       $this->getSession()->getPage()->pressButton('Continue');
-      $this->assertSession()->fieldNotExists('Local field');
-      $this->getSession()->getPage()->pressButton('Save settings');
     }
     else {
-      $initial_edit = [
-        'new_storage_type' => 'string',
-        'label' => 'String field',
-        'field_name' => 'field_text',
-      ];
-
-      $this->submitForm($initial_edit, 'Save and continue');
-      $this->getSession()->getPage()->pressButton('Save field settings');
-      $this->assertSession()->fieldNotExists('Local field');
-      $this->assertSession()->pageTextContains('Updated field String field field settings.');
+      $this->getSession()->getPage()->pressButton('Change field group');
     }
+
+    $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
+    $this->getSession()->getPage()->fillField('Label', 'String field');
+    $this->getSession()->getPage()->fillField('Machine-readable name', 'field_text');
+    $this->getSession()->getPage()->pressButton('Continue');
+    $this->assertSession()->fieldNotExists('Local field');
+    $this->getSession()->getPage()->pressButton('Save settings');
   }
 
 }

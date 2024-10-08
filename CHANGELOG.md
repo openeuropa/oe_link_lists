@@ -1,11 +1,31 @@
 # Changelog
 
+## [1.4.0](https://github.com/openeuropa/oe_link_lists/tree/1.4.0) (2024-08-28)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.3.0...1.4.0)
+
+**Merged pull requests:**
+
+- OEL-3032: Update to Drupal 10.3 [\#152](https://github.com/openeuropa/oe_link_lists/pull/152) ([AaronGilMartinez](https://github.com/AaronGilMartinez))
+- EWPP-4400: Pass on the link list identifier for the display plugins. [\#151](https://github.com/openeuropa/oe_link_lists/pull/151) ([nagyad](https://github.com/nagyad))
+- EWPP-4233: Making link lists revisionable \(add UI\) [\#148](https://github.com/openeuropa/oe_link_lists/pull/148) ([upchuk](https://github.com/upchuk))
+
+## [1.3.0](https://github.com/openeuropa/oe_link_lists/tree/1.3.0) (2024-06-11)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.2.0...1.3.0)
+
+**Merged pull requests:**
+
+- Prepare release 1.3.0. [\#150](https://github.com/openeuropa/oe_link_lists/pull/150) ([imanoleguskiza](https://github.com/imanoleguskiza))
+- EWPP-4307: Pass original internal link list id to source plugin configuration. [\#149](https://github.com/openeuropa/oe_link_lists/pull/149) ([hernani](https://github.com/hernani))
+
 ## [1.2.0](https://github.com/openeuropa/oe_link_lists/tree/1.2.0) (2024-02-16)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.1...1.2.0)
 
 **Merged pull requests:**
 
+- Release-1.2.0: Update changelog. [\#146](https://github.com/openeuropa/oe_link_lists/pull/146) ([nagyad](https://github.com/nagyad))
 - EWPP-3952: Add Drupal 10.2.x and PHP 8.2 to matrix. [\#145](https://github.com/openeuropa/oe_link_lists/pull/145) ([brummbar](https://github.com/brummbar))
 
 ## [1.1.1](https://github.com/openeuropa/oe_link_lists/tree/1.1.1) (2024-01-15)
