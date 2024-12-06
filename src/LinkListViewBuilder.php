@@ -260,6 +260,10 @@ class LinkListViewBuilder extends EntityViewBuilder {
     $source_plugin_configuration = $configuration['source']['plugin_configuration'] ?? [];
     // Pass the original link list id, so it can be used by the source plugin.
     $source_plugin_configuration['_link_list_id'] = $link_list->id();
+    // Force the first page if not specifically set.
+    if (empty($source_plugin_configuration['page'])) {
+      $source_plugin_configuration['page'] = 0;
+    }
     // For lists that use source plugins.
     if ($source_plugin) {
       $plugin = $this->linkSourceManager->createInstance($source_plugin, $source_plugin_configuration);
