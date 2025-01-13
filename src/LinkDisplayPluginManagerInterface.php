@@ -24,6 +24,6 @@ interface LinkDisplayPluginManagerInterface extends PluginManagerInterface {
    * @return array
    *   The options.
    */
-  public function getPluginsAsOptions(string $bundle = NULL, string $link_source = NULL): array;
+  public function getPluginsAsOptions(?string $bundle = NULL, ?string $link_source = NULL): array;
 
 }

@@ -442,7 +442,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#limit_validation_errors' => [
           array_merge($parents, ['plugin']),
         ],
-        '#access' => !empty($display_plugin_options),
+        '#access' => TRUE,
       ];
 
       // A wrapper that the Ajax callback will replace.
@@ -574,7 +574,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#limit_validation_errors' => [
           array_merge($parents, ['plugin']),
         ],
-        '#access' => !empty($more_link_plugin_options),
+        '#access' => TRUE,
       ];
 
       // A wrapper that the Ajax callback will replace.
@@ -676,7 +676,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
         '#limit_validation_errors' => [
           array_merge($parents, ['plugin']),
         ],
-        '#access' => !empty($no_results_plugin_options),
+        '#access' => TRUE,
       ];
 
       // A wrapper that the Ajax callback will replace.

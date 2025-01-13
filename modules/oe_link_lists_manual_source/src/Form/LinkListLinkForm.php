@@ -51,7 +51,7 @@ class LinkListLinkForm extends ContentEntityForm {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, AccountProxyInterface $account, MessengerInterface $messenger, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time, AccountProxyInterface $account, MessengerInterface $messenger, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time);
 
     $this->account = $account;

@@ -138,7 +138,7 @@ class RssLinkSource extends ExternalLinkSourcePluginBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $feed = $this->getFeed();
     $link_collection = new LinkCollection();
 

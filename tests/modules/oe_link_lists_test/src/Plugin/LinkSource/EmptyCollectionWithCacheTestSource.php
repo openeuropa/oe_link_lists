@@ -23,7 +23,7 @@ class EmptyCollectionWithCacheTestSource extends ExternalLinkSourcePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $collection = new LinkCollection();
     $collection
       ->addCacheContexts(['user'])
