@@ -26,7 +26,7 @@ class EmptyCollectionWithCacheTestSource extends ExternalLinkSourcePluginBase {
   public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $collection = new LinkCollection();
     $collection
-      ->addCacheContexts(['user'])
+      ->addCacheContexts(['user.permissions'])
       ->addCacheTags(['test_cache_metadata_tag']);
     return $collection;
   }
