@@ -1,17 +1,23 @@
-# Changelog
+# Change Log
 
-## [1.4.0](https://github.com/openeuropa/oe_link_lists/tree/1.4.0) (2024-08-28)
+## [1.5.0](https://github.com/openeuropa/oe_link_lists/tree/1.5.0) (2025-01-29)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.4.0...1.5.0)
 
+**Merged pull requests:**
+
+- EWPP-4991: Ensure PHP8.3 compatibility. [\#156](https://github.com/openeuropa/oe_link_lists/pull/156) ([nagyad](https://github.com/nagyad))
+
+## [1.4.0](https://github.com/openeuropa/oe_link_lists/tree/1.4.0) (2024-08-29)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.3.0...1.4.0)
 
 **Merged pull requests:**
 
+- Release-1.4.0: Update changelog. [\#153](https://github.com/openeuropa/oe_link_lists/pull/153) ([nagyad](https://github.com/nagyad))
 - OEL-3032: Update to Drupal 10.3 [\#152](https://github.com/openeuropa/oe_link_lists/pull/152) ([AaronGilMartinez](https://github.com/AaronGilMartinez))
 - EWPP-4400: Pass on the link list identifier for the display plugins. [\#151](https://github.com/openeuropa/oe_link_lists/pull/151) ([nagyad](https://github.com/nagyad))
 - EWPP-4233: Making link lists revisionable \(add UI\) [\#148](https://github.com/openeuropa/oe_link_lists/pull/148) ([upchuk](https://github.com/upchuk))
 
 ## [1.3.0](https://github.com/openeuropa/oe_link_lists/tree/1.3.0) (2024-06-11)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.2.0...1.3.0)
 
 **Merged pull requests:**
@@ -20,7 +26,6 @@
 - EWPP-4307: Pass original internal link list id to source plugin configuration. [\#149](https://github.com/openeuropa/oe_link_lists/pull/149) ([hernani](https://github.com/hernani))
 
 ## [1.2.0](https://github.com/openeuropa/oe_link_lists/tree/1.2.0) (2024-02-16)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.1...1.2.0)
 
 **Merged pull requests:**
@@ -29,7 +34,6 @@
 - EWPP-3952: Add Drupal 10.2.x and PHP 8.2 to matrix. [\#145](https://github.com/openeuropa/oe_link_lists/pull/145) ([brummbar](https://github.com/brummbar))
 
 ## [1.1.1](https://github.com/openeuropa/oe_link_lists/tree/1.1.1) (2024-01-15)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.1.0...1.1.1)
 
 **Merged pull requests:**
@@ -39,7 +43,6 @@
 - EWPP-3393: Cacheable metadata on the EntityValueResolverEvent. [\#135](https://github.com/openeuropa/oe_link_lists/pull/135) ([upchuk](https://github.com/upchuk))
 
 ## [1.1.0](https://github.com/openeuropa/oe_link_lists/tree/1.1.0) (2023-11-21)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.0.0...1.1.0)
 
 **Merged pull requests:**
@@ -49,7 +52,6 @@
 - EWPP-3612: RSS links refresh form. [\#139](https://github.com/openeuropa/oe_link_lists/pull/139) ([upchuk](https://github.com/upchuk))
 
 ## [1.0.0](https://github.com/openeuropa/oe_link_lists/tree/1.0.0) (2023-09-18)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.22.0...1.0.0)
 
 **Merged pull requests:**
@@ -60,7 +62,6 @@
 - OEL-2324: Source plugin is not passed to display manager in some scenarios [\#133](https://github.com/openeuropa/oe_link_lists/pull/133) ([brummbar](https://github.com/brummbar))
 
 ## [0.22.0](https://github.com/openeuropa/oe_link_lists/tree/0.22.0) (2023-03-28)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.21.0...0.22.0)
 
 **Merged pull requests:**
@@ -69,7 +70,6 @@
 - EWPP-2998: Drupal 10 compatibility. [\#127](https://github.com/openeuropa/oe_link_lists/pull/127) ([brummbar](https://github.com/brummbar))
 
 ## [0.21.0](https://github.com/openeuropa/oe_link_lists/tree/0.21.0) (2023-03-07)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.20.0...0.21.0)
 
 **Merged pull requests:**
@@ -78,7 +78,6 @@
 - Remove IEF patch. [\#129](https://github.com/openeuropa/oe_link_lists/pull/129) ([nagyad](https://github.com/nagyad))
 
 ## [0.20.0](https://github.com/openeuropa/oe_link_lists/tree/0.20.0) (2023-03-03)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.19.0...0.20.0)
 
 **Merged pull requests:**
@@ -87,7 +86,6 @@
 - EWPP-2919: Fix issue with empty link\_list teaser. [\#126](https://github.com/openeuropa/oe_link_lists/pull/126) ([sergepavle](https://github.com/sergepavle))
 
 ## [0.19.0](https://github.com/openeuropa/oe_link_lists/tree/0.19.0) (2022-12-13)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.18.0...0.19.0)
 
 **Merged pull requests:**
@@ -95,7 +93,6 @@
 - EWPP-2859: Update to PHP 8.1. [\#124](https://github.com/openeuropa/oe_link_lists/pull/124) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.18.0](https://github.com/openeuropa/oe_link_lists/tree/0.18.0) (2022-11-04)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.2...0.18.0)
 
 **Merged pull requests:**
@@ -104,7 +101,6 @@
 - EWPP-2572: Fix link list widget form + minor refactor on the more link plugins. [\#118](https://github.com/openeuropa/oe_link_lists/pull/118) ([yenyasinn](https://github.com/yenyasinn))
 
 ## [0.17.2](https://github.com/openeuropa/oe_link_lists/tree/0.17.2) (2022-10-05)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.1...0.17.2)
 
 **Merged pull requests:**
@@ -113,7 +109,6 @@
 - EWPP-2662: Return early if view is not showing entities. [\#121](https://github.com/openeuropa/oe_link_lists/pull/121) ([upchuk](https://github.com/upchuk))
 
 ## [0.17.1](https://github.com/openeuropa/oe_link_lists/tree/0.17.1) (2022-10-03)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.17.0...0.17.1)
 
 **Merged pull requests:**
@@ -122,7 +117,6 @@
 - EWPP-2662: Local link lists should not show up in Views. [\#117](https://github.com/openeuropa/oe_link_lists/pull/117) ([upchuk](https://github.com/upchuk))
 
 ## [0.17.0](https://github.com/openeuropa/oe_link_lists/tree/0.17.0) (2022-09-16)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.16.0...0.17.0)
 
 **Merged pull requests:**
@@ -132,7 +126,6 @@
 - EWPP-2346: Add link list type entity type access control handler. [\#112](https://github.com/openeuropa/oe_link_lists/pull/112) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.16.0](https://github.com/openeuropa/oe_link_lists/tree/0.16.0) (2022-08-02)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.1...0.16.0)
 
 **Merged pull requests:**
@@ -143,7 +136,6 @@
 - EWPP-2358: Drupal 9.4 support. [\#108](https://github.com/openeuropa/oe_link_lists/pull/108) ([yenyasinn](https://github.com/yenyasinn))
 
 ## [0.15.1](https://github.com/openeuropa/oe_link_lists/tree/0.15.1) (2022-06-22)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.15.0...0.15.1)
 
 **Merged pull requests:**
@@ -154,7 +146,6 @@
 - EWPP-2196: Fix dependency from composer patches. [\#106](https://github.com/openeuropa/oe_link_lists/pull/106) ([yenyasinn](https://github.com/yenyasinn))
 
 ## [0.15.0](https://github.com/openeuropa/oe_link_lists/tree/0.15.0) (2022-04-11)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.1...0.15.0)
 
 **Merged pull requests:**
@@ -163,7 +154,6 @@
 - EWPP-1666: New RSS source plugin with multiple URLs. [\#96](https://github.com/openeuropa/oe_link_lists/pull/96) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.1](https://github.com/openeuropa/oe_link_lists/tree/0.14.1) (2022-03-09)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.14.0...0.14.1)
 
 **Merged pull requests:**
@@ -172,7 +162,6 @@
 - EWPP-2056: More link plugin config form fix to not disappear on other AJAX rebuilds. [\#103](https://github.com/openeuropa/oe_link_lists/pull/103) ([upchuk](https://github.com/upchuk))
 
 ## [0.14.0](https://github.com/openeuropa/oe_link_lists/tree/0.14.0) (2022-03-07)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.13.0...0.14.0)
 
 **Merged pull requests:**
@@ -182,7 +171,6 @@
 - EWPP-0000: Use latest version of IEF and remove its PHP8 compatibility patch. [\#100](https://github.com/openeuropa/oe_link_lists/pull/100) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.13.0](https://github.com/openeuropa/oe_link_lists/tree/0.13.0) (2022-02-08)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.12.0...0.13.0)
 
 **Merged pull requests:**
@@ -195,7 +183,6 @@
 - \[EWPP-1552\] EWPP-1553: Pluggable more links. [\#92](https://github.com/openeuropa/oe_link_lists/pull/92) ([upchuk](https://github.com/upchuk))
 
 ## [0.12.0](https://github.com/openeuropa/oe_link_lists/tree/0.12.0) (2021-10-25)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.11.0...0.12.0)
 
 **Merged pull requests:**
@@ -206,7 +193,6 @@
 - EWPP-661: Localized link lists \(IEF\) [\#88](https://github.com/openeuropa/oe_link_lists/pull/88) ([upchuk](https://github.com/upchuk))
 
 ## [0.11.0](https://github.com/openeuropa/oe_link_lists/tree/0.11.0) (2021-06-15)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.10.0...0.11.0)
 
 **Merged pull requests:**
@@ -220,7 +206,6 @@
 - EWPP-721: Update xdebug configuration. [\#79](https://github.com/openeuropa/oe_link_lists/pull/79) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.10.0](https://github.com/openeuropa/oe_link_lists/tree/0.10.0) (2021-03-11)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.9.0...0.10.0)
 
 **Merged pull requests:**
@@ -229,7 +214,6 @@
 - EWPP-646: Implement preSave\(\). [\#78](https://github.com/openeuropa/oe_link_lists/pull/78) ([drishu](https://github.com/drishu))
 
 ## [0.9.0](https://github.com/openeuropa/oe_link_lists/tree/0.9.0) (2021-01-25)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.8.0...0.9.0)
 
 **Merged pull requests:**
@@ -239,7 +223,6 @@
 - EWPP-491: Fixing link source Ajax form. [\#71](https://github.com/openeuropa/oe_link_lists/pull/71) ([upchuk](https://github.com/upchuk))
 
 ## [0.8.0](https://github.com/openeuropa/oe_link_lists/tree/0.8.0) (2020-12-11)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.7.0...0.8.0)
 
 **Merged pull requests:**
@@ -249,7 +232,6 @@
 - EWPP-516: Update docker images. [\#72](https://github.com/openeuropa/oe_link_lists/pull/72) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.7.0](https://github.com/openeuropa/oe_link_lists/tree/0.7.0) (2020-08-06)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.6.0...0.7.0)
 
 **Merged pull requests:**
@@ -261,7 +243,6 @@
 - OPENEUROPA-3315: Update internal bundle label to Internal content. [\#66](https://github.com/openeuropa/oe_link_lists/pull/66) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.6.0](https://github.com/openeuropa/oe_link_lists/tree/0.6.0) (2020-06-22)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.5.0...0.6.0)
 
 **Merged pull requests:**
@@ -272,7 +253,6 @@
 - OPENEUROPA-0000: Opening to other manual link bundles. [\#53](https://github.com/openeuropa/oe_link_lists/pull/53) ([upchuk](https://github.com/upchuk))
 
 ## [0.5.0](https://github.com/openeuropa/oe_link_lists/tree/0.5.0) (2020-04-08)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.1...0.5.0)
 
 **Merged pull requests:**
@@ -285,7 +265,6 @@
 - OPENEUROPA-2732: Add render cache keys and test. [\#46](https://github.com/openeuropa/oe_link_lists/pull/46) ([imanoleguskiza](https://github.com/imanoleguskiza))
 
 ## [0.4.1](https://github.com/openeuropa/oe_link_lists/tree/0.4.1) (2020-03-04)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.4.0...0.4.1)
 
 **Merged pull requests:**
@@ -294,7 +273,6 @@
 - OPENEUROPA-2759: Display plugin non-translatable fix. [\#55](https://github.com/openeuropa/oe_link_lists/pull/55) ([upchuk](https://github.com/upchuk))
 
 ## [0.4.0](https://github.com/openeuropa/oe_link_lists/tree/0.4.0) (2020-03-03)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.3.0...0.4.0)
 
 **Merged pull requests:**
@@ -308,7 +286,6 @@
 - OPENEUROPA-2710: CRUD Permissions. [\#45](https://github.com/openeuropa/oe_link_lists/pull/45) ([22Alexandra](https://github.com/22Alexandra))
 
 ## [0.3.0](https://github.com/openeuropa/oe_link_lists/tree/0.3.0) (2020-02-05)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.2.0...0.3.0)
 
 **Merged pull requests:**
@@ -322,7 +299,6 @@
 - OPENEUROPA- 2578 - Link list translatability [\#36](https://github.com/openeuropa/oe_link_lists/pull/36) ([upchuk](https://github.com/upchuk))
 
 ## [0.2.0](https://github.com/openeuropa/oe_link_lists/tree/0.2.0) (2019-12-16)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/0.1.0...0.2.0)
 
 **Merged pull requests:**
@@ -370,4 +346,4 @@
 
 
 
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
+\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
