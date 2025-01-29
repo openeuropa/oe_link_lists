@@ -33,7 +33,7 @@ interface LinkSourceInterface extends PluginFormInterface, ConfigurableInterface
    * @return \Drupal\oe_link_lists\LinkCollectionInterface
    *   A list of links.
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface;
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface;
 
   /**
    * Called when parent entity's presave hook is invoked.

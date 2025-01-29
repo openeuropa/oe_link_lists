@@ -22,7 +22,7 @@ interface LinkSourcePluginManagerInterface extends PluginManagerInterface {
    * @return array
    *   The options.
    */
-  public function getPluginsAsOptions(string $bundle = NULL): array;
+  public function getPluginsAsOptions(?string $bundle = NULL): array;
 
   /**
    * Returns the plugin IDs that have been deprecated.

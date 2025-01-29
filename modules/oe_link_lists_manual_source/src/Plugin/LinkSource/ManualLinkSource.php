@@ -160,7 +160,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $ids = $this->configuration['links'];
     if (!$ids) {
       return new LinkCollection();
@@ -172,6 +172,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
 
     // For legacy reasons, we need to first dispatch the event responsible for
     // resolving all links if there are any subscribers to this event.
+    // @phpstan-ignore-next-line
     $listeners = $this->eventDispatcher->getListeners(ManualLinksResolverEvent::NAME);
     if ($listeners) {
       return $this->legacyResolveLinks($link_entities);
@@ -255,7 +256,9 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
    *   The list of resolved links.
    */
   protected function legacyResolveLinks(array $link_entities) {
+    // @phpstan-ignore-next-line
     $event = new ManualLinksResolverEvent($link_entities);
+    // @phpstan-ignore-next-line
     $this->eventDispatcher->dispatch($event, ManualLinksResolverEvent::NAME);
     return $event->getLinks();
   }

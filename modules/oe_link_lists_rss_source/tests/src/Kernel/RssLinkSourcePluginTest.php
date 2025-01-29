@@ -439,7 +439,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
     else {
       // If there is no such filter format, we can assume that the module
       // version is 1.x, so we get the allowed html from settings.
-      $allowed_tags = preg_split('/\s+|<|>/', $this->configFactory->get('aggregator.settings')->get('items.allowed_html'), -1, PREG_SPLIT_NO_EMPTY);
+      $allowed_tags = preg_split('/\s+|<|>/', $this->container->get('config.factory')->get('aggregator.settings')->get('items.allowed_html'), -1, PREG_SPLIT_NO_EMPTY);
     }
 
     $links = [];

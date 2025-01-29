@@ -39,7 +39,7 @@ class MarkupTestDisplay extends LinkDisplayPluginBase {
           'url' => $link->getUrl()->toString(),
         ],
       ];
-    };
+    }
 
     return [
       '#theme' => 'item_list',

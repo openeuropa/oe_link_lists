@@ -66,7 +66,7 @@ abstract class ManualLinkListTestBase extends WebDriverTestBase {
    * @param string|null $teaser
    *   The teaser.
    */
-  protected function createInlineInternalLink(string $page, string $title = NULL, string $teaser = NULL): void {
+  protected function createInlineInternalLink(string $page, ?string $title = NULL, ?string $teaser = NULL): void {
     $this->getSession()->getPage()->selectFieldOption('links[actions][bundle]', 'internal');
     $this->getSession()->getPage()->pressButton('Add new Link');
     $this->assertSession()->assertWaitOnAjaxRequest();

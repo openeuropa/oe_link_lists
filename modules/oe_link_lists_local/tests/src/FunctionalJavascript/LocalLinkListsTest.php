@@ -211,7 +211,7 @@ class LocalLinkListsTest extends WebDriverTestBase {
     $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->pressButton('Save');
-    $this->assertSession()->pageTextContains('Saved the Regular Link list.');
+    $this->assertSession()->pageTextContains('Created the Regular Link list.');
     $link_list = $this->getLinkListByTitle('Regular', TRUE);
     $this->assertFalse($link_list->isPublished());
     $this->assertEquals('draft', $link_list->get('moderation_state')->value);

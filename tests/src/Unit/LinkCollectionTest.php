@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists\Unit;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\Context\CacheContextsManager;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\oe_link_lists\DefaultEntityLink;
@@ -222,6 +224,8 @@ class LinkCollectionTest extends UnitTestCase {
    * @covers ::getCacheTags
    */
   public function testGetCacheTags(): void {
+    $this->setUpCacheContextsManager();
+
     $collection = new LinkCollection();
     $this->assertEquals([], $collection->getCacheTags());
 
@@ -272,6 +276,8 @@ class LinkCollectionTest extends UnitTestCase {
    * @covers ::getCacheContexts
    */
   public function testGetCacheContexts(): void {
+    $this->setUpCacheContextsManager();
+
     $collection = new LinkCollection();
     $this->assertEquals([], $collection->getCacheContexts());
 
@@ -325,6 +331,8 @@ class LinkCollectionTest extends UnitTestCase {
    * @covers ::getCacheMaxAge
    */
   public function testGetCacheMaxAge(): void {
+    $this->setUpCacheContextsManager();
+
     $collection = new LinkCollection();
     $this->assertEquals(Cache::PERMANENT, $collection->getCacheMaxAge());
 
@@ -384,6 +392,21 @@ class LinkCollectionTest extends UnitTestCase {
       1 => new DefaultEntityLink(new Url('<front>'), $this->randomMachineName(), []),
       NULL => new DefaultLink(new Url('<front>'), $this->randomMachineName(), []),
     ];
+  }
+
+  /**
+   * Sets up a fake cache contexts manager service.
+   *
+   * This is required to call ->addCacheContexts() method on links.
+   */
+  protected function setUpCacheContextsManager(): void {
+    $container = new ContainerBuilder();
+    $cache_contexts_manager_mock = $this->createMock(CacheContextsManager::class);
+    $cache_contexts_manager_mock->expects($this->any())
+      ->method('assertValidTokens')
+      ->will($this->returnValue(TRUE));
+    $container->set('cache_contexts_manager', $cache_contexts_manager_mock);
+    \Drupal::setContainer($container);
   }
 
   /**

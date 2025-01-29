@@ -26,7 +26,7 @@ class SameConfigurationSourceOne extends LinkSourcePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     return new LinkCollection();
   }
 

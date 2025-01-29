@@ -104,7 +104,7 @@ class DefaultLink implements LinkInterface {
   /**
    * {@inheritdoc}
    */
-  public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($operation, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     if ($operation !== 'view') {
       throw new \InvalidArgumentException('Only the "view" permission is supported for links.');
     }

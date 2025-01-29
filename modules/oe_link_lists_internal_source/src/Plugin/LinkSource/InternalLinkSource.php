@@ -303,7 +303,7 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
   /**
    * {@inheritdoc}
    */
-  public function getLinks(int $limit = NULL, int $offset = 0): LinkCollectionInterface {
+  public function getLinks(?int $limit = NULL, int $offset = 0): LinkCollectionInterface {
     $entity_type_id = $this->configuration['entity_type'];
     $bundle_id = $this->configuration['bundle'];
     $links = new LinkCollection();

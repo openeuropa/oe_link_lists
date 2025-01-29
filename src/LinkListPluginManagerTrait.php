@@ -20,7 +20,7 @@ trait LinkListPluginManagerTrait {
    * @return array
    *   The options.
    */
-  protected function getPluginsAsOptionsByBundle(string $bundle = NULL): array {
+  protected function getPluginsAsOptionsByBundle(?string $bundle = NULL): array {
     $definitions = $this->getDefinitions();
     $options = [];
     foreach ($definitions as $name => $definition) {

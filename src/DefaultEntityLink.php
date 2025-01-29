@@ -64,7 +64,7 @@ class DefaultEntityLink extends DefaultLink implements EntityAwareLinkInterface 
   /**
    * {@inheritdoc}
    */
-  public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($operation, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     $result = parent::access($operation, $account, TRUE);
 
     if ($this->entity) {

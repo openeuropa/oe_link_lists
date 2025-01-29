@@ -143,10 +143,12 @@ class LinkList extends EditorialContentEntityBase implements LinkListInterface {
    * {@inheritdoc}
    */
   public function save() {
-    parent::save();
+    $status = parent::save();
 
     // Invalidate the block cache to update the derivatives.
     \Drupal::service('plugin.manager.block')->clearCachedDefinitions();
+
+    return $status;
   }
 
   /**

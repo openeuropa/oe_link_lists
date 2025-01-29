@@ -84,6 +84,7 @@ class LocalLinkListsTest extends EntityKernelTestBase {
    * Tests that local link lists are not queryable.
    */
   public function testLocalLinkListQueryAlter(): void {
+    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $link_list_storage */
     $link_list_storage = $this->container->get('entity_type.manager')->getStorage('link_list');
     $values = [
       'bundle' => 'dynamic',
