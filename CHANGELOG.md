@@ -1,10 +1,18 @@
 # Change Log
 
+## [1.6.0](https://github.com/openeuropa/oe_link_lists/tree/1.6.0) (2025-02-11)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.5.0...1.6.0)
+
+**Merged pull requests:**
+
+- EWPP-4956: Force the first page of the list, if it is not specifically set [\#155](https://github.com/openeuropa/oe_link_lists/pull/155) ([intelektron](https://github.com/intelektron))
+
 ## [1.5.0](https://github.com/openeuropa/oe_link_lists/tree/1.5.0) (2025-01-29)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.4.0...1.5.0)
 
 **Merged pull requests:**
 
+- Release-1.5.0: Update changelog. [\#157](https://github.com/openeuropa/oe_link_lists/pull/157) ([nagyad](https://github.com/nagyad))
 - EWPP-4991: Ensure PHP8.3 compatibility. [\#156](https://github.com/openeuropa/oe_link_lists/pull/156) ([nagyad](https://github.com/nagyad))
 
 ## [1.4.0](https://github.com/openeuropa/oe_link_lists/tree/1.4.0) (2024-08-29)
