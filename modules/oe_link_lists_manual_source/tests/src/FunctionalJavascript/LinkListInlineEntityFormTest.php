@@ -68,7 +68,8 @@ class LinkListInlineEntityFormTest extends ManualLinkListTestBase {
     $links_wrapper->fillField('Teaser', 'The link teaser');
     $this->getSession()->getPage()->pressButton('Create Link');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains('External link to: http://example.com');
+    $this->assertSession()->pageTextContains('External link to: The link title.');
+    $this->assertSession()->linkByHrefExists('http://example.com');
 
     // Save the link list.
     $this->getSession()->getPage()->pressButton('Create link list');
@@ -87,7 +88,8 @@ class LinkListInlineEntityFormTest extends ManualLinkListTestBase {
     // Edit the link list and assert we see the link title there.
     $this->getSession()->getPage()->pressButton('Edit');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains('External link to: http://example.com');
+    $this->assertSession()->pageTextContains('External link to: The link title.');
+    $this->assertSession()->linkByHrefExists('http://example.com');
 
     // Make sure that we don't lose the revision id on pressing the Cancel
     // button and saving the node entity.
