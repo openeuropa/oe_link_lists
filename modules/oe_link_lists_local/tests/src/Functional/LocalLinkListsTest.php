@@ -53,13 +53,7 @@ class LocalLinkListsTest extends BrowserTestBase {
 
     $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
 
-    // @todo Remove when support for 10.2.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->pressButton('Continue');
-    }
-    else {
-      $this->getSession()->getPage()->pressButton('Change field group');
-    }
+    $this->getSession()->getPage()->pressButton('Continue');
 
     $this->getSession()->getPage()->selectFieldOption('Other', 'entity_reference');
     $this->getSession()->getPage()->fillField('Label', 'Link list');
@@ -99,14 +93,7 @@ class LocalLinkListsTest extends BrowserTestBase {
 
     $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
 
-    // @todo Remove when support for 10.2.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->pressButton('Continue');
-    }
-    else {
-      $this->getSession()->getPage()->pressButton('Change field group');
-    }
-
+    $this->getSession()->getPage()->pressButton('Continue');
     $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
     $this->getSession()->getPage()->fillField('Label', 'String field');
     $this->getSession()->getPage()->fillField('Machine-readable name', 'field_text');
