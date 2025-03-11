@@ -91,6 +91,15 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->assertEquals('Test title', $link->getTitle());
     $this->assertEquals('Test teaser', $link->getTeaser()['#markup']);
     $this->assertCount(1, $link_list_storage->loadMultiple());
+    // Test the getOptions and setOptions work correctly.
+    $link->setOptions([
+      'foo1' => 'bar1',
+      'foo2' => 'bar2',
+    ]);
+    $this->assertEquals([
+      'foo1' => 'bar1',
+      'foo2' => 'bar2',
+    ], $link->getOptions());
 
     // Edit the link list and check the values are shown correctly in the form.
     $this->drupalGet($link_list->toUrl('edit-form'));
