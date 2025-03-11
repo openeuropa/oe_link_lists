@@ -38,6 +38,16 @@ class DefaultLink implements LinkInterface {
   protected $teaser;
 
   /**
+   * The options.
+   *
+   * This can be used to add and pass various options for the link, specific
+   * to the implementation using the link.
+   *
+   * @var array
+   */
+  protected $options = [];
+
+  /**
    * DefaultLink constructor.
    *
    * @param \Drupal\Core\Url $url
@@ -112,6 +122,20 @@ class DefaultLink implements LinkInterface {
     $result = AccessResult::allowed();
 
     return $return_as_object ? $result : $result->isAllowed();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOptions(): array {
+    return $this->options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOptions(array $options): void {
+    $this->options = $options;
   }
 
 }
