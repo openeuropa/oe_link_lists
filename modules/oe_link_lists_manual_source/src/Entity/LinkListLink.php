@@ -85,7 +85,10 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
    */
   public function label(): TranslatableMarkup {
     if ($this->bundle() === 'external') {
-      return $this->t('External link to: @external_url', ['@external_url' => $this->get('url')->uri]);
+      return $this->t('External link to: <a href="@external_url" target="_blank">@title</a>', [
+        '@external_url' => $this->get('url')->uri,
+        '@title' => $this->get('title')->value,
+      ]);
     }
 
     $target = $this->hasField('target') ? $this->get('target')->entity : NULL;

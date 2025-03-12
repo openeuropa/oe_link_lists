@@ -94,7 +94,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
 
     // Edit the link list and check the values are shown correctly in the form.
     $this->drupalGet($link_list->toUrl('edit-form'));
-    $this->assertSession()->pageTextContains('External link to: http://example.com');
+    $this->assertSession()->pageTextContains('External link to: ' . $link->getTitle());
     $edit = $this->getSession()->getPage()->find('xpath', '(//input[@type="submit" and @value="Edit"])[1]');
     $edit->press();
     $this->assertSession()->assertWaitOnAjaxRequest();
@@ -138,7 +138,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
 
     // Edit the link list and check the values are shown correctly in the form.
     $this->drupalGet($link_list->toUrl('edit-form'));
-    $this->assertSession()->pageTextContains('External link to: http://example.com');
+    $this->assertSession()->pageTextContains('External link to: Test title');
     $this->assertSession()->pageTextContains('Internal link to: Page 1');
     $edit = $this->getSession()->getPage()->find('xpath', '(//input[@type="submit" and @value="Edit"])[2]');
     $edit->press();

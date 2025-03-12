@@ -109,7 +109,7 @@ abstract class ManualLinkListTestBase extends WebDriverTestBase {
     $links_wrapper->fillField('Teaser', $teaser);
     $this->getSession()->getPage()->pressButton('Create Link');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains('External link to: ' . $url);
+    $this->assertSession()->pageTextContains('External link to: ' . $title);
   }
 
   /**
