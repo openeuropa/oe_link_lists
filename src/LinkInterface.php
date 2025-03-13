@@ -55,4 +55,20 @@ interface LinkInterface extends RefinableCacheableDependencyInterface, Accessibl
    */
   public function setTeaser(array $teaser): void;
 
+  /**
+   * Returns the options for the link.
+   *
+   * @return array
+   *   The options.
+   */
+  public function getOptions(): array;
+
+  /**
+   * Sets the options of the link.
+   *
+   * @param array $options
+   *   The options.
+   */
+  public function setOptions(array $options): void;
+
 }
