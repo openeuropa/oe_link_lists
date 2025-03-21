@@ -359,7 +359,7 @@ class LinkCollectionTest extends UnitTestCase {
    * @return array
    *   A series of test elements and related expected exception.
    */
-  public function invalidArgumentDataProvider(): array {
+  public static function invalidArgumentDataProvider(): array {
     return [
       'string' => [
         'test',
@@ -403,8 +403,7 @@ class LinkCollectionTest extends UnitTestCase {
     $container = new ContainerBuilder();
     $cache_contexts_manager_mock = $this->createMock(CacheContextsManager::class);
     $cache_contexts_manager_mock->expects($this->any())
-      ->method('assertValidTokens')
-      ->will($this->returnValue(TRUE));
+      ->method('assertValidTokens')->willReturn(TRUE);
     $container->set('cache_contexts_manager', $cache_contexts_manager_mock);
     \Drupal::setContainer($container);
   }
