@@ -3,7 +3,7 @@ description: 'Provides a permission to view aggregator feed items.'
 package: OpenEuropa
 
 type: module
-core_version_requirement: ^10
+core_version_requirement: ^10 || ^11
 
 dependencies:
   - drupal:aggregator

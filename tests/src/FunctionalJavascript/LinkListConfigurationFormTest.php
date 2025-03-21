@@ -63,7 +63,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->config('aggregator.settings')->set('items.expire', FeedStorageInterface::CLEAR_NEVER)->save();
 
     // Mock the http client and factory to allow requests to certain RSS feeds.
-    $http_client_mock = $this->getMockBuilder(Client::class)->getMock();
+    $http_client_mock = $this->createMock(Client::class);
     $test_module_path = \Drupal::service('extension.list.module')->getPath('aggregator_test');
     $http_client_mock
       ->method('send')
@@ -81,9 +81,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
         return new Response(200, [], file_get_contents($filename));
       });
 
-    $http_client_factory_mock = $this->getMockBuilder(ClientFactory::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $http_client_factory_mock = $this->createMock(ClientFactory::class);
     $http_client_factory_mock->method('fromOptions')
       ->willReturn($http_client_mock);
 
@@ -763,7 +761,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     }
 
     $options = $select->findAll('css', 'option');
-    array_walk($options, function (NodeElement &$option) {
+    array_walk($options, function (NodeElement &$option): void {
       $option = $option->getValue();
     });
     $options = array_filter($options);
