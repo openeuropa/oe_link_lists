@@ -61,7 +61,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
     \Drupal::configFactory()->getEditable('aggregator.settings')->set('items.expire', FeedStorageInterface::CLEAR_NEVER)->save();
 
     // Mock the http client and factory to allow requests to certain RSS feeds.
-    $http_client_mock = $this->getMockBuilder(Client::class)->getMock();
+    $http_client_mock = $this->createMock(Client::class);
     $test_module_path = \Drupal::service('extension.list.module')->getPath('aggregator_test');
     $http_client_mock
       ->method('send')
@@ -83,9 +83,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
         return new Response(200, [], file_get_contents($filename));
       });
 
-    $http_client_factory_mock = $this->getMockBuilder(ClientFactory::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $http_client_factory_mock = $this->createMock(ClientFactory::class);
     $http_client_factory_mock->method('fromOptions')
       ->willReturn($http_client_mock);
 

@@ -13,7 +13,8 @@ use Drupal\Core\Field\Plugin\Field\FieldType\MapItem;
  * @FieldType(
  *   id = "link_list_configuration",
  *   label = @Translation("Link List Configuration"),
- *   category = @Translation("OpenEuropa"),
+ *   category = "OpenEuropa",
+ *   description = @Translation("Store the configuration"),
  *   default_widget = "link_list_configuration",
  *   list_class = "\Drupal\oe_link_lists\Plugin\Field\FieldType\LinkListConfigurationItemList",
  *   constraints = {"PluginsSelected" = {}}
