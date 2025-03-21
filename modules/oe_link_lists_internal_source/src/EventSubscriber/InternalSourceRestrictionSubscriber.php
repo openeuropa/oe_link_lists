@@ -34,7 +34,7 @@ class InternalSourceRestrictionSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       InternalSourceEntityTypesEvent::NAME => 'alterEntityTypes',
       InternalSourceBundlesEvent::NAME => 'alterBundles',

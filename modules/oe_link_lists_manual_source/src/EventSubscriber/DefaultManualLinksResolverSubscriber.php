@@ -51,7 +51,7 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [ManualLinkResolverEvent::NAME => 'resolveLink'];
   }
 
