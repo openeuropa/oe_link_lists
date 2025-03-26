@@ -1,10 +1,19 @@
 # Change Log
 
-## [1.6.0](https://github.com/openeuropa/oe_link_lists/tree/1.6.0) (2025-02-11)
+## [1.7.0](https://github.com/openeuropa/oe_link_lists/tree/1.7.0) (2025-03-26)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.6.0...1.7.0)
+
+**Merged pull requests:**
+
+- EWPP-5316: Adding options the the default link objects. [\#161](https://github.com/openeuropa/oe_link_lists/pull/161) ([upchuk](https://github.com/upchuk))
+- EWPP-5249: Add both the title and the URL for External Link list links as label. [\#159](https://github.com/openeuropa/oe_link_lists/pull/159) ([22Alexandra](https://github.com/22Alexandra))
+
+## [1.6.0](https://github.com/openeuropa/oe_link_lists/tree/1.6.0) (2025-02-12)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.5.0...1.6.0)
 
 **Merged pull requests:**
 
+- Release-1.6.0: Update changelog. [\#158](https://github.com/openeuropa/oe_link_lists/pull/158) ([nagyad](https://github.com/nagyad))
 - EWPP-4956: Force the first page of the list, if it is not specifically set [\#155](https://github.com/openeuropa/oe_link_lists/pull/155) ([intelektron](https://github.com/intelektron))
 
 ## [1.5.0](https://github.com/openeuropa/oe_link_lists/tree/1.5.0) (2025-01-29)
