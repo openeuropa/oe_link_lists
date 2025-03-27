@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\oe_link_lists_internal_source\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -34,8 +35,8 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entit_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager, EntityTypeManagerInterface $entit_type_manager, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+    parent::__construct($config_factory, $typed_config_manager);
     $this->entityTypeManager = $entit_type_manager;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }
@@ -46,6 +47,7 @@ class LinkListsInternalSourceSettings extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('entity_type.manager'),
       $container->get('entity_type.bundle.info')
     );
