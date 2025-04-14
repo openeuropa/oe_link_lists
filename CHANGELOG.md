@@ -1,10 +1,18 @@
 # Change Log
 
+## [1.8.0](https://github.com/openeuropa/oe_link_lists/tree/1.8.0) (2025-04-14)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.7.0...1.8.0)
+
+**Merged pull requests:**
+
+- EWPP-4628: D11 upgrade. [\#160](https://github.com/openeuropa/oe_link_lists/pull/160) ([gorsky87](https://github.com/gorsky87))
+
 ## [1.7.0](https://github.com/openeuropa/oe_link_lists/tree/1.7.0) (2025-03-26)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.6.0...1.7.0)
 
 **Merged pull requests:**
 
+- Release-1.7.0: Update changelog. [\#162](https://github.com/openeuropa/oe_link_lists/pull/162) ([nagyad](https://github.com/nagyad))
 - EWPP-5316: Adding options the the default link objects. [\#161](https://github.com/openeuropa/oe_link_lists/pull/161) ([upchuk](https://github.com/upchuk))
 - EWPP-5249: Add both the title and the URL for External Link list links as label. [\#159](https://github.com/openeuropa/oe_link_lists/pull/159) ([22Alexandra](https://github.com/22Alexandra))
 
