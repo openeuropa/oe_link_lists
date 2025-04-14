@@ -24,3 +24,20 @@ field.value.link_list_configuration:
     value:
       type: label
       label: Value
+
+# The view_mode block setting was removed from core block schema definition.
+# See: https://www.drupal.org/project/drupal/issues/3379725
+# @see \Drupal\oe_link_lists\Plugin\Block\LinkListBlock
+# @see \Drupal\oe_link_lists\Plugin\Derivative\LinkListBlock
+block.settings.oe_link_list_block:*:
+  type: block_settings
+  label: 'Link List'
+  constraints:
+    FullyValidatable: ~
+  mapping:
+    view_mode:
+      type: string
+      label: 'View mode'
+      constraints:
+        ConfigExists:
+          prefix: core.entity_view_mode.oe_link_list_block.

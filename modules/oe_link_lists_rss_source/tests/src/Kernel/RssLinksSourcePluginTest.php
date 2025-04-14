@@ -199,7 +199,11 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
     $form_state->setValue(['plugin', 'urls', 0, 'url'], 'invalid url');
     $form_builder->submitForm($this, $form_state);
     // Assert that the URL form element expects valid URLs.
-    $this->assertEquals(['plugin][urls][0][url' => 'The URL <em class="placeholder">invalid url</em> is not valid.'], $form_state->getErrors());
+    $errors = [];
+    foreach ($form_state->getErrors() as $key => $error) {
+      $errors[$key] = $error->render();
+    }
+    $this->assertEquals(['plugin][urls][0][url' => 'The URL <em class="placeholder">invalid url</em> is not valid.'], $errors);
 
     // The form submits correctly when a valid URL is provided.
     $form_state = new FormState();

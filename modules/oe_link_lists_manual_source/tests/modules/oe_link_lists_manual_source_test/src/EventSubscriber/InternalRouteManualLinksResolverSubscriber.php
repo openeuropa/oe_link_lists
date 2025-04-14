@@ -35,7 +35,7 @@ class InternalRouteManualLinksResolverSubscriber implements EventSubscriberInter
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       ManualLinkResolverEvent::NAME => ['resolveLink', 10],
     ];

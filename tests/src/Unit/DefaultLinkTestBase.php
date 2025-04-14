@@ -43,7 +43,7 @@ abstract class DefaultLinkTestBase extends UnitTestCase {
    * @return array
    *   A list of unsupported operations.
    */
-  public function unsupportedOperationsProvider(): array {
+  public static function unsupportedOperationsProvider(): array {
     return [
       ['create'],
       ['edit'],
