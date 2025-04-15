@@ -1,0 +1,18 @@
+services:
+  oe_link_lists_group.route_subscriber:
+    class: 'Drupal\oe_link_lists_group\Routing\RouteSubscriber'
+    tags:
+      - { name: 'event_subscriber' }
+
+  # Group relation plugin handlers.
+  group.relation_handler.permission_provider.group_link_list:
+    class: 'Drupal\oe_link_lists_group\Plugin\Group\RelationHandler\GroupLinkListPermissionProvider'
+    arguments: ['@group.relation_handler.permission_provider']
+
+  logger.channel.oe_link_lists_group:
+    parent: logger.channel_base
+    arguments: ['oe_link_lists_group']
+
+  oe_link_lists_group.attach_group:
+    class: 'Drupal\oe_link_lists_group\AttachLinkListToGroup'
+    arguments: [ '@group_relation_type.manager', '@module_handler', '@entity_type.manager', '@logger.channel.oe_link_lists_group' ]

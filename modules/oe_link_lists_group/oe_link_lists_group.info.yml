@@ -1,0 +1,10 @@
+name: 'OpenEuropa Link Lists Group'
+description: 'Provides support for enabling link lists to be related to groups.'
+package: OpenEuropa
+
+type: module
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - 'oe_link_lists:oe_link_lists'
+  - 'group:group'

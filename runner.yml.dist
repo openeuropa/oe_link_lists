@@ -19,7 +19,7 @@ drupal:
     - "./vendor/bin/drush config-set system.theme admin claro -y"
     - "./vendor/bin/drush config-set node.settings use_admin_theme 1 -y"
     # Enable the modules.
-    - "./vendor/bin/drush en oe_link_lists oe_link_lists_manual_source oe_link_lists_rss_source oe_link_lists_internal_source oe_link_lists_local -y"
+    - "./vendor/bin/drush en oe_link_lists oe_link_lists_manual_source oe_link_lists_rss_source oe_link_lists_internal_source oe_link_lists_local oe_link_lists_group -y"
     - "./vendor/bin/drush cr"
   settings:
     settings:
