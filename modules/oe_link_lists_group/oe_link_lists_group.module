@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @file
+ * OE link lists group module file.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\oe_link_lists\Entity\LinkListType;
+use Symfony\Component\Routing\RouterInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function oe_link_lists_group_link_list_type_insert(LinkListType $link_list_type) {
+  \Drupal::service('group_relation_type.manager')->clearCachedDefinitions();
+}
+
+/**
+ * Implements hook_group_content_insert().
+ */
+function oe_link_lists_group_group_content_insert(EntityInterface $group_relationship) {
+  \Drupal::service('oe_link_lists_group.attach_group')->attach($group_relationship);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function oe_link_lists_group_entity_update(EntityInterface $entity) {
+  \Drupal::service('oe_link_lists_group.attach_group')->attach($entity);
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function oe_link_lists_group_entity_operation(EntityInterface $entity) {
+  $operations = [];
+
+  if ($entity->getEntityTypeId() == 'group' && \Drupal::moduleHandler()->moduleExists('views')) {
+    assert($entity instanceof GroupInterface);
+    if ($entity->hasPermission('access group_link_lists overview', \Drupal::currentUser())) {
+      $router = \Drupal::service('router.no_access_checks');
+      assert($router instanceof RouterInterface);
+      if ($router->getRouteCollection()->get('view.group_link_lists.page_1') !== NULL) {
+        $operations['link_lists'] = [
+          'title' => t('Link lists'),
+          'weight' => 20,
+          'url' => Url::fromRoute('view.group_link_lists.page_1', ['group' => $entity->id()]),
+        ];
+      }
+    }
+  }
+
+  return $operations;
+}

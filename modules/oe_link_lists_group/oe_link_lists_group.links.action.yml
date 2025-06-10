@@ -1,0 +1,11 @@
+group_content.group_link_list_add_page:
+  route_name: 'entity.group_content.group_link_list_add_page'
+  title: 'Add existing link list'
+  appears_on:
+    - 'view.group_link_lists.page_1'
+
+group_content.group_link_list_create_page:
+  route_name: 'entity.group_content.group_link_list_create_page'
+  title: 'Add new link list'
+  appears_on:
+    - 'view.group_link_lists.page_1'

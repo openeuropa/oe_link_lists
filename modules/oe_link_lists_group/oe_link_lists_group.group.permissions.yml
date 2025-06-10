@@ -1,0 +1,3 @@
+access group_link_lists overview:
+  title: 'Access group link lists overview'
+  description: 'Access the overview of all group link lists, regardless of link list type'
