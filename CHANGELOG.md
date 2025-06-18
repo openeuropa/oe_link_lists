@@ -1,10 +1,19 @@
-# Change Log
+# Changelog
+
+## [1.9.0](https://github.com/openeuropa/oe_link_lists/tree/1.9.0) (2025-06-18)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.8.0...1.9.0)
+
+**Merged pull requests:**
+
+- EWPP-5322: Enable link lists to be related to groups. [\#164](https://github.com/openeuropa/oe_link_lists/pull/164) ([nagyad](https://github.com/nagyad))
 
 ## [1.8.0](https://github.com/openeuropa/oe_link_lists/tree/1.8.0) (2025-04-14)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.7.0...1.8.0)
 
 **Merged pull requests:**
 
+- Release-1.8.0: Update changelog. [\#163](https://github.com/openeuropa/oe_link_lists/pull/163) ([nagyad](https://github.com/nagyad))
 - EWPP-4628: D11 upgrade. [\#160](https://github.com/openeuropa/oe_link_lists/pull/160) ([gorsky87](https://github.com/gorsky87))
 
 ## [1.7.0](https://github.com/openeuropa/oe_link_lists/tree/1.7.0) (2025-03-26)
