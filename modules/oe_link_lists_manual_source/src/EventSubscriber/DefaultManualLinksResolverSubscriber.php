@@ -107,7 +107,11 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       $link->setTitle($link_entity->getTitle());
     }
     if (!$link_entity->get('teaser')->isEmpty()) {
-      $link->setTeaser(['#markup' => $link_entity->getTeaser()]);
+      $link->setTeaser([
+        '#type' => 'processed_text',
+        '#text' => $link_entity->getTeaser(),
+        '#format' => 'plain_text',
+      ]);
     }
 
     // Dispatch an event to allow others to perform their overrides.
@@ -138,7 +142,19 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       $url = Url::fromRoute('<front>');
     }
 
-    $link = new DefaultLink($url, $link_entity->getTitle(), ['#markup' => $link_entity->getTeaser()]);
+    $teaser = [];
+    // Convert the teaser string to a processed text render array.
+    // This is necessary to ensure that external links can have a teaser
+    // with same rendering as internal links.
+    if ($teaser_text = $link_entity->getTeaser()) {
+      $teaser = [
+        '#type' => 'processed_text',
+        '#text' => $teaser_text,
+        '#format' => 'plain_text',
+      ];
+    }
+
+    $link = new DefaultLink($url, $link_entity->getTitle(), $teaser);
     $override_event = new ManualLinkOverrideResolverEvent($link, $link_entity);
     $this->eventDispatcher->dispatch($override_event, ManualLinkOverrideResolverEvent::NAME);
 
