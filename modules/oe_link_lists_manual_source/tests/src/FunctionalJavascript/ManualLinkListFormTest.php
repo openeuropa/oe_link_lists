@@ -89,7 +89,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->assertInstanceOf(DefaultLink::class, $link);
     $this->assertEquals('http://example.com', $link->getUrl()->toString());
     $this->assertEquals('Test title', $link->getTitle());
-    $this->assertEquals('Test teaser', $link->getTeaser()['#markup']);
+    $this->assertEquals('Test teaser', $link->getTeaser()['#text']);
     $this->assertCount(1, $link_list_storage->loadMultiple());
     // Test the getOptions and setOptions work correctly.
     $link->setOptions([
@@ -182,7 +182,7 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
     $this->assertInstanceOf(NodeInterface::class, $link->getEntity());
     $this->assertEquals($link->getEntity()->toUrl(), $link->getUrl());
     $this->assertEquals('Overridden title', $link->getTitle());
-    $this->assertEquals('Overridden teaser', $link->getTeaser()['#markup']);
+    $this->assertEquals('Overridden teaser', $link->getTeaser()['#text']);
     $link_storage->resetCache();
     $this->assertCount(3, $link_storage->loadMultiple());
 
