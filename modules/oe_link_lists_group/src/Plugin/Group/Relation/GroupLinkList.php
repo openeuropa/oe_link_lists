@@ -54,7 +54,7 @@ class GroupLinkList extends GroupRelationBase {
    */
   public function calculateDependencies() {
     $dependencies = parent::calculateDependencies();
-    $dependencies['config'][] = 'link_list.type.' . $this->getRelationType()->getEntityBundle();
+    $dependencies['config'][] = 'oe_link_lists.link_list_type.' . $this->getRelationType()->getEntityBundle();
     return $dependencies;
   }
 
