@@ -1,11 +1,19 @@
-# Changelog
+# Change Log
+
+## [1.10.0](https://github.com/openeuropa/oe_link_lists/tree/1.10.0) (2025-09-09)
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.9.0...1.10.0)
+
+**Merged pull requests:**
+
+- EWPP-5768: Update to Drupal 10.5. [\#167](https://github.com/openeuropa/oe_link_lists/pull/167) ([intelektron](https://github.com/intelektron))
+- EWPP-5664: Harmonise rendering of manual external links. [\#166](https://github.com/openeuropa/oe_link_lists/pull/166) ([sergepavle](https://github.com/sergepavle))
 
 ## [1.9.0](https://github.com/openeuropa/oe_link_lists/tree/1.9.0) (2025-06-18)
-
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.8.0...1.9.0)
 
 **Merged pull requests:**
 
+- Release-1.9.0: Update changelog and docker PHP images. [\#165](https://github.com/openeuropa/oe_link_lists/pull/165) ([nagyad](https://github.com/nagyad))
 - EWPP-5322: Enable link lists to be related to groups. [\#164](https://github.com/openeuropa/oe_link_lists/pull/164) ([nagyad](https://github.com/nagyad))
 
 ## [1.8.0](https://github.com/openeuropa/oe_link_lists/tree/1.8.0) (2025-04-14)
