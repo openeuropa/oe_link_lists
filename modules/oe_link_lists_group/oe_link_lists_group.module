@@ -11,7 +11,18 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\oe_link_lists\Entity\LinkListType;
+use Drupal\oe_link_lists_group\Access\LinkListLinkAccessControlHandler;
 use Symfony\Component\Routing\RouterInterface;
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function oe_link_lists_group_entity_type_alter(array &$entity_types) {
+  // Override the access control handler for link_list_link entities.
+  if (isset($entity_types['link_list_link'])) {
+    $entity_types['link_list_link']->setHandlerClass('access', LinkListLinkAccessControlHandler::class);
+  }
+}
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
