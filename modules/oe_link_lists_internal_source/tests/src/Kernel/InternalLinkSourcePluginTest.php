@@ -7,6 +7,7 @@ namespace Drupal\Tests\oe_link_lists_internal_source\Kernel;
 use Drupal\Core\Cache\Cache;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestNoBundle;
+use Drupal\entity_test\EntityTestHelper;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -37,8 +38,8 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('entity_test_no_bundle');
     // Create two bundles for the entity_test entity type.
-    entity_test_create_bundle('foo');
-    entity_test_create_bundle('bar');
+    EntityTestHelper::createBundle('foo');
+    EntityTestHelper::createBundle('bar');
   }
 
   /**

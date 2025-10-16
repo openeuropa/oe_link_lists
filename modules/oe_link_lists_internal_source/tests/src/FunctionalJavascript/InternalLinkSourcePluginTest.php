@@ -48,14 +48,14 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     // The select shows bundleable entity types with at least one bundle and
     // non-bundleable ones. Node has no bundles so it's not present.
     $expected = [
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'link_list' => 'Link list',
       'user' => 'User',
     ];
     if ($this->container->get('entity_type.manager')->hasDefinition('path_alias')) {
       $expected['path_alias'] = 'URL alias';
     }
-    $this->assertEquals($expected, $this->getOptions($select));
+    $this->assertEquals($expected, $this->getSelectOptions($select));
     // The bundle select is not shown if no entity type is selected.
     $this->assertSession()->fieldNotExists('Bundle');
 
@@ -98,7 +98,7 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     $this->drupalGet($link_list->toUrl('edit-form'));
     $select = $this->assertSession()->selectExists('Entity type');
     $expected = [
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'link_list' => 'Link list',
       'node' => 'Content',
       'user' => 'User',
@@ -106,7 +106,7 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     if ($this->container->get('entity_type.manager')->hasDefinition('path_alias')) {
       $expected['path_alias'] = 'URL alias';
     }
-    $this->assertEquals($expected, $this->getOptions($select));
+    $this->assertEquals($expected, $this->getSelectOptions($select));
     $this->assertSession()->fieldNotExists('Bundle');
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'node');
     $this->assertSession()->assertWaitOnAjaxRequest();
@@ -115,9 +115,9 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     // No option is selected by default.
     $this->assertEquals('', $select->getValue());
     $this->assertEquals([
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'page' => 'Basic page',
-    ], $this->getOptions($select));
+    ], $this->getSelectOptions($select));
 
     // The bundle select is required.
     $this->disableNativeBrowserRequiredFieldValidation();
@@ -137,10 +137,10 @@ class InternalLinkSourcePluginTest extends InternalLinkSourceTestBase {
     // No option is selected by default.
     $this->assertEquals('', $select->getValue());
     $this->assertEquals([
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'page' => 'Basic page',
       'news' => 'News',
-    ], $this->getOptions($select));
+    ], $this->getSelectOptions($select));
 
     // Select the news bundle and save.
     $this->getSession()->getPage()->selectFieldOption('Bundle', 'news');
