@@ -197,7 +197,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $french = \Drupal::languageManager()->getLanguage('fr');
 
     // Unpublish FR.
-    $this->drupalGet($link_list->toUrl('edit-form', ['language' => $french]));
+    $this->drupalGet($this->getEntityUrl($link_list, $french->getId(), 'edit-form'));
     $this->getSession()->getPage()->uncheckField('Published');
     $this->getSession()->getPage()->pressButton('Save');
 
@@ -211,7 +211,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
     $this->assertFalse($this->container->get('content_translation.manager')->getTranslationMetadata($translation)->isPublished());
 
     // Publish back FR and unpublish EN.
-    $this->drupalGet($link_list->toUrl('edit-form', ['language' => $french]));
+    $this->drupalGet($this->getEntityUrl($link_list, $french->getId(), 'edit-form'));
     $this->getSession()->getPage()->checkField('Published');
     $this->getSession()->getPage()->pressButton('Save');
     $this->drupalGet($link_list->toUrl('edit-form'));

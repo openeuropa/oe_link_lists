@@ -72,6 +72,7 @@ class LinkListAccessControlHandlerTest extends EntityKernelTestBase {
 
     foreach ($scenarios as $scenario => $test_data) {
       // Update the published status based on the scenario.
+      $link_list->setNewRevision();
       $link_list->set('status', $test_data['published']);
       $link_list->isDefaultRevision($test_data['published']);
       if (in_array($test_data['operation'], ['revert', 'delete revision'])) {

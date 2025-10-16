@@ -37,8 +37,8 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('entity_test_no_bundle');
     // Create two bundles for the entity_test entity type.
-    entity_test_create_bundle('foo');
-    entity_test_create_bundle('bar');
+    $this->createTestBundle('foo');
+    $this->createTestBundle('bar');
   }
 
   /**
@@ -451,6 +451,31 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
         'type' => 'bar',
       ],
     ];
+  }
+
+  /**
+   * Creates a new bundle for entity_test entities.
+   *
+   * @param string $bundle
+   *   The machine-readable name of the bundle.
+   * @param string|null $text
+   *   (optional) The human-readable name of the bundle. If none is provided,
+   *   the machine name will be used.
+   * @param string $entity_type
+   *   (optional) The entity type for which the bundle is created. Defaults to
+   *   'entity_test'.
+   *
+   * @todo Remove after drupal:12.0.0. Use
+   *    \Drupal\entity_test\EntityTestHelper::createBundle() instead.
+   *
+   * @see \Drupal\entity_test\Hook\EntityTestHooks::entityBundleInfo()
+   * /
+   */
+  protected function createTestBundle($bundle, $text = NULL, $entity_type = 'entity_test') {
+    $bundles = \Drupal::state()->get($entity_type . '.bundles', [$entity_type => ['label' => 'Entity Test Bundle']]);
+    $bundles += [$bundle => ['label' => $text ?: $bundle]];
+    \Drupal::state()->set($entity_type . '.bundles', $bundles);
+    \Drupal::service('entity_bundle.listener')->onBundleCreate($bundle, $entity_type);
   }
 
 }
