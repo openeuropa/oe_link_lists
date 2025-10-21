@@ -1,4 +1,12 @@
-# Change Log
+# Changelog
+
+## [1.11.0](https://github.com/openeuropa/oe_link_lists/tree/1.11.0) (2025-10-21)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.10.0...1.11.0)
+
+- EWPP-6043: Move CI to Gitlab CI. [\#171](https://github.com/openeuropa/oe_link_lists/pull/171) ([hernani](https://github.com/hernani))
+- EWPP-6013: Add missing link list link access logic. [\#170](https://github.com/openeuropa/oe_link_lists/pull/170) ([nagyad](https://github.com/nagyad))
+- EWPP-5950: Fix dependencies for group\_link\_list group relationship types. [\#168](https://github.com/openeuropa/oe_link_lists/pull/168) ([msnassar](https://github.com/msnassar))
 
 ## [1.10.0](https://github.com/openeuropa/oe_link_lists/tree/1.10.0) (2025-09-09)
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.9.0...1.10.0)
