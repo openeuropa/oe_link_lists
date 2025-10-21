@@ -11,7 +11,7 @@ use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists\MoreLinkPluginBase;
 
 /**
- * Returns a simple hardcoded link..
+ * Returns a simple hardcoded link.
  *
  * @MoreLink(
  *   id = "hardcoded_link",
