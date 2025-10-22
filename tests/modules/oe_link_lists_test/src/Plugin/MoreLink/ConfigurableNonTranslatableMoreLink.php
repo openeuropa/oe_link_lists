@@ -7,7 +7,7 @@ namespace Drupal\oe_link_lists_test\Plugin\MoreLink;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Returns a simple hardcoded link..
+ * Returns a simple hardcoded link.
  *
  * @MoreLink(
  *   id = "configurable_non_translatable_link",

@@ -9,7 +9,7 @@ use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists\NoResultsBehaviourPluginBase;
 
 /**
- * Test plugin with a non-translatable configurable string..
+ * Test plugin with a non-translatable configurable string.
  *
  * @NoResultsBehaviour(
  *   id = "non_translatable_text_message",
