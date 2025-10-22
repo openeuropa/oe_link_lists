@@ -61,6 +61,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
    * Tests that the link lists are translatable.
    */
   public function testManualLinkListTranslatability(): void {
+
     $this->drupalGet('link_list/add/manual');
     $this->getSession()->getPage()->fillField('Title', 'Test translation');
     $this->getSession()->getPage()->fillField('Administrative title', 'Test translation admin title');
@@ -133,7 +134,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
     $this->assertSession()->pageTextNotContains('Teaser redéfinie');
 
     // Navigate to the list translation and assert we show translated values.
-    $this->drupalGet($link_list->toUrl('canonical', ['language' => \Drupal::languageManager()->getLanguage('fr')]));
+    $this->drupalGet($this->getEntityUrl($link_list, 'fr'));
     $this->assertEquals('Titre du test', $this->getSession()->getPage()->findAll('css', '.link-list-test--title')[0]->getText());
     $this->assertEquals('Description du test', $this->getSession()->getPage()->findAll('css', '.link-list-test--teaser')[0]->getText());
     $this->assertEquals('http://traduction.com/fr', $this->getSession()->getPage()->findAll('css', '.link-list-test--url')[0]->getText());
@@ -187,7 +188,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
 
     // Assert the rendering in French.
     $link_list = $this->getLinkListByTitle('Test translation');
-    $this->drupalGet($link_list->toUrl('canonical', ['language' => \Drupal::languageManager()->getLanguage('fr')]));
+    $this->drupalGet($this->getEntityUrl($link_list, 'fr'));
     $this->assertSession()->linkNotExists('Overridden title');
     $this->assertSession()->linkExists('Titre redéfinie');
     $this->assertSession()->linkExists('Page 1');

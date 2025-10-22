@@ -76,7 +76,7 @@ class RssLinksTranslationTest extends RssLinksTestBase {
     $this->assertSession()->pageTextNotContains('First example feed item description.');
 
     // Assert some items in FR where we use a completely different feed URL.
-    $this->drupalGet($link_list->toUrl('canonical', ['language' => \Drupal::languageManager()->getLanguage('fr')]));
+    $this->drupalGet($this->getEntityUrl($link_list, 'fr'));
     $this->assertSession()->pageTextContainsOnce('First example feed item title');
     $this->assertSession()->pageTextContainsOnce('http://example.com/example-turns-one');
     $this->assertSession()->pageTextContainsOnce('First example feed item description.');

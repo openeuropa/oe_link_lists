@@ -88,7 +88,7 @@ class InternalSourceTranslationTest extends InternalLinkSourceTestBase {
 
     // In French we should see one of nodes in FR.
     $link_list = $this->getLinkListByTitle('Internal list');
-    $this->drupalGet($link_list->toUrl('canonical', ['language' => \Drupal::languageManager()->getLanguage('fr')]));
+    $this->drupalGet($this->getEntityUrl($link_list, 'fr'));
     $this->assertSession()->pageTextContains('Page 1');
     $this->assertSession()->pageTextContains('deuxieme page');
     $this->assertSession()->pageTextNotContains('Page 2');

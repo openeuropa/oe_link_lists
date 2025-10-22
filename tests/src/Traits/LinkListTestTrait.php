@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists\Traits;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 
 /**
@@ -35,6 +36,33 @@ trait LinkListTestTrait {
     }
 
     return reset($entities);
+  }
+
+  /**
+   * Get Url to entity in given language.
+   *
+   * @param \Drupal\oe_link_lists\Entity\LinkListInterface $entity
+   *   The entity.
+   * @param string|null $langcode
+   *   The language code.
+   * @param string|null $rel
+   *   The relation type.
+   *
+   * @return string|\Drupal\Core\Url
+   *   The URL.
+   */
+  protected function getEntityUrl(ContentEntityInterface $entity, ?string $langcode = NULL, ?string $rel = 'canonical') {
+    if (!$langcode) {
+      return $entity->toUrl($rel)->toString();
+    }
+
+    // @todo Remove when support for 11.1.x is dropped.
+    if (version_compare(\Drupal::VERSION, '11.2', '>=')) {
+      return $langcode . '/' . $entity->toUrl($rel, ['path_processing' => FALSE, 'base_url' => ''])->toString();
+    }
+    else {
+      return $entity->toUrl($rel, ['language' => \Drupal::languageManager()->getLanguage($langcode)]);
+    }
   }
 
 }

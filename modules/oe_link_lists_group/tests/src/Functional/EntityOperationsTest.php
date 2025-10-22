@@ -20,8 +20,18 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
 
   /**
    * {@inheritdoc}
+   *
+   * @dataProvider provideLinkListsEntityOperationScenarios
    */
-  public function provideEntityOperationScenarios(): array {
+  // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
+  public function testEntityOperations($visible, $invisible, $permissions = [], $modules = []) {
+    parent::testEntityOperations($visible, $invisible, $permissions, $modules);
+  }
+
+  /**
+   * Data provider for TestEntityOperations().
+   */
+  public static function provideLinkListsEntityOperationScenarios(): array {
     $scenarios['withoutAccess'] = [
       [],
       ['group/1/link-lists' => 'Link lists'],
