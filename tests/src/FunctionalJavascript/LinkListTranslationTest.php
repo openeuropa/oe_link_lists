@@ -43,6 +43,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
     \Drupal::service('router.builder')->rebuild();
+    $this->resetAll();
 
     $web_user = $this->drupalCreateUser([
       'bypass node access',

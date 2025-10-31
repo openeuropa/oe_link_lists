@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists_internal_source\FunctionalJavascript;
 
+use Behat\Mink\Element\NodeElement;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 
@@ -32,6 +33,23 @@ abstract class InternalLinkSourceTestBase extends WebDriverTestBase {
    */
   protected function disableNativeBrowserRequiredFieldValidation() {
     $this->getSession()->executeScript("jQuery(':input[required]').prop('required', false);");
+  }
+
+  /**
+   * Returns the options of a select element as an associative array.
+   *
+   * @param \Behat\Mink\Element\NodeElement $select
+   *   The select element.
+   *
+   * @return array
+   *   An associative array of the select options, keyed by option value.
+   */
+  protected function getSelectOptions(NodeElement $select): array {
+    $options = [];
+    foreach ($select->findAll('css', 'option') as $option) {
+      $options[$option->getValue()] = $option->getText();
+    }
+    return $options;
   }
 
 }

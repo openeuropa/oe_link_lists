@@ -49,6 +49,7 @@ abstract class RssLinksTestBase extends WebDriverTestBase {
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
     \Drupal::service('router.builder')->rebuild();
+    $this->resetAll();
 
     // Do not delete old aggregator items during these tests, since our sample
     // feeds have hardcoded dates in them (which may be expired when this test
