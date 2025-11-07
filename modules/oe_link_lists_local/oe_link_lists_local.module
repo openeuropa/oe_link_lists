@@ -314,36 +314,3 @@ function oe_link_lists_local_link_list_presave(LinkListInterface $link_list) {
     }
   }
 }
-
-/**
- * Implements hook_module_implements_alter().
- */
-function oe_link_lists_local_module_implements_alter(&$implementations, $hook) {
-  if ($hook === 'entity_access' && isset($implementations['content_moderation'])) {
-    // If the site is using content_moderation, remove the implementation and
-    // rely on the one from this submodule.
-    // @see oe_link_lists_local_entity_access().
-    unset($implementations['content_moderation']);
-  }
-}
-
-/**
- * Implements hook_entity_access().
- *
- * Does almost nothing except prevents content_moderation_entity_access() from
- * running (if it exists) in case the entity is a local link list. This is
- * because we don't want local link list access to be tied to the workflow.
- * I tried to override the moderation handler but could not do it due to it
- * (and other handlers) being overridden by other modules as well.
- */
-function oe_link_lists_local_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
-  if ($entity instanceof LinkListInterface && (bool) $entity->get('local')->value) {
-    return AccessResult::neutral();
-  }
-
-  if (function_exists('content_moderation_entity_access')) {
-    return content_moderation_entity_access($entity, $operation, $account);
-  }
-
-  return AccessResult::neutral();
-}
