@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.0](https://github.com/openeuropa/oe_link_lists/tree/1.12.0) (2025-11-17)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.11.0...1.12.0)
+
+**Merged pull requests:**
+
+- EWPP-6064: Upgrade to Drupal 11.2. [\#173](https://github.com/openeuropa/oe_link_lists/pull/173) ([sergepavle](https://github.com/sergepavle))
+
 ## [1.11.0](https://github.com/openeuropa/oe_link_lists/tree/1.11.0) (2025-10-21)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.10.0...1.11.0)
