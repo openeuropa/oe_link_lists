@@ -36,6 +36,7 @@ class ManualLinkListTranslationTest extends ManualLinkListTestBase {
 
     \Drupal::service('content_translation.manager')->setEnabled('node', 'page', TRUE);
     \Drupal::service('router.builder')->rebuild();
+    $this->resetAll();
 
     $pages = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['title' => 'Page 2']);
     $page_two = reset($pages);

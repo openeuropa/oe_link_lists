@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Drupal\content_moderation\Hook\ContentModerationHooks;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
@@ -342,7 +343,15 @@ function oe_link_lists_local_entity_access(EntityInterface $entity, $operation, 
   }
 
   if (function_exists('content_moderation_entity_access')) {
+    // For Drupal 10, execute the hook function directly.
     return content_moderation_entity_access($entity, $operation, $account);
+  }
+  elseif (class_exists(ContentModerationHooks::class)) {
+    // For Drupal 11, use the class that contains the hook implementations.
+    // Invoking the hook is not possible, since it is disabled.
+    // @see oe_link_lists_local_module_implements_alter()
+    $content_moderation_hooks = new ContentModerationHooks();
+    return $content_moderation_hooks->entityAccess($entity, $operation, $account);
   }
 
   return AccessResult::neutral();

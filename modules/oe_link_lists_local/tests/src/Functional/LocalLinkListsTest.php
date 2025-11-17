@@ -51,15 +51,17 @@ class LocalLinkListsTest extends BrowserTestBase {
     $type_path = 'admin/structure/types/manage/page/fields/add-field';
     $this->drupalGet($type_path);
 
-    $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
-
-    // @todo Remove when support for 10.2.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->pressButton('Continue');
+    $save_setting_button_label = 'Save settings';
+    // @todo Remove when support for 11.1.x is dropped.
+    if (version_compare(\Drupal::VERSION, '11.2', '>=')) {
+      $this->getSession()->getPage()->findLink('Reference')->click();
+      $save_setting_button_label = 'Save';
     }
     else {
-      $this->getSession()->getPage()->pressButton('Change field group');
+      $this->getSession()->getPage()->selectFieldOption('Reference', 'reference');
     }
+
+    $this->getSession()->getPage()->pressButton('Continue');
 
     $this->getSession()->getPage()->selectFieldOption('Other', 'entity_reference');
     $this->getSession()->getPage()->fillField('Label', 'Link list');
@@ -67,14 +69,14 @@ class LocalLinkListsTest extends BrowserTestBase {
     $this->getSession()->getPage()->pressButton('Continue');
     $this->getSession()->getPage()->selectFieldOption('Type of item to reference', 'link_list');
     $this->getSession()->getPage()->pressButton('Update settings');
-    $this->getSession()->getPage()->pressButton('Save settings');
+    $this->getSession()->getPage()->pressButton($save_setting_button_label);
 
     $this->assertSession()->fieldExists('Local field');
     $this->assertSession()->checkboxNotChecked('Local field');
     $this->getSession()->getPage()->checkField('Dynamic');
 
     // Save the field without marking it as local.
-    $this->getSession()->getPage()->pressButton('Save settings');
+    $this->getSession()->getPage()->pressButton($save_setting_button_label);
     $this->assertSession()->pageTextContains('Saved Link list configuration.');
 
     // Reload the form and assert it is correct.
@@ -97,14 +99,13 @@ class LocalLinkListsTest extends BrowserTestBase {
     // Assert we don't have the checkbox available on other field types.
     $this->drupalGet($type_path);
 
-    $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
-
-    // @todo Remove when support for 10.2.x is dropped.
-    if (version_compare(\Drupal::VERSION, '10.3', '>')) {
-      $this->getSession()->getPage()->pressButton('Continue');
+    // @todo Remove when support for 11.1.x is dropped.
+    if (version_compare(\Drupal::VERSION, '11.2', '>=')) {
+      $this->getSession()->getPage()->findLink('Plain text')->click();
     }
     else {
-      $this->getSession()->getPage()->pressButton('Change field group');
+      $this->getSession()->getPage()->selectFieldOption('Reference', 'plain_text');
+      $this->getSession()->getPage()->pressButton('Continue');
     }
 
     $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
@@ -112,7 +113,7 @@ class LocalLinkListsTest extends BrowserTestBase {
     $this->getSession()->getPage()->fillField('Machine-readable name', 'field_text');
     $this->getSession()->getPage()->pressButton('Continue');
     $this->assertSession()->fieldNotExists('Local field');
-    $this->getSession()->getPage()->pressButton('Save settings');
+    $this->getSession()->getPage()->pressButton($save_setting_button_label);
   }
 
 }

@@ -59,7 +59,7 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Entity type');
     $expected = [
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'link_list' => 'Link list',
       'node' => 'Content',
       'user' => 'User',
@@ -67,18 +67,18 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     if ($this->container->get('entity_type.manager')->hasDefinition('path_alias')) {
       $expected['path_alias'] = 'URL alias';
     }
-    $this->assertEquals($expected, $this->getOptions($select));
+    $this->assertEquals($expected, $this->getSelectOptions($select));
 
     // Select the node and assert we can see all the content types.
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'node');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Bundle');
     $expected = [
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'page' => 'Basic page',
       'article' => 'Article',
     ];
-    $this->assertEquals($expected, $this->getOptions($select));
+    $this->assertEquals($expected, $this->getSelectOptions($select));
 
     // Disable the article bundle from the list of selectable entity types.
     \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
@@ -102,10 +102,10 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Bundle');
     $expected = [
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'page' => 'Basic page',
     ];
-    $this->assertEquals($expected, $this->getOptions($select));
+    $this->assertEquals($expected, $this->getSelectOptions($select));
 
     // Select the user option and save the content.
     $this->getSession()->getPage()->selectFieldOption('Entity type', 'user');
@@ -125,11 +125,11 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $select = $this->assertSession()->selectExists('Entity type');
     $this->assertEquals('user', $select->getValue());
     $this->assertEquals([
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'link_list' => 'Link list',
       'node' => 'Content',
       'user' => 'User',
-    ], $this->getOptions($select));
+    ], $this->getSelectOptions($select));
 
     // Leave only node (article) enabled.
     \Drupal::configFactory()->getEditable('oe_link_lists_internal_source.settings')->set('allowed_entity_bundles', [
@@ -141,18 +141,18 @@ class InternalLinkSourceAlterabilityTest extends InternalLinkSourceTestBase {
     $this->drupalGet($link_list->toUrl('edit-form'));
     $select = $this->assertSession()->selectExists('Entity type');
     $this->assertEquals([
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'node' => 'Content',
-    ], $this->getOptions($select));
+    ], $this->getSelectOptions($select));
 
     // Verify that the bundle select appears correctly.
     $select->selectOption('node');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $select = $this->assertSession()->selectExists('Bundle');
     $this->assertEquals([
-      '- Select -' => '- Select -',
+      '' => '- Select -',
       'article' => 'Article',
-    ], $this->getOptions($select));
+    ], $this->getSelectOptions($select));
 
     // Complete the selection to verify that no errors are triggered.
     $select->selectOption('article');
