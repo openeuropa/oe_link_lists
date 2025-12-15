@@ -480,6 +480,34 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     }
 
     $this->buildMoreLinkConfigurationForm($items, $delta, $element, $form, $form_state);
+
+    $element['link_display']['#element_validate'][] = [$this, 'validateDisplayFormElement'];
+  }
+
+  /**
+   * Validates the form element before extraction.
+   *
+   * @param array $element
+   *   The element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param array $form
+   *   The form.
+   */
+  public function validateDisplayFormElement($element, FormStateInterface $form_state, $form): void {
+    $parents = $element['#parents'];
+    $plugin_id = $form_state->getValue(array_merge($parents, [
+      'plugin',
+    ]));
+
+    if ($plugin_id && isset($element['plugin_configuration_wrapper'][$plugin_id])) {
+      /** @var \Drupal\Core\Plugin\PluginFormInterface $plugin */
+      $plugin = $this->linkDisplayPluginManager->createInstance($plugin_id);
+
+      $plugin_configuration_element = $element['plugin_configuration_wrapper'][$plugin_id];
+      $subform_state = SubformState::createForSubform($plugin_configuration_element, $form_state->getCompleteForm(), $form_state);
+      $plugin->validateConfigurationForm($plugin_configuration_element, $subform_state);
+    }
   }
 
   /**

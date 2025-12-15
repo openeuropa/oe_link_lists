@@ -27,6 +27,7 @@ class ConfigurableTitleTestDisplay extends LinkDisplayPluginBase {
   public function defaultConfiguration() {
     return [
       'link' => TRUE,
+      'no_validate' => NULL,
     ];
   }
 
@@ -40,7 +41,24 @@ class ConfigurableTitleTestDisplay extends LinkDisplayPluginBase {
       '#default_value' => $this->configuration['link'],
     ];
 
+    // Textfield that will prevent validation if filled in.
+    $form['no_validate'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('No validate'),
+      '#default_value' => $this->configuration['no_validate'],
+    ];
+
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::validateConfigurationForm($form, $form_state);
+    if ($form_state->getValue('no_validate')) {
+      $form_state->setError($form, $this->t('The no_validate value cannot be filled in.'));
+    }
   }
 
   /**
