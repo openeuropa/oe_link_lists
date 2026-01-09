@@ -265,7 +265,14 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->checkboxChecked('Link');
     $this->getSession()->getPage()->uncheckField('Link');
+    // Assert the validation.
+    $this->getSession()->getPage()->fillField('No validate', 'Test validation');
     $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->elementTextContains('css', '.messages--error', 'The no_validate value cannot be filled in.');
+
+    $this->getSession()->getPage()->fillField('No validate', '');
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->elementNotExists('css', '.messages--error');
 
     $storage->resetCache();
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
@@ -274,6 +281,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertEquals('test_configurable_title', $configuration['display']['plugin']);
     $this->assertEquals([
       'link' => FALSE,
+      'no_validate' => NULL,
     ], $configuration['display']['plugin_configuration']);
   }
 
