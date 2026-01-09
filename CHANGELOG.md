@@ -1,11 +1,22 @@
 # Changelog
 
+## [1.13.0](https://github.com/openeuropa/oe_link_lists/tree/1.13.0) (2026-01-09)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.12.0...1.13.0)
+
+**Merged pull requests:**
+
+- EWPP-6400: Update testing matrix. [\#180](https://github.com/openeuropa/oe_link_lists/pull/180) ([nagyad](https://github.com/nagyad))
+- EWPP-6236: Link display plugin validation. [\#178](https://github.com/openeuropa/oe_link_lists/pull/178) ([upchuk](https://github.com/upchuk))
+- EWPP-6261: Bump composer/installers to 2.x. [\#177](https://github.com/openeuropa/oe_link_lists/pull/177) ([nagyad](https://github.com/nagyad))
+
 ## [1.12.0](https://github.com/openeuropa/oe_link_lists/tree/1.12.0) (2025-11-17)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.11.0...1.12.0)
 
 **Merged pull requests:**
 
+- Release-1.12.0: Update changelog. [\#176](https://github.com/openeuropa/oe_link_lists/pull/176) ([hernani](https://github.com/hernani))
 - EWPP-6064: Upgrade to Drupal 11.2. [\#173](https://github.com/openeuropa/oe_link_lists/pull/173) ([sergepavle](https://github.com/sergepavle))
 
 ## [1.11.0](https://github.com/openeuropa/oe_link_lists/tree/1.11.0) (2025-10-21)
