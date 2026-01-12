@@ -367,6 +367,16 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $select = $this->assertSession()->selectExists('Number of items');
     // 20 items are selected by default.
     $this->assertEquals(20, $select->getValue());
+    // Assert the available options.
+    $options = [];
+    foreach ($select->findAll('xpath', '//option') as $option) {
+      $options[$option->getAttribute('value')] = $option->getText();
+    }
+    $options_range = range(1, 20);
+    $this->assertEquals(array_combine($options_range, $options_range) + [
+      '50' => '50',
+      '0' => '100',
+    ], $options);
 
     // Show all links.
     $this->getSession()->getPage()->selectFieldOption('Number of items', '0');
