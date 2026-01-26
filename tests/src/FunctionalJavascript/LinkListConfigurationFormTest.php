@@ -152,6 +152,9 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('Title', 'The title');
     $this->assertSession()->selectExists('Link source');
 
+    // Check if title is selected as  default by event subscriber.
+    $this->assertSame('title', $this->assertSession()->selectExists('Link display')->getValue());
+
     // Assert we can only see the source plugins that work with the Dynamic
     // bundle.
     $this->assertFieldSelectOptions('Link source', [
@@ -358,9 +361,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->getSession()->getPage()->fillField('Administrative title', 'The admin title');
     $this->getSession()->getPage()->fillField('Title', 'The title');
 
-    // Select and configure the display plugin.
-    $this->getSession()->getPage()->selectFieldOption('Link display', 'Title');
-    $this->assertSession()->assertWaitOnAjaxRequest();
+    // Check if title is default and configure the display plugin.
+    $this->assertSame('title', $this->assertSession()->selectExists('Link display')->getValue());
     $this->assertSession()->pageTextContains('This plugin does not have any configuration options.');
 
     // Check that the Size field exists.

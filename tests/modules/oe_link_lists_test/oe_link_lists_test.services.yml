@@ -1,0 +1,5 @@
+services:
+  oe_link_lists_test.link_list_default_display_plugin_subscriber:
+    class: Drupal\oe_link_lists_test\EventSubscriber\LinkListTestDefaultDisplayPluginSubscriber
+    tags:
+      - { name: event_subscriber }
