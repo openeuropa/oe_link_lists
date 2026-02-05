@@ -537,9 +537,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     ]);
     $first_parent = array_shift($parents);
 
-    $options = [0 => $this->t('All')];
     $range = range(1, 20);
-    $options += array_combine($range, $range);
+    $options = array_combine($range, $range);
+    $options += [
+      50 => $this->t('50'),
+      0 => $this->t('100'),
+    ];
 
     $element['link_display']['size'] = [
       '#type' => 'select',
