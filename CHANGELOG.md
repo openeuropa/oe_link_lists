@@ -1,11 +1,21 @@
 # Changelog
 
+## [1.14.0](https://github.com/openeuropa/oe_link_lists/tree/1.14.0) (2026-03-02)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.13.0...1.14.0)
+
+**Merged pull requests:**
+
+- EWPP-6419: Link list form improvements. [\#182](https://github.com/openeuropa/oe_link_lists/pull/182) ([gorsky87](https://github.com/gorsky87))
+- EWPP-6364: Update options for link list pager. [\#179](https://github.com/openeuropa/oe_link_lists/pull/179) ([sergepavle](https://github.com/sergepavle))
+
 ## [1.13.0](https://github.com/openeuropa/oe_link_lists/tree/1.13.0) (2026-01-09)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.12.0...1.13.0)
 
 **Merged pull requests:**
 
+- Release-1.13.0: Update changelog. [\#181](https://github.com/openeuropa/oe_link_lists/pull/181) ([nagyad](https://github.com/nagyad))
 - EWPP-6400: Update testing matrix. [\#180](https://github.com/openeuropa/oe_link_lists/pull/180) ([nagyad](https://github.com/nagyad))
 - EWPP-6236: Link display plugin validation. [\#178](https://github.com/openeuropa/oe_link_lists/pull/178) ([upchuk](https://github.com/upchuk))
 - EWPP-6261: Bump composer/installers to 2.x. [\#177](https://github.com/openeuropa/oe_link_lists/pull/177) ([nagyad](https://github.com/nagyad))

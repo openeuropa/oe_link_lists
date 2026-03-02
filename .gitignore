@@ -10,6 +10,7 @@ node_modules
 npm-debug.log
 package-lock.json
 phpunit.xml
+recipes
 runner.yml
 vendor
 yarn.lock
