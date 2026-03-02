@@ -15,12 +15,14 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\ElementInfoManagerInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
+use Drupal\oe_link_lists\Event\DisplayPluginDefaultResolverEvent;
 use Drupal\oe_link_lists\LinkDisplayPluginManagerInterface;
 use Drupal\oe_link_lists\LinkListConfigurationManager;
 use Drupal\oe_link_lists\LinkSourcePluginManagerInterface;
 use Drupal\oe_link_lists\MoreLinkPluginManagerInterface;
 use Drupal\oe_link_lists\NoResultsBehaviourPluginManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Defines the 'link_list_configuration' field widget.
@@ -87,6 +89,13 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
   protected $moreLinkPluginManager;
 
   /**
+   * The event dispatcher.
+   *
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
    * Constructs a LinkListConfigurationWidget object.
    *
    * @param string $plugin_id
@@ -113,10 +122,12 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
    *   The no_results_behaviour plugin manager.
    * @param \Drupal\oe_link_lists\MoreLinkPluginManagerInterface $more_link_manager
    *   The more_link plugin manager.
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
    *
    * @SuppressWarnings(PHPMD.ExcessiveParameterList)
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager, MoreLinkPluginManagerInterface $more_link_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LinkSourcePluginManagerInterface $link_source_plugin_manager, LinkDisplayPluginManagerInterface $link_display_plugin_manager, EntityTypeManagerInterface $entity_type_manager, ElementInfoManagerInterface $element_info_manager, LinkListConfigurationManager $link_list_configuration_manager, NoResultsBehaviourPluginManagerInterface $no_results_behaviour_manager, MoreLinkPluginManagerInterface $more_link_manager, EventDispatcherInterface $event_dispatcher) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
 
     $this->linkSourcePluginManager = $link_source_plugin_manager;
@@ -126,6 +137,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     $this->linkListConfigurationManager = $link_list_configuration_manager;
     $this->noResultsBehaviourPluginManager = $no_results_behaviour_manager;
     $this->moreLinkPluginManager = $more_link_manager;
+    $this->eventDispatcher = $event_dispatcher;
   }
 
   /**
@@ -144,7 +156,8 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
       $container->get('plugin.manager.element_info'),
       $container->get('oe_link_list.link_list_configuration_manager'),
       $container->get('plugin.manager.oe_link_lists.no_results_behaviour'),
-      $container->get('plugin.manager.oe_link_lists.more_link')
+      $container->get('plugin.manager.oe_link_lists.more_link'),
+      $container->get('event_dispatcher')
     );
   }
 
@@ -415,10 +428,17 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
 
     $display_plugin_options = $this->linkDisplayPluginManager->getPluginsAsOptions($link_list->bundle(), $link_source_plugin_id);
 
-    // If we don't have a plugin ID and there is only one available option,
-    // use that as the default.
-    if (!$plugin_id && count($display_plugin_options) === 1) {
-      $plugin_id = key($display_plugin_options);
+    // If no plugin is selected, allow subscribers to resolve the plugin.
+    // Fall back to the single available option if none was provided.
+    if (!$plugin_id) {
+      $event = new DisplayPluginDefaultResolverEvent(array_keys($display_plugin_options));
+      $this->eventDispatcher->dispatch($event, DisplayPluginDefaultResolverEvent::NAME);
+
+      $plugin_id = $event->getDefaultPluginId();
+
+      if (!$plugin_id && count($display_plugin_options) === 1) {
+        $plugin_id = array_key_first($display_plugin_options);
+      }
     }
 
     if ($display_plugin_options) {
