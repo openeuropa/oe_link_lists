@@ -21,6 +21,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
     'inline_entity_form',
     'composite_reference',
     'node',
+    'node_storage_body_field',
     'user',
     'field',
     'system',
@@ -40,6 +41,7 @@ class LinkListLinkTest extends EntityKernelTestBase {
     $this->installConfig([
       'field',
       'node',
+      'node_storage_body_field',
       'system',
       'composite_reference',
       'oe_link_lists_manual_source',
