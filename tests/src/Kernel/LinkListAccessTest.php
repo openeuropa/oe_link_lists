@@ -30,6 +30,7 @@ class LinkListAccessTest extends KernelTestBase {
     'composite_reference',
     'field',
     'node',
+    'node_storage_body_field',
     'text',
     'user',
     'system',
@@ -48,6 +49,7 @@ class LinkListAccessTest extends KernelTestBase {
     $this->installSchema('node', ['node_access']);
     $this->installConfig([
       'node',
+      'node_storage_body_field',
       'system',
       'entity_reference_revisions',
       'oe_link_lists',

@@ -23,6 +23,7 @@ class GroupLinkListConfigTest extends EntityKernelTestBase {
     'oe_link_lists_group',
     'group',
     'node',
+    'node_storage_body_field',
     'options',
     'views',
   ];

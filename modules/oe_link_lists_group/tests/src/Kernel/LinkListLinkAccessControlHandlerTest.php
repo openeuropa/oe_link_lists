@@ -32,6 +32,7 @@ class LinkListLinkAccessControlHandlerTest extends GroupKernelTestBase {
     'user',
     'link',
     'node',
+    'node_storage_body_field',
     'entity_reference_revisions',
     'inline_entity_form',
     'composite_reference',
