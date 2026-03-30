@@ -152,4 +152,54 @@ class LinkListAccessTest extends KernelTestBase {
     $this->assertEquals('<ul><li><a href="/node/1" hreflang="en">Published</a></li><li><a href="/node/2" hreflang="en">Unpublished</a></li><li><a href="/node/3" hreflang="en">Published revision</a></li></ul>', $html);
   }
 
+  /**
+   * Tests that the internal source size limit is applied after access checks.
+   */
+  public function testLinkAccessWithSizeLimit(): void {
+    $expected_links = [];
+    for ($index = 1; $index <= 10; $index++) {
+      $node = Node::create([
+        'title' => "Node $index",
+        'type' => 'page',
+        'status' => 0,
+      ]);
+
+      // We mark some nodes to be published.
+      if (in_array($index, [2, 3, 6, 8, 9], TRUE)) {
+        $node->setPublished();
+        $expected_links[] = sprintf('<li><a href="/node/%d" hreflang="en">Node %d</a></li>', $index, $index);
+      }
+      $node->save();
+    }
+
+    $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $storage->create([
+      'bundle' => 'dynamic',
+      'title' => $this->randomString(),
+      'administrative_title' => $this->randomString(),
+    ]);
+    $link_list->setConfiguration([
+      'source' => [
+        'plugin' => 'internal',
+        'plugin_configuration' => [
+          'entity_type' => 'node',
+          'bundle' => 'page',
+        ],
+      ],
+      'display' => [
+        'plugin' => 'test_configurable_title',
+      ],
+      'size' => 5,
+    ]);
+    $link_list->save();
+
+    $this->setUpCurrentUser([], ['access content']);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+
+    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
+  }
+
 }
