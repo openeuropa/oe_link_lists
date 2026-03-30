@@ -98,6 +98,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
   public function defaultConfiguration() {
     return [
       'links' => [],
+      'sort_alphabetical' => FALSE,
     ];
   }
 
@@ -105,9 +106,15 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    // We do nothing here because due to the complexity of the inline entity
-    // form embed we have to handle it in a form alter.
-    // @see oe_link_lists_manual_source_link_list_form_handle_alter()
+    // This won't ne shown in the traditional sense in the plugin form but
+    // instead it's added via
+    // oe_link_lists_manual_source_link_list_form_handle_alter(). We add it
+    // here for the sake of completeness.
+    $form['sort_alphabetical'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Sort links alphabetically'),
+      '#default_value' => $this->configuration['sort_alphabetical'],
+    ];
     return $form;
   }
 
@@ -115,8 +122,7 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // Nothing to do here as we copy the referenced link IDs to the plugin
-    // configuration inside preSave().
+    $this->configuration['sort_alphabetical'] = (bool) $form_state->getValue('sort_alphabetical');
   }
 
   /**
@@ -147,12 +153,14 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
     // Set the referenced link list links onto the plugin configuration. We
     // need to do this for all languages in case the link list is getting saved
     // together with multiple languages (as opposed to a translation-specific
-    // save).
+    // save). We also propagate sort_alphabetical to all translations since it
+    // is not a per-translation setting.
     foreach ($entity->getTranslationLanguages(TRUE) as $language) {
       $translation = $entity->getTranslation($language->getId());
       $ids = $this->getLinkIds($translation);
       $configuration = $translation->getConfiguration();
       $configuration['source']['plugin_configuration']['links'] = $ids;
+      $configuration['source']['plugin_configuration']['sort_alphabetical'] = $this->configuration['sort_alphabetical'];
       $translation->setConfiguration($configuration);
     }
   }
@@ -166,31 +174,72 @@ class ManualLinkSource extends LinkSourcePluginBase implements ContainerFactoryP
       return new LinkCollection();
     }
 
-    $ids = array_slice($ids, $offset, $limit);
+    $sort_alphabetical = !empty($this->configuration['sort_alphabetical']);
+
+    // When sorting alphabetically, all links must be loaded and resolved first
+    // so that pagination is applied to the sorted result. Otherwise, we can
+    // slice.
+    $ids_to_load = $sort_alphabetical ? $ids : array_slice($ids, $offset, $limit);
+
     /** @var \Drupal\oe_link_lists_manual_source\Entity\LinkListLinkInterface[] $link_entities */
-    $link_entities = $this->entityTypeManager->getStorage('link_list_link')->loadMultipleRevisions(array_column($ids, 'entity_revision_id'));
+    $link_entities = $this->entityTypeManager->getStorage('link_list_link')->loadMultipleRevisions(array_column($ids_to_load, 'entity_revision_id'));
 
     // For legacy reasons, we need to first dispatch the event responsible for
     // resolving all links if there are any subscribers to this event.
     // @phpstan-ignore-next-line
     $listeners = $this->eventDispatcher->getListeners(ManualLinksResolverEvent::NAME);
     if ($listeners) {
-      return $this->legacyResolveLinks($link_entities);
+      $links = $this->legacyResolveLinks($link_entities);
     }
-
-    // Otherwise we resolve the links by dispatching an event for each of them.
-    $links = new LinkCollection();
-    foreach ($link_entities as $link_entity) {
-      $event = new ManualLinkResolverEvent($link_entity);
-      $this->eventDispatcher->dispatch($event, ManualLinkResolverEvent::NAME);
-      if ($event->hasLink()) {
-        $link = $event->getLink();
-        $link->addCacheableDependency($link_entity);
-        $links->add($link);
+    else {
+      // Otherwise we resolve the links by dispatching an event for each of
+      // them.
+      $links = new LinkCollection();
+      foreach ($link_entities as $link_entity) {
+        $event = new ManualLinkResolverEvent($link_entity);
+        $this->eventDispatcher->dispatch($event, ManualLinkResolverEvent::NAME);
+        if ($event->hasLink()) {
+          $link = $event->getLink();
+          $link->addCacheableDependency($link_entity);
+          $links->add($link);
+        }
       }
     }
 
+    if ($sort_alphabetical) {
+      $links = $this->sortLinksAlphabetically($links, $offset, $limit);
+    }
+
     return $links;
+  }
+
+  /**
+   * Sorts a link collection alphabetically by resolved title.
+   *
+   * @param \Drupal\oe_link_lists\LinkCollectionInterface $links
+   *   The link collection to sort.
+   * @param int $offset
+   *   The offset to apply after sorting.
+   * @param int|null $limit
+   *   The limit to apply after sorting.
+   *
+   * @return \Drupal\oe_link_lists\LinkCollectionInterface
+   *   A new link collection with the sorted and paginated links.
+   */
+  protected function sortLinksAlphabetically(LinkCollectionInterface $links, int $offset = 0, ?int $limit = NULL): LinkCollectionInterface {
+    $items = $links->toArray();
+
+    $collator = new \Collator('root');
+    $collator->setStrength(\Collator::SECONDARY);
+
+    usort($items, function ($a, $b) use ($collator) {
+      $a_lower = mb_strtolower($a->getTitle(), 'UTF-8');
+      $b_lower = mb_strtolower($b->getTitle(), 'UTF-8');
+      return $collator->compare($a_lower, $b_lower);
+    });
+
+    $items = array_slice($items, $offset, $limit);
+    return new LinkCollection($items);
   }
 
   /**
