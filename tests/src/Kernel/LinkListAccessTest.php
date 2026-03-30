@@ -155,7 +155,70 @@ class LinkListAccessTest extends KernelTestBase {
   /**
    * Tests that the internal source size limit is applied after access checks.
    */
-  public function testLinkAccessWithSizeLimit(): void {
+  public function testSizeLimit(): void {
+    $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+    $link_list = $this->createInternalSourceLinkList(5);
+
+    $this->setUpCurrentUser([], ['access content']);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+
+    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
+  }
+
+  /**
+   * Tests that size and offset are applied to accessible links.
+   */
+  public function testSizeLimitWithOffset(): void {
+    $this->setUpCurrentUser([], ['access content']);
+    $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+
+    /** @var \Drupal\oe_link_lists_internal_source\Plugin\LinkSource\InternalLinkSource $plugin */
+    $plugin = $this->container
+      ->get('plugin.manager.oe_link_lists.link_source')
+      ->createInstance('internal', [
+        'entity_type' => 'node',
+        'bundle' => 'page',
+      ]);
+
+    $links = $plugin->getLinks(2, 2)->toArray();
+    $titles = array_map(static fn($link): string => $link->getTitle(), $links);
+
+    $this->assertEquals(['Node 6', 'Node 8'], $titles);
+  }
+
+  /**
+   * Tests that offset without a size still uses the unlimited query path.
+   */
+  public function testOffsetWithoutSizeLimit(): void {
+    $this->setUpCurrentUser([], ['access content']);
+    $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
+
+    /** @var \Drupal\oe_link_lists_internal_source\Plugin\LinkSource\InternalLinkSource $plugin */
+    $plugin = $this->container
+      ->get('plugin.manager.oe_link_lists.link_source')
+      ->createInstance('internal', [
+        'entity_type' => 'node',
+        'bundle' => 'page',
+      ]);
+
+    $links = $plugin->getLinks(NULL, 2)->toArray();
+    $titles = array_map(static fn($link): string => $link->getTitle(), $links);
+
+    $this->assertEquals(['Node 3', 'Node 4', 'Node 5'], $titles);
+  }
+
+  /**
+   * Creates test nodes and returns the expected rendered links.
+   *
+   * @param int[] $published_indexes
+   *   The 1-based indexes that should be published.
+   *
+   * @return string[]
+   *   The expected rendered list items for accessible nodes.
+   */
+  protected function createNodesForAccessTest(array $published_indexes): array {
     $expected_links = [];
     for ($index = 1; $index <= 10; $index++) {
       $node = Node::create([
@@ -164,14 +227,30 @@ class LinkListAccessTest extends KernelTestBase {
         'status' => 0,
       ]);
 
-      // We mark some nodes to be published.
-      if (in_array($index, [2, 3, 6, 8, 9], TRUE)) {
+      if (in_array($index, $published_indexes, TRUE)) {
         $node->setPublished();
-        $expected_links[] = sprintf('<li><a href="/node/%d" hreflang="en">Node %d</a></li>', $index, $index);
       }
+
       $node->save();
+
+      if ($node->isPublished()) {
+        $expected_links[] = sprintf('<li><a href="/node/%d" hreflang="en">Node %d</a></li>', $node->id(), $index);
+      }
     }
 
+    return $expected_links;
+  }
+
+  /**
+   * Creates an internal-source link list for a bundle.
+   *
+   * @param int|null $size
+   *   The optional size limit.
+   *
+   * @return \Drupal\oe_link_lists\Entity\LinkListInterface
+   *   The link list.
+   */
+  protected function createInternalSourceLinkList(?int $size = NULL) {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->create([
@@ -179,7 +258,8 @@ class LinkListAccessTest extends KernelTestBase {
       'title' => $this->randomString(),
       'administrative_title' => $this->randomString(),
     ]);
-    $link_list->setConfiguration([
+
+    $configuration = [
       'source' => [
         'plugin' => 'internal',
         'plugin_configuration' => [
@@ -190,16 +270,16 @@ class LinkListAccessTest extends KernelTestBase {
       'display' => [
         'plugin' => 'test_configurable_title',
       ],
-      'size' => 5,
-    ]);
+    ];
+
+    if ($size !== NULL) {
+      $configuration['size'] = $size;
+    }
+
+    $link_list->setConfiguration($configuration);
     $link_list->save();
 
-    $this->setUpCurrentUser([], ['access content']);
-    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
-    $build = $builder->view($link_list);
-    $html = (string) $this->container->get('renderer')->renderRoot($build);
-
-    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
+    return $link_list;
   }
 
 }
