@@ -153,7 +153,7 @@ class LinkListAccessTest extends KernelTestBase {
   }
 
   /**
-   * Tests that the internal source size limit is applied after access checks.
+   * Tests that the configured size yields the requested visible links.
    */
   public function testSizeLimit(): void {
     $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
@@ -168,49 +168,37 @@ class LinkListAccessTest extends KernelTestBase {
   }
 
   /**
-   * Tests that size and offset are applied to accessible links.
+   * Tests that size and page offset are applied to visible links.
    */
   public function testSizeLimitWithOffset(): void {
+    $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+    $link_list = $this->createInternalSourceLinkList(2, 2);
+
     $this->setUpCurrentUser([], ['access content']);
-    $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
 
-    /** @var \Drupal\oe_link_lists_internal_source\Plugin\LinkSource\InternalLinkSource $plugin */
-    $plugin = $this->container
-      ->get('plugin.manager.oe_link_lists.link_source')
-      ->createInstance('internal', [
-        'entity_type' => 'node',
-        'bundle' => 'page',
-      ]);
-
-    $links = $plugin->getLinks(2, 2)->toArray();
-    $titles = array_map(static fn($link): string => $link->getTitle(), $links);
-
-    $this->assertEquals(['Node 6', 'Node 8'], $titles);
+    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 2, 2)) . '</ul>', $html);
   }
 
   /**
-   * Tests that offset without a size still uses the unlimited query path.
+   * Tests that the page offset works when no size limit is configured.
    */
   public function testOffsetWithoutSizeLimit(): void {
+    $expected_links = $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
+    $link_list = $this->createInternalSourceLinkList(NULL, 2);
+
     $this->setUpCurrentUser([], ['access content']);
-    $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
 
-    /** @var \Drupal\oe_link_lists_internal_source\Plugin\LinkSource\InternalLinkSource $plugin */
-    $plugin = $this->container
-      ->get('plugin.manager.oe_link_lists.link_source')
-      ->createInstance('internal', [
-        'entity_type' => 'node',
-        'bundle' => 'page',
-      ]);
-
-    $links = $plugin->getLinks(NULL, 2)->toArray();
-    $titles = array_map(static fn($link): string => $link->getTitle(), $links);
-
-    $this->assertEquals(['Node 3', 'Node 4', 'Node 5'], $titles);
+    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 2)) . '</ul>', $html);
   }
 
   /**
-   * Creates test nodes and returns the expected rendered links.
+   * Creates test nodes and returns the expected rendered visible links.
    *
    * @param int[] $published_indexes
    *   The 1-based indexes that should be published.
@@ -246,11 +234,13 @@ class LinkListAccessTest extends KernelTestBase {
    *
    * @param int|null $size
    *   The optional size limit.
+   * @param int $page
+   *   The source offset.
    *
    * @return \Drupal\oe_link_lists\Entity\LinkListInterface
    *   The link list.
    */
-  protected function createInternalSourceLinkList(?int $size = NULL) {
+  protected function createInternalSourceLinkList(?int $size = NULL, int $page = 0) {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->create([
@@ -265,6 +255,7 @@ class LinkListAccessTest extends KernelTestBase {
         'plugin_configuration' => [
           'entity_type' => 'node',
           'bundle' => 'page',
+          'page' => $page,
         ],
       ],
       'display' => [

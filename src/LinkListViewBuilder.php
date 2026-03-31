@@ -268,10 +268,62 @@ class LinkListViewBuilder extends EntityViewBuilder {
     if ($source_plugin) {
       $plugin = $this->linkSourceManager->createInstance($source_plugin, $source_plugin_configuration);
       $size = isset($configuration['size']) && $configuration['size'] > 0 ? $configuration['size'] : NULL;
-      return $plugin->getLinks($size);
+      $offset = (int) $source_plugin_configuration['page'];
+
+      return $this->getVisibleLinksFromSource($plugin, $size, $offset);
     }
 
     return new LinkCollection();
+  }
+
+  /**
+   * Returns enough source links to render the requested visible slice.
+   *
+   * @param \Drupal\oe_link_lists\LinkSourceInterface $plugin
+   *   The source plugin.
+   * @param int|null $size
+   *   The number of visible links to collect, or NULL for all remaining links.
+   * @param int $offset
+   *   The number of visible links to skip.
+   *
+   * @return \Drupal\oe_link_lists\LinkCollectionInterface
+   *   The collected source links.
+   */
+  protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size, int $offset): LinkCollectionInterface {
+    $links = new LinkCollection();
+    $visible_offset = 0;
+    $visible_returned = 0;
+    $chunk_size = max($size ?? 0, 50);
+    $chunk_offset = 0;
+
+    while (TRUE) {
+      $chunk = $plugin->getLinks($chunk_size, $chunk_offset);
+      $links->addCacheableDependency($chunk);
+
+      foreach ($chunk as $link) {
+        /** @var \Drupal\oe_link_lists\LinkInterface $link */
+        $access = $link->access('view', NULL, TRUE);
+        $links->addCacheableDependency($access);
+        if (!$access->isAllowed()) {
+          continue;
+        }
+
+        if ($visible_offset++ < $offset) {
+          continue;
+        }
+
+        $links[] = $link;
+        if ($size !== NULL && ++$visible_returned >= $size) {
+          return $links;
+        }
+      }
+
+      if (count($chunk->toArray()) < $chunk_size) {
+        return $links;
+      }
+
+      $chunk_offset += $chunk_size;
+    }
   }
 
   /**

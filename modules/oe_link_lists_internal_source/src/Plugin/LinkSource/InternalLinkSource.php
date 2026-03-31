@@ -9,7 +9,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
@@ -328,6 +327,10 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     if ($entity_type->hasKey('bundle')) {
       $query->condition($entity_type->getKey('bundle'), $bundle_id);
     }
+    if ($limit !== NULL) {
+      $query->range($offset, $limit);
+    }
+
     // Run all the enabled filter plugins.
     $context = [
       'entity_type' => $entity_type_id,
@@ -349,99 +352,20 @@ class InternalLinkSource extends LinkSourcePluginBase implements ContainerFactor
     $event = new InternalSourceQueryEvent($query);
     $this->eventDispatcher->dispatch($event, InternalSourceQueryEvent::NAME);
 
-    if ($limit === NULL) {
-      $accessible_offset = 0;
-      foreach ($storage->loadMultiple($query->accessCheck(TRUE)->execute()) as $entity) {
-        $this->appendAccessibleLink($entity, $links, $accessible_offset, $offset);
-      }
-    }
-    else {
-      // Fetch results in query chunks so a configured limit yields that many
-      // accessible links even when inaccessible entities appear in the initial
-      // query window.
-      $chunk_size = max($limit, 50);
-      $query_offset = 0;
-      $accessible_offset = 0;
-      $returned = 0;
-
-      // Keep querying subsequent chunks until we collect enough accessible
-      // links or there are no more matching entities.
-      while (TRUE) {
-        $chunk_query = clone $query;
-        $ids = $chunk_query
-          ->range($query_offset, $chunk_size)
-          ->accessCheck(TRUE)
-          ->execute();
-
-        if (!$ids) {
-          break;
-        }
-
-        foreach ($storage->loadMultiple($ids) as $entity) {
-          if (!$this->appendAccessibleLink($entity, $links, $accessible_offset, $offset)) {
-            continue;
-          }
-
-          if (++$returned >= $limit) {
-            // Exit both loops as soon as the requested number of links is met.
-            break 2;
-          }
-        }
-
-        if (count($ids) < $chunk_size) {
-          break;
-        }
-
-        $query_offset += $chunk_size;
-      }
+    $entities = $storage->loadMultiple($query->accessCheck(TRUE)->execute());
+    foreach ($entities as $entity) {
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+      $entity = $this->entityRepository->getTranslationFromContext($entity);
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+      $event = new EntityValueResolverEvent($entity);
+      $this->eventDispatcher->dispatch($event, EntityValueResolverEvent::NAME);
+      $links[] = $event->getLink();
     }
 
     $links->addCacheContexts($entity_type->getListCacheContexts());
     $links->addCacheTags($entity_type->getListCacheTags());
 
     return $links;
-  }
-
-  /**
-   * Adds a link for an accessible entity.
-   *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   The entity to process.
-   * @param \Drupal\oe_link_lists\LinkCollectionInterface $links
-   *   The link collection to populate.
-   * @param int|null $accessible_offset
-   *   The number of accessible entities processed so far.
-   * @param int $offset
-   *   The accessible-link offset.
-   *
-   * @return bool
-   *   TRUE when a link was appended, FALSE otherwise.
-   */
-  protected function appendAccessibleLink(
-    ContentEntityInterface $entity,
-    LinkCollectionInterface $links,
-    ?int &$accessible_offset = NULL,
-    int $offset = 0,
-  ): bool {
-    $entity = $this->entityRepository->getTranslationFromContext($entity);
-    // Keep the entity-level access check here because the final rendered link
-    // access can still filter entities out after the entity query has applied
-    // its own access conditions.
-    $access = $entity->access('view', NULL, TRUE);
-    $links->addCacheableDependency($access);
-    if (!$access->isAllowed()) {
-      return FALSE;
-    }
-
-    if ($accessible_offset !== NULL && $accessible_offset++ < $offset) {
-      return FALSE;
-    }
-
-    $event = new EntityValueResolverEvent($entity);
-    $this->eventDispatcher->dispatch($event, EntityValueResolverEvent::NAME);
-    $links[] = $event->getLink();
-
-    return TRUE;
   }
 
   /**
