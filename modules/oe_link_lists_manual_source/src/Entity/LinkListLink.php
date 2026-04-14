@@ -190,25 +190,22 @@ class LinkListLink extends EditorialContentEntityBase implements LinkListLinkInt
       ->setDisplayConfigurable('view', TRUE)
       ->setRequired(FALSE);
 
-    $fields['teaser'] = BaseFieldDefinition::create('string_long')
+    $fields['teaser'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Teaser'))
       ->setDescription(t('The teaser of the link.'))
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
-      ->setSettings([
-        'max_length' => 2000,
-        'text_processing' => 0,
-      ])
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
         'label' => 'above',
-        'type' => 'string',
+        'type' => 'text_default',
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textarea',
+        'type' => 'text_textarea',
         'weight' => 11,
       ])
       ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE)
       ->setRequired(FALSE);
 
     $fields['parent_id'] = BaseFieldDefinition::create('string')

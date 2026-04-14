@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @file
+ * Install and update functions for OpenEuropa Manual Link Lists module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Change the teaser base field from string_long to text_long.
+ *
+ * This adds WYSIWYG support and proper HTML rendering for the teaser field
+ * on link_list_link entities.
+ */
+function oe_link_lists_manual_source_update_10001(): string {
+  $entity_type_id = 'link_list_link';
+  $field_name = 'teaser';
+  $default_format = 'simple_rich_text';
+
+  $database = \Drupal::database();
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+  $tables = [
+    $entity_type->getDataTable(),
+    $entity_type->getRevisionDataTable(),
+  ];
+
+  // Add the 'format' column to all relevant tables.
+  $format_spec = [
+    'type' => 'varchar_ascii',
+    'length' => 255,
+    'not null' => FALSE,
+  ];
+
+  foreach ($tables as $table) {
+    if ($table && $database->schema()->tableExists($table)) {
+      $format_column = $field_name . '__format';
+      if (!$database->schema()->fieldExists($table, $format_column)) {
+        $database->schema()->addField($table, $format_column, $format_spec);
+      }
+      // Set default format for existing teaser values.
+      $database->update($table)
+        ->fields([$format_column => $default_format])
+        ->isNotNull($field_name)
+        ->condition($field_name, '', '<>')
+        ->execute();
+    }
+  }
+
+  // Update the last installed field storage definition so Drupal knows the
+  // field is now text_long.
+  $field_storage_definition = $entity_definition_update_manager->getFieldStorageDefinition($field_name, $entity_type_id);
+  $entity_definition_update_manager->updateFieldStorageDefinition($field_storage_definition);
+
+  return 'Changed the teaser field from string_long to text_long for WYSIWYG support.';
+}
