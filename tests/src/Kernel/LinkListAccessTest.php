@@ -168,9 +168,9 @@ class LinkListAccessTest extends KernelTestBase {
   }
 
   /**
-   * Tests that size and page offset are applied to visible links.
+   * Tests visible links with a configured page and size limit.
    */
-  public function testSizeLimitWithOffset(): void {
+  public function testPageWithSizeLimit(): void {
     $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
     $link_list = $this->createInternalSourceLinkList(2, 2);
 
@@ -179,13 +179,13 @@ class LinkListAccessTest extends KernelTestBase {
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
 
-    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 2, 2)) . '</ul>', $html);
+    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 0, 2)) . '</ul>', $html);
   }
 
   /**
-   * Tests that the page offset works when no size limit is configured.
+   * Tests visible links with a configured page and no size limit.
    */
-  public function testOffsetWithoutSizeLimit(): void {
+  public function testPageWithoutSizeLimit(): void {
     $expected_links = $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
     $link_list = $this->createInternalSourceLinkList(NULL, 2);
 
@@ -194,7 +194,7 @@ class LinkListAccessTest extends KernelTestBase {
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
 
-    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 2)) . '</ul>', $html);
+    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
   }
 
   /**
@@ -203,7 +203,7 @@ class LinkListAccessTest extends KernelTestBase {
    * @param int[] $published_indexes
    *   The 1-based indexes that should be published.
    *
-   * @return string[]
+   * @return list<string>
    *   The expected rendered list items for accessible nodes.
    */
   protected function createNodesForAccessTest(array $published_indexes): array {
@@ -235,7 +235,7 @@ class LinkListAccessTest extends KernelTestBase {
    * @param int|null $size
    *   The optional size limit.
    * @param int $page
-   *   The source offset.
+   *   The configured page value.
    *
    * @return \Drupal\oe_link_lists\Entity\LinkListInterface
    *   The link list.

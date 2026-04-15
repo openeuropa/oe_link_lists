@@ -268,9 +268,7 @@ class LinkListViewBuilder extends EntityViewBuilder {
     if ($source_plugin) {
       $plugin = $this->linkSourceManager->createInstance($source_plugin, $source_plugin_configuration);
       $size = isset($configuration['size']) && $configuration['size'] > 0 ? $configuration['size'] : NULL;
-      $offset = (int) $source_plugin_configuration['page'];
-
-      return $this->getVisibleLinksFromSource($plugin, $size, $offset);
+      return $this->getVisibleLinksFromSource($plugin, $size);
     }
 
     return new LinkCollection();
@@ -283,36 +281,27 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *   The source plugin.
    * @param int|null $size
    *   The number of visible links to collect, or NULL for all remaining links.
-   * @param int $offset
-   *   The number of visible links to skip.
    *
    * @return \Drupal\oe_link_lists\LinkCollectionInterface
    *   The collected source links.
    */
-  protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size, int $offset): LinkCollectionInterface {
+  protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size): LinkCollectionInterface {
     $links = new LinkCollection();
-    $visible_offset = 0;
     $visible_returned = 0;
     $chunk_size = max($size ?? 0, 50);
-    $chunk_offset = 0;
 
-    while (TRUE) {
+    for ($chunk_offset = 0;; $chunk_offset += $chunk_size) {
       $chunk = $plugin->getLinks($chunk_size, $chunk_offset);
       $links->addCacheableDependency($chunk);
 
       foreach ($chunk as $link) {
-        /** @var \Drupal\oe_link_lists\LinkInterface $link */
         $access = $link->access('view', NULL, TRUE);
         $links->addCacheableDependency($access);
         if (!$access->isAllowed()) {
           continue;
         }
 
-        if ($visible_offset++ < $offset) {
-          continue;
-        }
-
-        $links[] = $link;
+        $links->add($link);
         if ($size !== NULL && ++$visible_returned >= $size) {
           return $links;
         }
@@ -321,8 +310,6 @@ class LinkListViewBuilder extends EntityViewBuilder {
       if (count($chunk->toArray()) < $chunk_size) {
         return $links;
       }
-
-      $chunk_offset += $chunk_size;
     }
   }
 
