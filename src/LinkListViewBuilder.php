@@ -284,6 +284,9 @@ class LinkListViewBuilder extends EntityViewBuilder {
    *
    * @return \Drupal\oe_link_lists\LinkCollectionInterface
    *   The collected source links.
+   *
+   * @todo Make $size parameter required, or set a default size to prevent
+   *   unlimited lists.
    */
   protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size): LinkCollectionInterface {
     $links = new LinkCollection();
