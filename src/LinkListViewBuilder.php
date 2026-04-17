@@ -309,6 +309,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
       }
 
       if (count($chunk->toArray()) < $chunk_size) {
+        // This must have been the last chunk.
+        // No further links are available in the source.
         return $links;
       }
     }
