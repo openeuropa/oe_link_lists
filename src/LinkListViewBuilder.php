@@ -302,7 +302,8 @@ class LinkListViewBuilder extends EntityViewBuilder {
         }
 
         $links->add($link);
-        if ($size !== NULL && ++$visible_returned >= $size) {
+        ++$visible_returned;
+        if ($size !== NULL && $visible_returned >= $size) {
           return $links;
         }
       }
