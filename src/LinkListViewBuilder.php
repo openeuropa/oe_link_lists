@@ -288,10 +288,15 @@ class LinkListViewBuilder extends EntityViewBuilder {
   protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size): LinkCollectionInterface {
     $links = new LinkCollection();
     $visible_returned = 0;
-    $chunk_size = max($size ?? 0, 50);
+    $chunk_offset = 0;
 
-    for ($chunk_offset = 0;; $chunk_offset += $chunk_size) {
+    while (TRUE) {
+      // Don't load more than 50 links at once.
+      $chunk_size = $size === NULL
+        ? 50
+        : min($size - $visible_returned, 50);
       $chunk = $plugin->getLinks($chunk_size, $chunk_offset);
+      $chunk_offset += $chunk_size;
       $links->addCacheableDependency($chunk);
 
       foreach ($chunk as $link) {
