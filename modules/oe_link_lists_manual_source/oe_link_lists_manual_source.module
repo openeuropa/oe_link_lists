@@ -7,7 +7,9 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\oe_link_lists_manual_source\Entity\Bundle\ManualLinkList;
 use Drupal\oe_link_lists_manual_source\LinkListLinkInlineForm;
@@ -54,4 +56,105 @@ function oe_link_lists_manual_source_entity_bundle_info_alter(&$bundles) {
   if (isset($bundles['link_list']['manual'])) {
     $bundles['link_list']['manual']['class'] = ManualLinkList::class;
   }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function oe_link_lists_manual_source_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof EntityFormInterface) {
+    return;
+  }
+  $entity = $form_object->getEntity();
+  if (!$entity instanceof LinkListInterface || $entity->bundle() !== 'manual') {
+    return;
+  }
+  oe_link_lists_manual_source_link_list_form_handle_alter($form, $form_state, $entity);
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function oe_link_lists_manual_source_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state): void {
+  if (!isset($entity_form['#entity']) || !$entity_form['#entity'] instanceof LinkListInterface) {
+    return;
+  }
+  $entity = $entity_form['#entity'];
+  if ($entity->bundle() !== 'manual') {
+    return;
+  }
+  oe_link_lists_manual_source_link_list_form_handle_alter($entity_form, $form_state, $entity, TRUE);
+}
+
+/**
+ * Adds the sort alphabetically checkbox to the manual link list form.
+ *
+ * @param array $form
+ *   The form or entity form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ * @param \Drupal\oe_link_lists\Entity\LinkListInterface $entity
+ *   The link list entity.
+ * @param bool $is_ief
+ *   Whether the form is embedded via inline entity form.
+ */
+function oe_link_lists_manual_source_link_list_form_handle_alter(array &$form, FormStateInterface $form_state, LinkListInterface $entity, bool $is_ief = FALSE): void {
+  $configuration = $entity->getConfiguration();
+  $sort_alphabetical = $configuration['source']['plugin_configuration']['sort_alphabetical'] ?? FALSE;
+
+  $form['sort_alphabetical'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Sort links alphabetically'),
+    '#default_value' => $sort_alphabetical,
+    '#weight' => 10,
+  ];
+
+  if ($is_ief) {
+    $form['#ief_element_submit'][] = 'oe_link_lists_manual_source_link_list_ief_submit';
+  }
+  else {
+    $form['#entity_builders'][] = 'oe_link_lists_manual_source_link_list_entity_builder';
+  }
+}
+
+/**
+ * Entity builder for the manual link list form.
+ *
+ * Writes the sort_alphabetical value into the entity's plugin configuration
+ * so it is available in ManualLinkSource::preSave().
+ */
+function oe_link_lists_manual_source_link_list_entity_builder(string $entity_type, LinkListInterface $entity, array &$form, FormStateInterface $form_state): void {
+  $configuration = $entity->getConfiguration();
+  if (!isset($configuration['source'])) {
+    // Initialize the source structure so that the auto-plugin check in
+    // LinkListForm::buildEntity() and LinkList::preSave() is not bypassed by
+    // a partial configuration array.
+    $configuration['source'] = [
+      'plugin' => 'manual_links',
+      'plugin_configuration' => [],
+    ];
+  }
+  $configuration['source']['plugin_configuration']['sort_alphabetical'] = (bool) $form_state->getValue('sort_alphabetical');
+  $entity->setConfiguration($configuration);
+}
+
+/**
+ * IEF element submit callback for the manual link list form.
+ *
+ * Writes the sort_alphabetical value into the entity's plugin configuration
+ * when the link list is embedded via inline entity form.
+ */
+function oe_link_lists_manual_source_link_list_ief_submit(array $entity_form, FormStateInterface $form_state): void {
+  /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $entity */
+  $entity = $entity_form['#entity'];
+  $configuration = $entity->getConfiguration();
+  if (!isset($configuration['source'])) {
+    $configuration['source'] = [
+      'plugin' => 'manual_links',
+      'plugin_configuration' => [],
+    ];
+  }
+  $configuration['source']['plugin_configuration']['sort_alphabetical'] = (bool) $entity_form['sort_alphabetical']['#value'];
+  $entity->setConfiguration($configuration);
 }

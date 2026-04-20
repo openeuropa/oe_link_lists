@@ -360,4 +360,124 @@ class ManualLinkSourcePluginTest extends KernelTestBase {
     $this->assertEquals($configured_ids['en'], $configured_ids['fr']);
   }
 
+  /**
+   * Tests alphabetical sorting with translated link titles.
+   */
+  public function testAlphabeticalSort(): void {
+    $this->container->get('state')->set('oe_link_lists_manual_source_test_subscriber_resolve', TRUE);
+
+    // Create FR language.
+    $language = ConfigurableLanguage::createFromLangcode('fr');
+    $language->save();
+
+    $config = $this->config('language.negotiation');
+    $config->set('url.prefixes', [
+      'en' => 'en',
+      'fr' => 'fr',
+    ])->save();
+
+    $this->container->get('content_translation.manager')->setEnabled('link_list', 'manual', TRUE);
+    $this->container->get('content_translation.manager')->setEnabled('link_list_link', 'external', TRUE);
+    $this->container->get('kernel')->rebuildContainer();
+    $this->container->get('router.builder')->rebuild();
+
+    $language_manager = $this->container->get('language_manager');
+    $entity_type_manager = $this->container->get('entity_type.manager');
+    $link_storage = $entity_type_manager->getStorage('link_list_link');
+
+    // EN order: Zebra, Apple, Mango -> sorted EN: Apple, Mango, Zebra.
+    // FR titles: Citron, Abricot, Mangue.
+    // EN order stored: Citron FR, Abricot FR, Mangue FR -> sorted FR: Abricot,
+    // Citron, Mangue.
+    $link_one = $link_storage->create([
+      'bundle' => 'external',
+      'url' => 'http://example.com/1',
+      'title' => 'Zebra',
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $link_one->addTranslation('fr', $link_one->toArray());
+    $translation->set('title', 'Citron');
+    $link_one->save();
+
+    $link_two = $link_storage->create([
+      'bundle' => 'external',
+      'url' => 'http://example.com/2',
+      'title' => 'Apple',
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $link_two->addTranslation('fr', $link_two->toArray());
+    $translation->set('title', 'Abricot');
+    $link_two->save();
+
+    $link_three = $link_storage->create([
+      'bundle' => 'external',
+      'url' => 'http://example.com/3',
+      'title' => 'Mango',
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $link_three->addTranslation('fr', $link_three->toArray());
+    $translation->set('title', 'Mangue');
+    $link_three->save();
+
+    $list_storage = $entity_type_manager->getStorage('link_list');
+    $list = $list_storage->create([
+      'title' => 'Sort test list',
+      'bundle' => 'manual',
+      'links' => [$link_one, $link_two, $link_three],
+      'status' => 1,
+      'langcode' => 'en',
+    ]);
+    $translation = $list->addTranslation('fr', $list->toArray());
+    $translation->set('title', 'Sort test list FR');
+    $list->save();
+
+    $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
+    $plugin_configuration = $list->getConfiguration()['source']['plugin_configuration'];
+
+    // Without sorting, original order is preserved: Zebra, Apple, Mango.
+    $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
+    $links = $plugin->getLinks();
+    $this->assertCount(3, $links);
+    $this->assertEquals('Zebra', $links[0]->getTitle());
+    $this->assertEquals('Apple', $links[1]->getTitle());
+    $this->assertEquals('Mango', $links[2]->getTitle());
+
+    // Switch to FR and assert original (unsorted) order is preserved.
+    $this->container->get('language.default')->set($language);
+    $language_manager->reset();
+
+    $links = $plugin->getLinks();
+    $this->assertCount(3, $links);
+    $this->assertEquals('Citron', $links[0]->getTitle());
+    $this->assertEquals('Abricot', $links[1]->getTitle());
+    $this->assertEquals('Mangue', $links[2]->getTitle());
+
+    // Restore EN for the sort assertions below.
+    $this->container->get('language.default')->set($language_manager->getLanguage('en'));
+    $language_manager->reset();
+
+    $plugin_configuration['sort_alphabetical'] = TRUE;
+    $plugin = $plugin_manager->createInstance('manual_links', $plugin_configuration);
+
+    // In EN: should sort as Apple, Mango, Zebra.
+    $links = $plugin->getLinks();
+    $this->assertCount(3, $links);
+    $this->assertEquals('Apple', $links[0]->getTitle());
+    $this->assertEquals('Mango', $links[1]->getTitle());
+    $this->assertEquals('Zebra', $links[2]->getTitle());
+
+    // Switch to FR: should sort by FR titles as Abricot, Citron, Mangue.
+    $this->container->get('language.default')->set($language);
+    $language_manager->reset();
+
+    $links = $plugin->getLinks();
+    $this->assertCount(3, $links);
+    $this->assertEquals('Abricot', $links[0]->getTitle());
+    $this->assertEquals('Citron', $links[1]->getTitle());
+    $this->assertEquals('Mangue', $links[2]->getTitle());
+  }
+
 }

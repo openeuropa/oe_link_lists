@@ -222,6 +222,53 @@ class ManualLinkListFormTest extends ManualLinkListTestBase {
   }
 
   /**
+   * Tests that the sort alphabetically option is saved correctly.
+   */
+  public function testSortAlphabetically(): void {
+    $web_user = $this->drupalCreateUser($this->userPermissions);
+    $this->drupalLogin($web_user);
+
+    /** @var \Drupal\Core\Entity\EntityStorageInterface $link_list_storage */
+    $link_list_storage = \Drupal::service('entity_type.manager')->getStorage('link_list');
+
+    $this->drupalGet('link_list/add/manual');
+    $this->getSession()->getPage()->fillField('Title', 'Test list');
+    $this->getSession()->getPage()->fillField('Administrative title', 'List 1');
+
+    $this->getSession()->getPage()->selectFieldOption('Link display', 'Links');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->selectFieldOption('No results behaviour', 'Hide');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    // Assert the checkbox is present and unchecked by default.
+    $this->assertSession()->fieldExists('Sort links alphabetically');
+    $this->assertSession()->checkboxNotChecked('Sort links alphabetically');
+
+    // Check the checkbox and save.
+    $this->getSession()->getPage()->checkField('Sort links alphabetically');
+    $this->getSession()->getPage()->pressButton('Save');
+
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $link_list_storage->load(1);
+    $configuration = $link_list->getConfiguration();
+    $this->assertEquals('manual_links', $configuration['source']['plugin']);
+    $this->assertTrue($configuration['source']['plugin_configuration']['sort_alphabetical']);
+
+    // Edit again and verify the checkbox is checked.
+    $this->drupalGet($link_list->toUrl('edit-form'));
+    $this->assertSession()->checkboxChecked('Sort links alphabetically');
+
+    // Uncheck and save.
+    $this->getSession()->getPage()->uncheckField('Sort links alphabetically');
+    $this->getSession()->getPage()->pressButton('Save');
+
+    $link_list_storage->resetCache();
+    $link_list = $link_list_storage->load(1);
+    $configuration = $link_list->getConfiguration();
+    $this->assertFalse($configuration['source']['plugin_configuration']['sort_alphabetical']);
+  }
+
+  /**
    * Tests that the manual list can work with other link bundles.
    */
   public function testExtraBundle(): void {
