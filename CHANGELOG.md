@@ -1,11 +1,20 @@
 # Changelog
 
+## [1.15.0](https://github.com/openeuropa/oe_link_lists/tree/1.15.0) (2026-04-20)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.14.0...1.15.0)
+
+**Merged pull requests:**
+
+- EWPP-6535: Manual link lists alphabetical sort. [\#185](https://github.com/openeuropa/oe_link_lists/pull/185) ([upchuk](https://github.com/upchuk))
+
 ## [1.14.0](https://github.com/openeuropa/oe_link_lists/tree/1.14.0) (2026-03-02)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.13.0...1.14.0)
 
 **Merged pull requests:**
 
+- Release-1.14.0: Update changelog. [\#183](https://github.com/openeuropa/oe_link_lists/pull/183) ([nagyad](https://github.com/nagyad))
 - EWPP-6419: Link list form improvements. [\#182](https://github.com/openeuropa/oe_link_lists/pull/182) ([gorsky87](https://github.com/gorsky87))
 - EWPP-6364: Update options for link list pager. [\#179](https://github.com/openeuropa/oe_link_lists/pull/179) ([sergepavle](https://github.com/sergepavle))
 
