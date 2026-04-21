@@ -172,7 +172,7 @@ class LinkListAccessTest extends KernelTestBase {
    */
   public function testPageWithSizeLimit(): void {
     $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
-    $link_list = $this->createInternalSourceLinkList(2, 2);
+    $link_list = $this->createInternalSourceLinkList(2);
 
     $this->setUpCurrentUser([], ['access content']);
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
@@ -187,7 +187,7 @@ class LinkListAccessTest extends KernelTestBase {
    */
   public function testPageWithoutSizeLimit(): void {
     $expected_links = $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
-    $link_list = $this->createInternalSourceLinkList(NULL, 2);
+    $link_list = $this->createInternalSourceLinkList(NULL);
 
     $this->setUpCurrentUser([], ['access content']);
     $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
@@ -234,13 +234,11 @@ class LinkListAccessTest extends KernelTestBase {
    *
    * @param int|null $size
    *   The optional size limit.
-   * @param int $page
-   *   The configured page value.
    *
    * @return \Drupal\oe_link_lists\Entity\LinkListInterface
    *   The link list.
    */
-  protected function createInternalSourceLinkList(?int $size = NULL, int $page = 0) {
+  protected function createInternalSourceLinkList(?int $size = NULL) {
     $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->create([
@@ -255,7 +253,6 @@ class LinkListAccessTest extends KernelTestBase {
         'plugin_configuration' => [
           'entity_type' => 'node',
           'bundle' => 'page',
-          'page' => $page,
         ],
       ],
       'display' => [
