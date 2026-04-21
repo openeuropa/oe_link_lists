@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists\Kernel;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -175,7 +176,7 @@ class LinkListAccessTest extends KernelTestBase {
     $link_list = $this->createInternalSourceLinkList(2);
 
     $this->setUpCurrentUser([], ['access content']);
-    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $builder = $this->container->get(EntityTypeManagerInterface::class)->getViewBuilder('link_list');
     $build = $builder->view($link_list);
     $html = (string) $this->container->get('renderer')->renderRoot($build);
 
