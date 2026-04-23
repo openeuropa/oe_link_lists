@@ -107,10 +107,11 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
       $link->setTitle($link_entity->getTitle());
     }
     if (!$link_entity->get('teaser')->isEmpty()) {
+      $teaser_field = $link_entity->get('teaser')->first();
       $link->setTeaser([
         '#type' => 'processed_text',
-        '#text' => $link_entity->getTeaser(),
-        '#format' => 'plain_text',
+        '#text' => $teaser_field->value,
+        '#format' => $teaser_field->format ?? 'simple_rich_text',
       ]);
     }
 
@@ -143,14 +144,12 @@ class DefaultManualLinksResolverSubscriber implements EventSubscriberInterface {
     }
 
     $teaser = [];
-    // Convert the teaser string to a processed text render array.
-    // This is necessary to ensure that external links can have a teaser
-    // with same rendering as internal links.
-    if ($teaser_text = $link_entity->getTeaser()) {
+    if (!$link_entity->get('teaser')->isEmpty()) {
+      $teaser_field = $link_entity->get('teaser')->first();
       $teaser = [
         '#type' => 'processed_text',
-        '#text' => $teaser_text,
-        '#format' => 'plain_text',
+        '#text' => $teaser_field->value,
+        '#format' => $teaser_field->format ?? 'simple_rich_text',
       ];
     }
 
