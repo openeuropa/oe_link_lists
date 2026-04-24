@@ -42,6 +42,7 @@ class GroupLinkListAssignTest extends GroupKernelTestBase {
     'text',
     'system',
     'node',
+    'node_storage_body_field',
     'link',
     'gnode',
     'inline_entity_form',
@@ -69,6 +70,7 @@ class GroupLinkListAssignTest extends GroupKernelTestBase {
     $this->installConfig([
       'field',
       'node',
+      'node_storage_body_field',
       'system',
       'entity_reference_revisions',
       'inline_entity_form',

@@ -26,6 +26,7 @@ class LocalLinkListsTest extends EntityKernelTestBase {
     'user',
     'system',
     'node',
+    'node_storage_body_field',
     'oe_link_lists_internal_source',
     'views',
   ];
@@ -40,7 +41,7 @@ class LocalLinkListsTest extends EntityKernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('link_list');
-    $this->installConfig(['field', 'node']);
+    $this->installConfig(['field', 'node', 'node_storage_body_field']);
     $this->installConfig([
       'oe_link_lists',
       'system',
