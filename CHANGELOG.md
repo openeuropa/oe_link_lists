@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/openeuropa/oe_link_lists/tree/1.16.0) (2026-04-27)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.15.0...1.16.0)
+
+**Merged pull requests:**
+
+- EWPP-6514: Support D11.3. [\#184](https://github.com/openeuropa/oe_link_lists/pull/184) ([nagyad](https://github.com/nagyad))
+
 ## [1.15.0](https://github.com/openeuropa/oe_link_lists/tree/1.15.0) (2026-04-20)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.14.0...1.15.0)
