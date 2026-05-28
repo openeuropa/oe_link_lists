@@ -100,6 +100,9 @@ function oe_link_lists_manual_source_inline_entity_form_entity_form_alter(array 
  *   Whether the form is embedded via inline entity form.
  */
 function oe_link_lists_manual_source_link_list_form_handle_alter(array &$form, FormStateInterface $form_state, LinkListInterface $entity, bool $is_ief = FALSE): void {
+  if (isset($form['#form_id']) && $form['#form_id'] === 'link_list_manual_delete_form') {
+    return;
+  }
   $configuration = $entity->getConfiguration();
   $sort_alphabetical = $configuration['source']['plugin_configuration']['sort_alphabetical'] ?? FALSE;
 
