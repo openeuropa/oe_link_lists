@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/openeuropa/oe_link_lists/tree/1.17.0) (2026-07-01)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.16.0...1.17.0)
+
+**Merged pull requests:**
+
+- EWPP-6927: Remove 'Sort links alphabetically' checkbox on delete page. [\#191](https://github.com/openeuropa/oe_link_lists/pull/191) ([sergepavle](https://github.com/sergepavle))
+
 ## [1.16.0](https://github.com/openeuropa/oe_link_lists/tree/1.16.0) (2026-04-27)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.15.0...1.16.0)
