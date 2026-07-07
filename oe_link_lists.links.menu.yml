@@ -10,3 +10,8 @@ oe_link_lists.index:
   description: 'List of Link lists'
   parent: system.admin_config
   weight: 100
+entity.link_list_type.collection:
+  title: 'Link list types'
+  route_name: entity.link_list_type.collection
+  description: 'Manage link list types'
+  parent: system.admin_structure
