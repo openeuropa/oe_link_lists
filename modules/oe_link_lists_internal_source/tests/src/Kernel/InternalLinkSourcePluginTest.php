@@ -103,7 +103,7 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
     ]);
     $this->assertEquals($test_entities_by_bundle['bar'], $this->extractEntityNames($plugin->getLinks()->toArray()));
 
-    // Test that the limit is applied to the results.
+    // Test that the raw result limit is applied by the source plugin.
     $plugin->setConfiguration([
       'entity_type' => 'entity_test',
       'bundle' => 'foo',
@@ -113,7 +113,8 @@ class InternalLinkSourcePluginTest extends KernelTestBase {
       $this->extractEntityNames($plugin->getLinks(2)->toArray())
     );
 
-    // Test that the offset and limit are applied to the results.
+    // Test that the raw result offset and limit are applied by the source
+    // plugin.
     $this->assertEquals(
       array_slice($test_entities_by_bundle['foo'], 2, 2, TRUE),
       $this->extractEntityNames($plugin->getLinks(2, 2)->toArray())

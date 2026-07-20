@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\oe_link_lists\Kernel;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -152,6 +153,124 @@ class LinkListAccessTest extends KernelTestBase {
     $html = (string) $renderer->renderRoot($build);
     // All the nodes, even the unpublished ones, are rendered.
     $this->assertEquals('<ul><li><a href="/node/1" hreflang="en">Published</a></li><li><a href="/node/2" hreflang="en">Unpublished</a></li><li><a href="/node/3" hreflang="en">Published revision</a></li></ul>', $html);
+  }
+
+  /**
+   * Tests that the configured size yields the requested visible links.
+   */
+  public function testSizeLimit(): void {
+    $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+    $link_list = $this->createInternalSourceLinkList(5);
+
+    $this->setUpCurrentUser([], ['access content']);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+
+    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
+  }
+
+  /**
+   * Tests visible links with a configured page and size limit.
+   */
+  public function testPageWithSizeLimit(): void {
+    $expected_links = $this->createNodesForAccessTest([2, 3, 6, 8, 9]);
+    $link_list = $this->createInternalSourceLinkList(2);
+
+    $this->setUpCurrentUser([], ['access content']);
+    $builder = $this->container->get(EntityTypeManagerInterface::class)->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+
+    $this->assertEquals('<ul>' . implode('', array_slice($expected_links, 0, 2)) . '</ul>', $html);
+  }
+
+  /**
+   * Tests visible links with a configured page and no size limit.
+   */
+  public function testPageWithoutSizeLimit(): void {
+    $expected_links = $this->createNodesForAccessTest([1, 2, 3, 4, 5]);
+    $link_list = $this->createInternalSourceLinkList(NULL);
+
+    $this->setUpCurrentUser([], ['access content']);
+    $builder = $this->container->get('entity_type.manager')->getViewBuilder('link_list');
+    $build = $builder->view($link_list);
+    $html = (string) $this->container->get('renderer')->renderRoot($build);
+
+    $this->assertEquals('<ul>' . implode('', $expected_links) . '</ul>', $html);
+  }
+
+  /**
+   * Creates test nodes and returns the expected rendered visible links.
+   *
+   * @param int[] $published_indexes
+   *   The 1-based indexes that should be published.
+   *
+   * @return list<string>
+   *   The expected rendered list items for accessible nodes.
+   */
+  protected function createNodesForAccessTest(array $published_indexes): array {
+    $expected_links = [];
+    for ($index = 1; $index <= 10; $index++) {
+      $node = Node::create([
+        'title' => "Node $index",
+        'type' => 'page',
+        'status' => 0,
+      ]);
+
+      if (in_array($index, $published_indexes, TRUE)) {
+        $node->setPublished();
+      }
+
+      $node->save();
+
+      if ($node->isPublished()) {
+        $expected_links[] = sprintf('<li><a href="/node/%d" hreflang="en">Node %d</a></li>', $node->id(), $index);
+      }
+    }
+
+    return $expected_links;
+  }
+
+  /**
+   * Creates an internal-source link list for a bundle.
+   *
+   * @param int|null $size
+   *   The optional size limit.
+   *
+   * @return \Drupal\oe_link_lists\Entity\LinkListInterface
+   *   The link list.
+   */
+  protected function createInternalSourceLinkList(?int $size = NULL) {
+    $storage = $this->container->get('entity_type.manager')->getStorage('link_list');
+    /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
+    $link_list = $storage->create([
+      'bundle' => 'dynamic',
+      'title' => $this->randomString(),
+      'administrative_title' => $this->randomString(),
+    ]);
+
+    $configuration = [
+      'source' => [
+        'plugin' => 'internal',
+        'plugin_configuration' => [
+          'entity_type' => 'node',
+          'bundle' => 'page',
+        ],
+      ],
+      'display' => [
+        'plugin' => 'test_configurable_title',
+      ],
+    ];
+
+    if ($size !== NULL) {
+      $configuration['size'] = $size;
+    }
+
+    $link_list->setConfiguration($configuration);
+    $link_list->save();
+
+    return $link_list;
   }
 
 }

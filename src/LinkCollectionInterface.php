@@ -8,6 +8,9 @@ use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 
 /**
  * Provides an interface for collections of links.
+ *
+ * @template-extends \IteratorAggregate<array-key, \Drupal\oe_link_lists\LinkInterface>
+ * @template-extends \ArrayAccess<array-key, \Drupal\oe_link_lists\LinkInterface>
  */
 interface LinkCollectionInterface extends \ArrayAccess, \IteratorAggregate, RefinableCacheableDependencyInterface {
 
