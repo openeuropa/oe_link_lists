@@ -7,12 +7,14 @@ namespace Drupal\Tests\oe_link_lists_internal_source\FunctionalJavascript;
 use Behat\Mink\Element\NodeElement;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Base test class for internal link browser tests.
  */
 abstract class InternalLinkSourceTestBase extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -27,6 +29,14 @@ abstract class InternalLinkSourceTestBase extends WebDriverTestBase {
     'oe_link_lists_test',
     'oe_link_lists_internal_source',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
+    parent::setUp();
+  }
 
   /**
    * Disables the native browser validation for required fields.

@@ -7,6 +7,7 @@ namespace Drupal\Tests\oe_link_lists_rss_source\FunctionalJavascript;
 use Drupal\aggregator\FeedStorageInterface;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Base class for RSS Links functional tests.
@@ -15,6 +16,7 @@ use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
  */
 abstract class RssLinksTestBase extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -45,6 +47,7 @@ abstract class RssLinksTestBase extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);

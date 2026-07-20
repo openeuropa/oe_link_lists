@@ -6,11 +6,14 @@ namespace Drupal\Tests\oe_link_lists_local\Functional;
 
 use Drupal\field\Entity\FieldConfig;
 use Drupal\Tests\BrowserTestBase;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Tests the local link lists.
  */
 class LocalLinkListsTest extends BrowserTestBase {
+
+  use CachedDatabaseInstallTrait;
 
   /**
    * {@inheritdoc}
@@ -37,6 +40,7 @@ class LocalLinkListsTest extends BrowserTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Page']);

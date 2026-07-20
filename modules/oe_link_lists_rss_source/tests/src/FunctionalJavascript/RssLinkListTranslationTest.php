@@ -10,6 +10,7 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -20,6 +21,7 @@ use Psr\Http\Message\RequestInterface;
  */
 class RssLinkListTranslationTest extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -50,6 +52,7 @@ class RssLinkListTranslationTest extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);
