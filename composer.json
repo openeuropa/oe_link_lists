@@ -86,6 +86,8 @@
             "phpstan/extension-installer": true,
             "symfony/runtime": true,
             "tbachert/spi": true
+            "tbachert/spi": true,
+            "symfony/runtime": true
         }
     }
 }
