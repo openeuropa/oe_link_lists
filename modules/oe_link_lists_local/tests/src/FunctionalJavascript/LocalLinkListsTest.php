@@ -11,12 +11,14 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\oe_link_lists\Entity\LinkList;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\workflows\Entity\Workflow;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Tests link lists can be created inside a IEF.
  */
 class LocalLinkListsTest extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -55,6 +57,7 @@ class LocalLinkListsTest extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     $this->drupalCreateContentType([

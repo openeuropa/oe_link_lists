@@ -14,6 +14,7 @@ use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 use Drupal\Tests\oe_link_lists\Traits\NativeBrowserValidationTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -23,6 +24,7 @@ use Psr\Http\Message\RequestInterface;
  */
 class LinkListConfigurationFormTest extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use ContentTypeCreationTrait;
   use NodeCreationTrait;
   use NativeBrowserValidationTrait;
@@ -55,6 +57,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     // Do not delete old aggregator items during these tests, since our sample

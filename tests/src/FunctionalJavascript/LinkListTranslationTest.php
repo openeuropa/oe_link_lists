@@ -6,6 +6,7 @@ namespace Drupal\Tests\oe_link_lists\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Tests the link list translation form.
@@ -14,6 +15,7 @@ use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
  */
 class LinkListTranslationTest extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -39,6 +41,7 @@ class LinkListTranslationTest extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     \Drupal::service('content_translation.manager')->setEnabled('link_list', 'dynamic', TRUE);

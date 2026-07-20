@@ -7,12 +7,14 @@ namespace Drupal\Tests\oe_link_lists_manual_source\FunctionalJavascript;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\oe_link_lists\Entity\LinkListInterface;
 use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Base class for manual link list web tests.
  */
 abstract class ManualLinkListTestBase extends WebDriverTestBase {
 
+  use CachedDatabaseInstallTrait;
   use LinkListTestTrait;
 
   /**
@@ -35,6 +37,7 @@ abstract class ManualLinkListTestBase extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
     parent::setUp();
 
     $this->drupalCreateContentType([
