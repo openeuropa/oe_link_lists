@@ -25,6 +25,7 @@
         "ec-europa/toolkit": "^10.23",
         "openeuropa/code-review-drupal": "^1.0.0-alpha",
         "openeuropa/oe_multilingual": "^1.13",
+        "openeuropa/oe_testing_utils": "^1",
         "phpspec/prophecy-phpunit": "^2"
     },
     "scripts": {
@@ -83,6 +84,7 @@
             "phpro/grumphp": true,
             "phpro/grumphp-shim": true,
             "phpstan/extension-installer": true,
+            "symfony/runtime": true,
             "tbachert/spi": true
         }
     }

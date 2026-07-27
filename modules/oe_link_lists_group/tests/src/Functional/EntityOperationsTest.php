@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\oe_link_lists_group\Functional;
 
 use Drupal\Tests\group\Functional\EntityOperationsTest as GroupEntityOperationsTest;
+use OpenEuropa\TestingUtilities\Traits\CachedDatabaseInstallTrait;
 
 /**
  * Tests that entity operations (do not) show up on the group overview.
@@ -13,10 +14,20 @@ use Drupal\Tests\group\Functional\EntityOperationsTest as GroupEntityOperationsT
  */
 class EntityOperationsTest extends GroupEntityOperationsTest {
 
+  use CachedDatabaseInstallTrait;
+
   /**
    * {@inheritdoc}
    */
   protected static $modules = ['oe_link_lists_group'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    $this->cacheDbInstall = TRUE;
+    parent::setUp();
+  }
 
   /**
    * {@inheritdoc}
