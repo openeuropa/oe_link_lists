@@ -112,7 +112,15 @@ class LocalLinkListsTest extends BrowserTestBase {
       $this->getSession()->getPage()->pressButton('Continue');
     }
 
-    $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
+    // @todo Remove when support for 11.3.x is dropped.
+    // Drupal 11.4 renamed the "Text (plain)" field-type option to "Short text"
+    // on the field storage add form; the machine name ("string") is unchanged.
+    if (version_compare(\Drupal::VERSION, '11.4', '>=')) {
+      $this->getSession()->getPage()->selectFieldOption('Short text', 'string');
+    }
+    else {
+      $this->getSession()->getPage()->selectFieldOption('Text (plain)', 'string');
+    }
     $this->getSession()->getPage()->fillField('Label', 'String field');
     $this->getSession()->getPage()->fillField('Machine-readable name', 'field_text');
     $this->getSession()->getPage()->pressButton('Continue');

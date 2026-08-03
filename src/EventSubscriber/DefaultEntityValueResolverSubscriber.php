@@ -34,10 +34,23 @@ class DefaultEntityValueResolverSubscriber implements EventSubscriberInterface {
       '#markup' => '',
     ];
     if ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
+      $body = $entity->get('body');
+      $size = (int) \Drupal::config('text.settings')->get('default_summary_length');
+      // The TextSummary service replaces text_summary() in Drupal 11.4; use it
+      // when available and fall back to the function on older cores.
+      $text_summary_service = 'Drupal\text\TextSummary';
+      if (\Drupal::hasService($text_summary_service)) {
+        $summary = \Drupal::service($text_summary_service)->generate($body->value, $body->format, $size);
+      }
+      else {
+        // Called via a variable so the fallback isn't flagged as deprecated.
+        $text_summary = 'text_summary';
+        $summary = $text_summary($body->value, $body->format, $size);
+      }
       $teaser = [
         '#type' => 'processed_text',
-        '#text' => text_summary($entity->get('body')->value, $entity->get('body')->format),
-        '#format' => $entity->get('body')->format,
+        '#text' => $summary,
+        '#format' => $body->format,
       ];
     }
 
