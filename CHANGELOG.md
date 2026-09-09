@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.18.0](https://github.com/openeuropa/oe_link_lists/tree/1.18.0) (2026-09-09)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.17.0...1.18.0)
+
+**Merged pull requests:**
+
+- EWPP-7144: Configure github actions. [\#197](https://github.com/openeuropa/oe_link_lists/pull/197) ([hernani](https://github.com/hernani))
+- EWPP-6988: Test against Drupal 11.4. [\#195](https://github.com/openeuropa/oe_link_lists/pull/195) ([nagyad](https://github.com/nagyad))
+- EWPP-7120: Functional test cached DB. [\#194](https://github.com/openeuropa/oe_link_lists/pull/194) ([upchuk](https://github.com/upchuk))
+
 ## [1.17.0](https://github.com/openeuropa/oe_link_lists/tree/1.17.0) (2026-07-01)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.16.0...1.17.0)
