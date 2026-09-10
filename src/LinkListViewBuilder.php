@@ -267,11 +267,62 @@ class LinkListViewBuilder extends EntityViewBuilder {
     // For lists that use source plugins.
     if ($source_plugin) {
       $plugin = $this->linkSourceManager->createInstance($source_plugin, $source_plugin_configuration);
+      assert($plugin instanceof LinkSourceInterface);
       $size = isset($configuration['size']) && $configuration['size'] > 0 ? $configuration['size'] : NULL;
-      return $plugin->getLinks($size);
+      return $this->getVisibleLinksFromSource($plugin, $size);
     }
 
     return new LinkCollection();
+  }
+
+  /**
+   * Returns enough source links to render the requested visible slice.
+   *
+   * @param \Drupal\oe_link_lists\LinkSourceInterface $plugin
+   *   The source plugin.
+   * @param int|null $size
+   *   The number of visible links to collect, or NULL for all remaining links.
+   *
+   * @return \Drupal\oe_link_lists\LinkCollectionInterface
+   *   The collected source links.
+   *
+   * @todo Make $size parameter required, or set a default size to prevent
+   *   unlimited lists.
+   */
+  protected function getVisibleLinksFromSource(LinkSourceInterface $plugin, ?int $size): LinkCollectionInterface {
+    $links = new LinkCollection();
+    $visible_returned = 0;
+    $chunk_offset = 0;
+
+    while (TRUE) {
+      // Don't load more than 50 links at once.
+      $chunk_size = $size === NULL
+        ? 50
+        : min($size - $visible_returned, 50);
+      $chunk = $plugin->getLinks($chunk_size, $chunk_offset);
+      $chunk_offset += $chunk_size;
+      $links->addCacheableDependency($chunk);
+
+      foreach ($chunk as $link) {
+        $access = $link->access('view', NULL, TRUE);
+        $links->addCacheableDependency($access);
+        if (!$access->isAllowed()) {
+          continue;
+        }
+
+        $links->add($link);
+        ++$visible_returned;
+        if ($size !== NULL && $visible_returned >= $size) {
+          return $links;
+        }
+      }
+
+      if (count($chunk->toArray()) < $chunk_size) {
+        // This must have been the last chunk.
+        // No further links are available in the source.
+        return $links;
+      }
+    }
   }
 
   /**
