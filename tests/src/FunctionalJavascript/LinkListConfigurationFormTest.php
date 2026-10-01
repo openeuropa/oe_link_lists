@@ -381,6 +381,7 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     $this->assertEquals(array_combine($options_range, $options_range) + [
       '50' => '50',
       '0' => '100',
+      '500' => '500',
     ], $options);
 
     // Show all links.

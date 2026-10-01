@@ -562,6 +562,7 @@ class LinkListConfigurationWidget extends WidgetBase implements ContainerFactory
     $options += [
       50 => $this->t('50'),
       0 => $this->t('100'),
+      500 => $this->t('500'),
     ];
 
     $element['link_display']['size'] = [
