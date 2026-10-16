@@ -4,3 +4,8 @@ parameters:
   excludePaths:
   # Exclude the following file from analysis as RawDrupalContext is not present.
     - tests/src/Behat/LinkListsContext.php
+  ignoreErrors:
+    -
+      identifier: method.deprecatedClass
+      path: modules/oe_link_lists_manual_source/src/Plugin/LinkSource/ManualLinkSource.php
+      reportUnmatched: false

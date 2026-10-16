@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
@@ -48,7 +49,7 @@ function oe_link_lists_group_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_entity_operation().
  */
-function oe_link_lists_group_entity_operation(EntityInterface $entity) {
+function oe_link_lists_group_entity_operation(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
   $operations = [];
 
   if ($entity->getEntityTypeId() == 'group' && \Drupal::moduleHandler()->moduleExists('views')) {

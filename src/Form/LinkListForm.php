@@ -131,13 +131,13 @@ class LinkListForm extends ContentEntityForm {
     switch ($status) {
       case SAVED_NEW:
         $this->messenger->addMessage($this->t('Created the %label Link list.', [
-          '%label' => $entity->label(),
+          '%label' => $entity->toLink()->toString(),
         ]));
         break;
 
       default:
         $this->messenger->addMessage($this->t('Saved the %label Link list.', [
-          '%label' => $entity->label(),
+          '%label' => $entity->toLink()->toString(),
         ]));
     }
     $form_state->setRedirect('entity.link_list.canonical', ['link_list' => $entity->id()]);
