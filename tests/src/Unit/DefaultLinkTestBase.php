@@ -27,7 +27,6 @@ abstract class DefaultLinkTestBase extends UnitTestCase {
    *   The access operation to check.
    *
    * @dataProvider unsupportedOperationsProvider
-   * @covers ::access
    */
   public function testUnsupportedAccessOperation(string $operation): void {
     $this->expectException(\InvalidArgumentException::class);
