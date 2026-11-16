@@ -13,11 +13,12 @@
     },
     "require-dev": {
         "composer/installers": "^2.3",
+        "consolidation/robo": "5.1.1",
         "drupal/aggregator": "^2.2",
         "drupal/composite_reference": "^2.2",
         "drupal/core-composer-scaffold": "^10 || ^11",
         "drupal/core-dev": "^10 || ^11",
-        "drupal/entity_reference_revisions": "^1.9",
+        "drupal/entity_reference_revisions": "^1.15",
         "drupal/inline_entity_form": "^1.0-rc15 || ^3.0@RC",
         "drupal/group": "^2.3",
         "drupal/multivalue_form_element": "^1.0-beta6",
@@ -63,14 +64,17 @@
         },
         "patches": {
             "drupal/entity_reference_revisions": {
-                "https://www.drupal.org/project/entity_reference_revisions/issues/3206499": "https://www.drupal.org/files/issues/2021-05-26/entity_reference_revisions-3206499-5.patch"
+                "https://www.drupal.org/project/entity_reference_revisions/issues/3206499": "https://git.drupalcode.org/-/project/19203/uploads/2c87c5ab708c5a6d55281d813ddbaafb/entity_reference_revisions-3206499-11.patch"
             }
         },
         "drupal-scaffold": {
             "locations": {
                 "web-root": "./build"
             }
-        }
+        },
+        "_readme": [
+            "Locking consolidation/robo to 5.1.1 due to 5.2.x calling Application::addCommand() which doesn't exists. Remove when support for Drupal core 10.6.x is dropped."
+        ]
     },
     "config": {
         "sort-packages": true,
