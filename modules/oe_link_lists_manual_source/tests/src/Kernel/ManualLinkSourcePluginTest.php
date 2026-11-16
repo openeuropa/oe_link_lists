@@ -14,7 +14,7 @@ use Drupal\Tests\oe_link_lists\Traits\LinkListTestTrait;
 /**
  * Tests the manual link source plugin.
  *
- * @covers \Drupal\oe_link_lists_manual_source\Plugin\LinkSource\ManualLinkSource
+ * @coversDefaultClass \Drupal\oe_link_lists_manual_source\Plugin\LinkSource\ManualLinkSource
  */
 class ManualLinkSourcePluginTest extends KernelTestBase {
 

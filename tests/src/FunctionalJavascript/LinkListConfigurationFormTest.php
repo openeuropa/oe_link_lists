@@ -245,6 +245,10 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
 
     /** @var \Drupal\oe_link_lists\Entity\LinkListInterface $link_list */
     $link_list = $storage->load(1);
+    // Assert the message links to the link list.
+    $this->assertSession()->pageTextContains('Created the The admin title Link list.');
+    $message = $this->assertSession()->elementExists('css', '.messages--status');
+    $this->assertEquals($link_list->toUrl()->toString(), $message->findLink('The admin title')->getAttribute('href'));
     $configuration = $link_list->getConfiguration();
     $this->assertEquals('test_link_tag', $configuration['display']['plugin']);
     $this->assertEquals(['title' => NULL, 'more' => []], $configuration['display']['plugin_configuration']);
@@ -679,6 +683,8 @@ class LinkListConfigurationFormTest extends WebDriverTestBase {
     // plugin.
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->pageTextContains('Saved the Link list 1 Link list.');
+    $message = $this->assertSession()->elementExists('css', '.messages--status');
+    $this->assertEquals($link_list->toUrl()->toString(), $message->findLink('Link list 1')->getAttribute('href'));
 
     // We can edit again and change the link source to use a supported on.
     $this->drupalGet($link_list->toUrl('edit-form'));

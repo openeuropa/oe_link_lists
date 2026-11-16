@@ -294,7 +294,7 @@ class RssLinkSourcePluginTest extends KernelTestBase implements FormInterface {
   /**
    * Tests that the plugin returns the links.
    *
-   * @covers ::getLinks()
+   * @covers ::getLinks
    * @covers ::getFeed
    */
   public function testLinks(): void {

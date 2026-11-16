@@ -59,7 +59,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
     $plugin = $plugin_manager->createInstance('rss_links', $form_state->get('plugin_configuration') ?? []);
 
     $form['#tree'] = TRUE;
@@ -77,7 +77,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
     $plugin = $form_state->get('plugin');
     $sub_form_state = SubformState::createForSubform($form['plugin'], $form, $form_state);
     $plugin->validateConfigurationForm($form, $sub_form_state);
@@ -87,7 +87,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
     $plugin = $form_state->get('plugin');
     $sub_form_state = SubformState::createForSubform($form['plugin'], $form, $form_state);
     $plugin->submitConfigurationForm($form, $sub_form_state);
@@ -313,8 +313,8 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
   /**
    * Tests that the plugin returns the links.
    *
-   * @covers ::getLinks()
-   * @covers ::getFeed
+   * @covers ::getLinks
+   * @covers ::getFeeds
    */
   public function testLinks(): void {
     // Create two test feeds.
@@ -336,7 +336,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
     $plugin = $plugin_manager->createInstance('rss_links');
     // Test a plugin with empty configuration.
     $this->assertTrue($plugin->getLinks()->isEmpty());
@@ -405,7 +405,7 @@ class RssLinksSourcePluginTest extends KernelTestBase implements FormInterface {
 
     $plugin_manager = $this->container->get('plugin.manager.oe_link_lists.link_source');
 
-    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinkSource $plugin */
+    /** @var \Drupal\oe_link_lists_rss_source\Plugin\LinkSource\RssLinksSource $plugin */
     $plugin = $plugin_manager->createInstance('rss_links');
     $plugin->setConfiguration(['urls' => [$url]]);
 

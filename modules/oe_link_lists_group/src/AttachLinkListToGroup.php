@@ -39,11 +39,11 @@ class AttachLinkListToGroup {
   protected $moduleHandler;
 
   /**
-   * Group relationship storage.
+   * The entity type manager.
    *
-   * @var \Drupal\group\Entity\Storage\GroupRelationshipStorage
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $groupRelationshipStorage;
+  protected $entityTypeManager;
 
   /**
    * Link list logger channel.
@@ -79,7 +79,7 @@ class AttachLinkListToGroup {
   ) {
     $this->groupRelationTypeManager = $group_relationship_type_manager;
     $this->moduleHandler = $module_handler;
-    $this->groupRelationshipStorage = $entity_type_manager->getStorage('group_content');
+    $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
   }
 
@@ -236,7 +236,7 @@ class AttachLinkListToGroup {
       $groups[] = $entity;
     }
     elseif ($entity instanceof ContentEntityInterface) {
-      $group_relationships = $this->groupRelationshipStorage->loadByEntity($entity);
+      $group_relationships = $this->entityTypeManager->getStorage('group_content')->loadByEntity($entity);
       foreach ($group_relationships as $group_relationship) {
         $groups[] = $group_relationship->getGroup();
       }
@@ -281,7 +281,7 @@ class AttachLinkListToGroup {
     if (!isset($this->groupCount[$item->id()])) {
       // Check what relations already exist for this link list to control the
       // group cardinality.
-      $group_relationships = $this->groupRelationshipStorage->loadByEntity($item);
+      $group_relationships = $this->entityTypeManager->getStorage('group_content')->loadByEntity($item);
       $group_ids = [];
 
       /** @var \Drupal\group\Entity\GroupRelationshipInterface $group_relationship */
