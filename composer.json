@@ -17,7 +17,7 @@
         "drupal/composite_reference": "^2.2",
         "drupal/core-composer-scaffold": "^10 || ^11",
         "drupal/core-dev": "^10 || ^11",
-        "drupal/entity_reference_revisions": "^1.9",
+        "drupal/entity_reference_revisions": "^1.15",
         "drupal/inline_entity_form": "^1.0-rc15 || ^3.0@RC",
         "drupal/group": "^2.3",
         "drupal/multivalue_form_element": "^1.0-beta6",
@@ -60,11 +60,6 @@
             "build/profiles/contrib/{$name}": ["type:drupal-profile"],
             "build/modules/contrib/{$name}": ["type:drupal-module"],
             "build/themes/contrib/{$name}": ["type:drupal-theme"]
-        },
-        "patches": {
-            "drupal/entity_reference_revisions": {
-                "https://www.drupal.org/project/entity_reference_revisions/issues/3206499": "https://www.drupal.org/files/issues/2021-05-26/entity_reference_revisions-3206499-5.patch"
-            }
         },
         "drupal-scaffold": {
             "locations": {

@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Drupal\oe_link_lists\Form\LinkListInlineForm;
+use Drupal\oe_link_lists\Plugin\Field\FieldType\EntityReferenceRevisionsItemFix;
 
 /**
  * Implements hook_entity_type_build().
@@ -16,5 +17,17 @@ function oe_link_lists_entity_type_build(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   if (isset($entity_types['link_list'])) {
     $entity_types['link_list']->setHandlerClass('inline_form', LinkListInlineForm::class);
+  }
+}
+
+/**
+ * Implements hook_field_info_alter().
+ */
+function oe_link_lists_field_info_alter(array &$info) {
+  // Replace the 'entity_reference_revisions' field item class to work around
+  // a bug that loses entities created through nested inline entity forms.
+  // @see \Drupal\oe_link_lists\Plugin\Field\FieldType\EntityReferenceRevisionsItemFix
+  if (isset($info['entity_reference_revisions'])) {
+    $info['entity_reference_revisions']['class'] = EntityReferenceRevisionsItemFix::class;
   }
 }
