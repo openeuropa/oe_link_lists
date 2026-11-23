@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.19.0](https://github.com/openeuropa/oe_link_lists/tree/1.19.0) (2026-11-23)
+
+[Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.18.0...1.19.0)
+
+**Merged pull requests:**
+
+- EWPP-0000: Unlock consolidation/robo. [\#206](https://github.com/openeuropa/oe_link_lists/pull/206) ([hernani](https://github.com/hernani))
+- EWPP-7556: Update entity\_reference\_revisions patch. [\#205](https://github.com/openeuropa/oe_link_lists/pull/205) ([hernani](https://github.com/hernani))
+- EWPP-7556: Use entity\_reference\_revisions 3206499 patch rerolled for 1.15. [\#203](https://github.com/openeuropa/oe_link_lists/pull/203) ([nagyad](https://github.com/nagyad))
+- EWPP-7434: Add link to the entity on the status messages. [\#202](https://github.com/openeuropa/oe_link_lists/pull/202) ([22Alexandra](https://github.com/22Alexandra))
+
 ## [1.18.0](https://github.com/openeuropa/oe_link_lists/tree/1.18.0) (2026-09-09)
 
 [Full Changelog](https://github.com/openeuropa/oe_link_lists/compare/1.17.0...1.18.0)
